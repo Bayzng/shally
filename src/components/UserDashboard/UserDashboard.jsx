@@ -303,7 +303,7 @@ const OrderCard = ({ order, downloadReceipt, mode }) => {
           onClick={() => downloadReceipt(order.id)}
           className="bg-pink-500 text-white px-3 py-1 rounded text-sm"
         >
-          Download Receipt
+          Download Receipts
         </button>
       </div>
 
