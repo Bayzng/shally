@@ -1,3 +1,8 @@
+import mainOne from "../../assets/mainOne.webp"
+import mainTwo from "../../assets/mainTwo.jpg"
+import mainThree from "../../assets/mainThree.jpg"
+import mainFour from "../../assets/mainFour.jpg"
+
 const MaintenancePage = () => {
   return (
     <div className="font-sans text-gray-900">
@@ -20,7 +25,7 @@ const MaintenancePage = () => {
           </div>
           <div className="lg:w-1/2">
             <img
-              src="https://assets-static.invideo.io/images/large/181_Fashion_Clothing_Ads_1_33b060017f.webp"
+              src={mainOne}
               alt="Shally Products"
               className="rounded-xl shadow-2xl"
             />
@@ -36,8 +41,7 @@ const MaintenancePage = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-purple-400 transition">
             <img
-              src="https://img.freepik.com/free-vector/blonde-brunette-redhead-fashion-shopping-girls-with-bags-packages-hand-glad-purchases-vector-illustration_1284-42909.jpg?semt=ais_hybrid&w=740&q=80"
-              alt="Product 1"
+              src={mainTwo}
               className="w-full h-64 object-cover"
             />
             <div className="p-6">
@@ -56,7 +60,7 @@ const MaintenancePage = () => {
 
           <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-purple-400 transition">
             <img
-              src="https://img.freepik.com/free-vector/flat-hand-drawn-people-shopping_23-2148823204.jpg?semt=ais_hybrid&w=740"
+              src={mainThree}
               alt="Product 2"
               className="w-full h-64 object-cover"
             />
@@ -74,7 +78,7 @@ const MaintenancePage = () => {
 
           <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-purple-400 transition">
             <img
-              src="https://img.freepik.com/premium-vector/shopping_1212593-989.jpg?semt=ais_hybrid&w=740&q=80"
+              src={mainFour}
               alt="Product 3"
               className="w-full h-64 object-cover"
             />
@@ -125,7 +129,7 @@ const MaintenancePage = () => {
       </section>
 
       {/* Call to Action */}
-      <section className="bg-purple-600 text-white py-20">
+      <section className="text-black py-20">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-4xl font-bold mb-6">Get Ready for Shally!</h2>
           <p className="mb-6">
