@@ -5,7 +5,6 @@ import {
   Navigate,
 } from "react-router-dom";
 
-import Home from './pages/home/Home';
 import Order from './pages/order/Order';
 import Cart from './pages/cart/Cart';
 import Dashboard from './pages/admin/dashboard/Dashboard';
@@ -19,6 +18,8 @@ import UpdateProduct from './pages/admin/page/UpdateProduct';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Allproducts from './pages/allproducts/Allproducts';
+import MaintenancePage from "./components/MaintenancePage/MaintenancePage";
+// import Home from './pages/home/Home';
 
 
 function App() {
@@ -26,7 +27,8 @@ function App() {
     <MyState>
       <Router>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<MaintenancePage />} />
+          {/* <Route path="/" element={<Home />} /> */}
           <Route path="/allproducts" element={<Allproducts />} />
           <Route path="/order" element={
             <ProtectedRoute>

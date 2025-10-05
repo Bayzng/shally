@@ -5,6 +5,9 @@ import { useSelector } from "react-redux";
 import { FiSun } from "react-icons/fi";
 import { BsFillCloudSunFill } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import logo from "../../assets/logo.png";
 import myContext from "../../context/data/myContext";
 
 function Navbar() {
@@ -20,8 +23,26 @@ function Navbar() {
 
   const isDark = mode === "dark";
 
+  // ✅ Handle cart click (prevent if empty)
+  const handleCartClick = (e) => {
+    if (cartItems.length === 0) {
+      e.preventDefault();
+      toast.info("🛒 Your cart is empty!", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        theme: isDark ? "dark" : "light",
+      });
+      return;
+    }
+  };
+
   return (
     <div className="bg-white sticky top-0 z-50">
+      <ToastContainer />
       {/* Mobile Menu */}
       <Transition.Root show={open} as={Fragment}>
         <Dialog as="div" className="relative z-40 lg:hidden" onClose={setOpen}>
@@ -91,20 +112,12 @@ function Navbar() {
                       Signup
                     </Link>
                   )}
-
-                  <div className="flex justify-center">
-                    <img
-                      src="https://thumbs.dreamstime.com/b/person-icon-flat-style-man-symbol-person-icon-flat-style-man-symbol-isolated-white-background-simple-people-abstract-icon-118611127.jpg"
-                      alt="user"
-                      className="w-10 h-10 rounded-full"
-                    />
-                  </div>
                 </div>
 
                 <div className="border-t border-gray-200 px-4 py-6">
                   <div className="flex items-center space-x-2">
                     <img
-                      src="https://etendard.com/media/1864/nigeria.png?width=570&height=570&bgcolor=e5e5e5"
+                      src="https://symbl-cdn.com/i/webp/0b/e342fb927a24503ca913445ad97323.webp"
                       alt="Nigeria flag"
                       className="w-5"
                     />
@@ -112,14 +125,23 @@ function Navbar() {
                   </div>
                 </div>
 
-                <div className="text-center px-4 py-4">
+                <div className="px-4 py-4">
                   {user ? (
-                    <h2 className="text-green-600 font-semibold">
-                      Welcome Back
+                    <h2 className="text-green-600 font-semibold text-lg">
+                      👋 Welcome back, smart shopper!
+                      <span className="block text-gray-600 text-sm">
+                        Great to see you again — amazing deals are waiting for
+                        you!
+                      </span>
                     </h2>
                   ) : (
-                    <h3 className="text-red-500 text-sm">
-                      Kindly create an account and login to explore our products
+                    <h3 className="text-red-500 text-sm font-medium">
+                      🚀 Create your account today and start exploring our
+                      exclusive collections.
+                      <span className="block text-gray-600">
+                        Discover trending products, unbeatable discounts, and a
+                        shopping experience you’ll love.
+                      </span>
                     </h3>
                   )}
                 </div>
@@ -169,29 +191,35 @@ function Navbar() {
                 </svg>
               </button>
 
-              <Link to="/" className="ml-4 text-2xl font-bold">
-                Leemah_Hair
-              </Link>
+              <div className="flex items-center space-x-1">
+                <img
+                  src={logo}
+                  alt="Shally Logo"
+                  className="w-12 h-12 object-contain"
+                />
+                <Link to="/" className="text-2xl font-bold">
+                  Shally
+                </Link>
+              </div>
             </div>
 
             {/* Right: Links, Theme, Cart */}
             <div className="flex items-center space-x-6">
-              <Link to="/allproducts">All Products</Link>
-
-              {user ? (
-                <Link to="/order">Order</Link>
-              ) : (
-                <Link to="/signup">Signup</Link>
-              )}
-
               {user?.user?.email === "leetsmeets@gmail.com" && (
                 <Link to="/dashboard">Admin</Link>
               )}
 
-              {user && (
-                <button onClick={logout} className="cursor-pointer">
+              {user ? (
+                <button
+                  onClick={logout}
+                  className="hidden md:block font-medium text-left cursor-pointer"
+                >
                   Logout
                 </button>
+              ) : (
+                <Link to="/signup" className="hidden md:block font-medium">
+                  Signup
+                </Link>
               )}
 
               {/* Theme Toggle */}
@@ -203,9 +231,13 @@ function Navbar() {
                 )}
               </button>
 
-              {/* Cart */}
+              {/* ✅ Cart: Only opens when not empty */}
               {user && (
-                <Link to="/cart" className="flex items-center space-x-1">
+                <Link
+                  to={cartItems.length > 0 ? "/cart" : "#"}
+                  onClick={handleCartClick}
+                  className="flex items-center space-x-1"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"

@@ -1,15 +1,37 @@
-import React from 'react'
+// import Navbar from '../navbar/Navbar'
+// import Footer from '../footer/Footer'
+
+// function Layout({children}) {
+//   return (
+//     <div>
+//         <Navbar/>
+//         <div className="content">
+//             {children}
+//         </div>
+//         <Footer/>
+//     </div>
+//   )
+// }
+
+// export default Layout
+
+
 import Navbar from '../navbar/Navbar'
 import Footer from '../footer/Footer'
 
-function Layout({children}) {
+function Layout({ children }) {
   return (
-    <div>
-        <Navbar/>
-        <div className="content">
-            {children}
-        </div>
-        <Footer/>
+    <div className="flex flex-col min-h-screen">
+      {/* Navbar always on top */}
+      <Navbar />
+
+      {/* Page Content */}
+      <main className="flex-grow  ">
+        {children}
+      </main>
+
+      {/* Footer always at bottom */}
+      <Footer />
     </div>
   )
 }
