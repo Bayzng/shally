@@ -102,7 +102,7 @@ function ProductCard() {
                           mode === "dark" ? "text-pink-400" : "text-pink-600"
                         }`}
                       >
-                        Leemah_Hair
+                        Shally_Store
                       </h2>
                       <h1 className="text-lg font-semibold mt-1 truncate">
                         {title}

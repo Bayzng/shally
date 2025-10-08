@@ -15,30 +15,33 @@ function Dashboard() {
   const totalOrders = order?.length || 0;
   const totalUsers = user?.length || 0;
 
-  // ✅ Calculate total revenue if each order has totalAmount or price fields
+  // ✅ Calculate total revenue (including ₦100 shipping per order)
   const totalRevenue = order?.reduce((acc, o) => {
-    if (o.cartItems) {
-      const sum = o.cartItems.reduce(
-        (innerAcc, item) => innerAcc + (item.price || 0),
+    if (o.cartItems && Array.isArray(o.cartItems)) {
+      const itemTotal = o.cartItems.reduce(
+        (sum, item) => sum + (Number(item.price) || 0),
         0
       );
-      return acc + sum;
+      const shipping = 100; // Flat shipping rate
+      return acc + itemTotal + shipping;
     }
     return acc;
   }, 0);
 
-  // Toast welcome
-  toast.dismiss(); // Avoid stacking
+  // ✅ Toast (avoid duplicates)
+  toast.dismiss();
   toast.info("Dashboard data loaded successfully!", {
     position: "top-right",
     autoClose: 2000,
   });
 
+  // ✅ Styling
   const cardStyle = {
     backgroundColor: mode === "dark" ? "rgb(46 49 55)" : "",
     color: mode === "dark" ? "white" : "",
   };
 
+  // ✅ Dashboard stats
   const stats = [
     {
       icon: <FaBox size={50} />,
@@ -98,6 +101,7 @@ function Dashboard() {
           </div>
         </div>
 
+        {/* 📊 Detailed Tabs Section */}
         <DashboardTab />
       </section>
     </Layout>
