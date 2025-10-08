@@ -48,7 +48,9 @@ function ProductInfo() {
     <Layout>
       <section
         className={`body-font overflow-hidden ${
-          mode === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-800"
+          mode === "dark"
+            ? "bg-gray-900 text-white"
+            : "bg-gray-50 text-gray-800"
         }`}
       >
         <div className="container mx-auto px-4 sm:px-6 py-10">
@@ -163,6 +165,104 @@ function ProductInfo() {
             </div>
           )}
         </div>
+        {/* 🚚 Product Availability Note */}
+        {products && (
+          <div
+            className={`mt-12 mb-10 mx-auto px-4 sm:px-6 md:px-8 py-8 w-[92%] sm:w-[85%] md:w-[75%] lg:w-[74%] rounded-2xl shadow-xl border
+      ${
+        mode === "dark"
+          ? "bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700 text-gray-100"
+          : "bg-gradient-to-br from-white to-pink-50 border-gray-200 text-gray-700"
+      } transition-all duration-500`}
+          >
+            <div className="text-center">
+              <h3
+                className={`text-xl sm:text-2xl font-bold mb-3 ${
+                  mode === "dark" ? "text-pink-400" : "text-pink-600"
+                }`}
+              >
+                Available & Ready to Ship 🚚
+              </h3>
+
+              <p className="text-sm sm:text-base leading-relaxed max-w-2xl mx-auto px-2 sm:px-4">
+                The product{" "}
+                <span className="font-semibold text-pink-600">
+                  {products.title}
+                </span>{" "}
+                is <span className="font-semibold">in stock</span> and will be
+                delivered immediately once your order is placed. Enjoy{" "}
+                <span className="text-pink-500 font-medium">fast delivery</span>
+                , trusted packaging, and premium quality — right to your
+                doorstep!
+              </p>
+            </div>
+
+            <div className="flex flex-wrap justify-center items-center gap-6 mt-8">
+              {/* Feature 1 */}
+              <div className="flex flex-col items-center text-center space-y-2">
+                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-green-100 text-green-600">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <p className="text-sm font-medium">Quality Assured</p>
+              </div>
+
+              {/* Feature 2 */}
+              <div className="flex flex-col items-center text-center space-y-2">
+                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-yellow-100 text-yellow-600">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3 3h18M9 3v18m6-18v18M3 9h18M3 15h18"
+                    />
+                  </svg>
+                </div>
+                <p className="text-sm font-medium">Nationwide Delivery</p>
+              </div>
+
+              {/* Feature 3 */}
+              <div className="flex flex-col items-center text-center space-y-2">
+                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-pink-100 text-pink-600">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13 16h-1v-4h-1m1-4h.01M12 8v8"
+                    />
+                  </svg>
+                </div>
+                <p className="text-sm font-medium">Secure Payment</p>
+              </div>
+            </div>
+          </div>
+        )}
       </section>
     </Layout>
   );

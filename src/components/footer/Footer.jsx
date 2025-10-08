@@ -15,40 +15,33 @@ function Footer() {
       }`}
     >
       {/* Top Section */}
+      <hr/>
       <div className="container mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center sm:text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-10 text-center sm:text-left">
+          
           {/* Categories */}
           <div>
             <h2 className="text-lg font-semibold mb-4 uppercase tracking-wide">
               Categories
             </h2>
-            <ul className="space-y-2">
+            <ul className="flex flex-row flex-wrap justify-center lg:flex-col lg:justify-start gap-4 text-sm sm:text-base">
               <li>
                 <Link to="/" className="hover:text-pink-600 transition-colors">
                   Home
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/"
-                  className="hover:text-pink-600 transition-colors"
-                >
+                <Link to="/" className="hover:text-pink-600 transition-colors">
                   Order
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/"
-                  className="hover:text-pink-600 transition-colors"
-                >
+                <Link to="/" className="hover:text-pink-600 transition-colors">
                   Local for Vocal
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/"
-                  className="hover:text-pink-600 transition-colors"
-                >
+                <Link to="/" className="hover:text-pink-600 transition-colors">
                   Cart
                 </Link>
               </li>
@@ -60,28 +53,19 @@ function Footer() {
             <h2 className="text-lg font-semibold mb-4 uppercase tracking-wide">
               Customer Service
             </h2>
-            <ul className="space-y-2">
+            <ul className="flex flex-row flex-wrap justify-center lg:flex-col lg:justify-start gap-4 text-sm sm:text-base">
               <li>
-                <Link
-                  to="/"
-                  className="hover:text-pink-600 transition-colors"
-                >
+                <Link to="/" className="hover:text-pink-600 transition-colors">
                   Return Policy
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/"
-                  className="hover:text-pink-600 transition-colors"
-                >
+                <Link to="/" className="hover:text-pink-600 transition-colors">
                   About
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/"
-                  className="hover:text-pink-600 transition-colors"
-                >
+                <Link to="/" className="hover:text-pink-600 transition-colors">
                   Contact Us
                 </Link>
               </li>
@@ -93,12 +77,9 @@ function Footer() {
             <h2 className="text-lg font-semibold mb-4 uppercase tracking-wide">
               Services
             </h2>
-            <ul className="space-y-2">
+            <ul className="flex flex-row flex-wrap justify-center lg:flex-col lg:justify-start gap-4 text-sm sm:text-base">
               <li>
-                <Link
-                  to="/"
-                  className="hover:text-pink-600 transition-colors"
-                >
+                <Link to="/" className="hover:text-pink-600 transition-colors">
                   Privacy Policy
                 </Link>
               </li>
@@ -106,15 +87,22 @@ function Footer() {
           </div>
 
           {/* Payment Section */}
-          <div className="flex justify-center lg:justify-end">
+          <div className="flex justify-center lg:justify-end items-center">
             <img
               src="https://ecommerce-sk.vercel.app/pay.png"
               alt="Payment Options"
-              className="w-52 sm:w-64 mx-auto sm:mx-0 object-contain"
+              className="w-52 sm:w-64 object-contain"
             />
           </div>
         </div>
       </div>
+
+      {/* Divider */}
+      <div
+        className={`w-full h-[1px] ${
+          mode === "dark" ? "bg-gray-700" : "bg-gray-300"
+        }`}
+      ></div>
 
       {/* Bottom Section */}
       <div
@@ -122,14 +110,14 @@ function Footer() {
           mode === "dark" ? "bg-gray-800" : "bg-gray-200"
         } border-t border-gray-300`}
       >
-        <div className="container mx-auto px-6 py-6 flex flex-col items-center sm:flex-row justify-between text-center sm:text-left space-y-4 sm:space-y-0">
+        <div className="container mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between text-center sm:text-left space-y-4 sm:space-y-0">
           {/* Brand + Email */}
           <div>
             <h1 className="text-xl font-bold tracking-wide mb-1 sm:mb-0">
               Shally
             </h1>
             <a
-              href="mailto:leemahhair10@gmail.com"
+              href="mailto:shally@gmail.com"
               className="text-sm hover:text-pink-600 transition-colors block sm:inline"
             >
               shally@gmail.com
@@ -137,7 +125,7 @@ function Footer() {
           </div>
 
           {/* Social Links */}
-          <div className="flex space-x-5">
+          <div className="flex justify-center sm:justify-end flex-wrap gap-5">
             <a href="#" className="hover:text-pink-600 transition-colors">
               <svg fill="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
                 <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" />

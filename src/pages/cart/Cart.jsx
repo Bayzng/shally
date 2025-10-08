@@ -224,12 +224,19 @@ function Cart() {
         </div>
 
         {/* 🪟 Delivery Modal */}
+        {/* 🪟 Delivery Modal */}
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white white:bg-gray-800 rounded-2xl p-6 w-[90%] sm:w-[500px] shadow-2xl relative">
+            <div
+              className={`rounded-2xl p-6 w-[90%] sm:w-[500px] shadow-2xl relative transition-all duration-500 ${
+                mode === "dark"
+                  ? "bg-gray-900 text-white border border-gray-700"
+                  : "bg-white text-gray-900"
+              }`}
+            >
               <button
                 onClick={() => setShowModal(false)}
-                className="absolute top-3 right-3 text-gray-500 hover:text-red-500"
+                className="absolute top-3 right-3 text-gray-400 hover:text-red-500"
               >
                 ✕
               </button>
@@ -244,19 +251,33 @@ function Cart() {
                   placeholder="Full Name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"
+                  className={`w-full p-3 rounded-lg border outline-none focus:ring-2 ${
+                    mode === "dark"
+                      ? "bg-gray-800 border-gray-700 text-white focus:ring-blue-500"
+                      : "bg-white border-gray-300 text-gray-900 focus:ring-blue-500"
+                  }`}
                 />
+
                 <input
                   type="text"
                   placeholder="Phone Number"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"
+                  className={`w-full p-3 rounded-lg border outline-none focus:ring-2 ${
+                    mode === "dark"
+                      ? "bg-gray-800 border-gray-700 text-white focus:ring-blue-500"
+                      : "bg-white border-gray-300 text-gray-900 focus:ring-blue-500"
+                  }`}
                 />
+
                 <select
                   value={deliveryOption}
                   onChange={(e) => setDeliveryOption(e.target.value)}
-                  className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"
+                  className={`w-full p-3 rounded-lg border outline-none focus:ring-2 ${
+                    mode === "dark"
+                      ? "bg-gray-800 border-gray-700 text-white focus:ring-blue-500"
+                      : "bg-white border-gray-300 text-gray-900 focus:ring-blue-500"
+                  }`}
                 >
                   <option value="home">Home Delivery</option>
                   <option value="pickup">Pickup Point</option>
@@ -268,14 +289,22 @@ function Cart() {
                     placeholder="Delivery Address"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"
+                    className={`w-full p-3 rounded-lg border outline-none focus:ring-2 ${
+                      mode === "dark"
+                        ? "bg-gray-800 border-gray-700 text-white focus:ring-blue-500"
+                        : "bg-white border-gray-300 text-gray-900 focus:ring-blue-500"
+                    }`}
                   />
                 ) : (
                   <>
                     <select
                       value={selectedState}
                       onChange={(e) => setSelectedState(e.target.value)}
-                      className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"
+                      className={`w-full p-3 rounded-lg border outline-none focus:ring-2 ${
+                        mode === "dark"
+                          ? "bg-gray-800 border-gray-700 text-white focus:ring-blue-500"
+                          : "bg-white border-gray-300 text-gray-900 focus:ring-blue-500"
+                      }`}
                     >
                       <option value="">Select State</option>
                       {Object.keys(pickupPoints).map((state) => (
@@ -284,11 +313,16 @@ function Cart() {
                         </option>
                       ))}
                     </select>
+
                     {selectedState && (
                       <select
                         value={pickupLocation}
                         onChange={(e) => setPickupLocation(e.target.value)}
-                        className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"
+                        className={`w-full p-3 rounded-lg border outline-none focus:ring-2 ${
+                          mode === "dark"
+                            ? "bg-gray-800 border-gray-700 text-white focus:ring-blue-500"
+                            : "bg-white border-gray-300 text-gray-900 focus:ring-blue-500"
+                        }`}
                       >
                         <option value="">Select Pickup Point</option>
                         {pickupPoints[selectedState].map((point) => (
@@ -306,7 +340,11 @@ function Cart() {
                   placeholder="Postal Code"
                   value={pincode}
                   onChange={(e) => setPincode(e.target.value)}
-                  className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"
+                  className={`w-full p-3 rounded-lg border outline-none focus:ring-2 ${
+                    mode === "dark"
+                      ? "bg-gray-800 border-gray-700 text-white focus:ring-blue-500"
+                      : "bg-white border-gray-300 text-gray-900 focus:ring-blue-500"
+                  }`}
                 />
 
                 <button
@@ -322,7 +360,14 @@ function Cart() {
 
         {/* 🚴 Delivery Riders Section */}
         <div
-          className="mt-20 px-6 py-12 text-center rounded-2xl shadow-lg max-w-6xl mx-auto border border-gray-200"
+          className={`
+    mt-16 sm:mt-20 
+    w-[92%] sm:w-[90%] md:w-[85%] lg:w-[80%] xl:max-w-6xl 
+    mx-auto px-4 sm:px-6 md:px-8 py-10 sm:py-12 text-center 
+    rounded-2xl shadow-xl border 
+    transition-all duration-500 
+    ${mode === "dark" ? "border-gray-700" : "border-gray-200"}
+  `}
           style={{
             background:
               mode === "dark"
@@ -331,16 +376,26 @@ function Cart() {
             color: mode === "dark" ? "white" : "#1e293b",
           }}
         >
-          <h2 className="text-3xl font-bold mb-4 flex justify-center items-center gap-2">
+          <h2
+            className={`
+      text-2xl sm:text-3xl font-bold mb-4 flex justify-center items-center gap-2 
+      ${mode === "dark" ? "text-gray-100" : "text-gray-800"}
+    `}
+          >
             <span role="img" aria-label="rider">
               🚴
-            </span>{" "}
+            </span>
             Reliable Delivery Riders Everywhere
           </h2>
 
-          <p className="max-w-3xl mx-auto text-lg mb-6">
+          <p
+            className={`
+      max-w-3xl mx-auto text-base sm:text-lg mb-8 leading-relaxed 
+      ${mode === "dark" ? "text-gray-300" : "text-gray-600"}
+    `}
+          >
             We’ve got experienced{" "}
-            <span className="font-semibold text-blue-600">delivery riders </span>
+            <span className="font-semibold text-blue-600">delivery riders</span>{" "}
             across all pickup and delivery zones you select. Whether you choose
             <span className="font-medium text-green-600"> Home Delivery </span>
             or prefer{" "}
@@ -348,49 +403,51 @@ function Cart() {
             your order will always be handled with care and delivered swiftly.
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8">
-            <div
-              className="p-6 rounded-xl bg-white shadow-md hover:shadow-xl transition"
-              style={{
-                backgroundColor: mode === "dark" ? "rgb(32 33 34)" : "white",
-              }}
-            >
-              <h3 className="font-semibold text-xl mb-2">🕒 Fast Delivery</h3>
-              <p className="text-gray-500 dark:text-gray-300">
-                Expect delivery within{" "}
-                <span className="font-medium">7 days</span> of confirmation.
-              </p>
-            </div>
-
-            <div
-              className="p-6 rounded-xl bg-white shadow-md hover:shadow-xl transition"
-              style={{
-                backgroundColor: mode === "dark" ? "rgb(32 33 34)" : "white",
-              }}
-            >
-              <h3 className="font-semibold text-xl mb-2">📍 Wide Coverage</h3>
-              <p className="text-gray-500 dark:text-gray-300">
-                Riders are stationed across{" "}
-                <span className="font-medium">all major states</span> for pickup
-                & drop.
-              </p>
-            </div>
-
-            <div
-              className="p-6 rounded-xl bg-white shadow-md hover:shadow-xl transition"
-              style={{
-                backgroundColor: mode === "dark" ? "rgb(32 33 34)" : "white",
-              }}
-            >
-              <h3 className="font-semibold text-xl mb-2">🔒 Safe & Secure</h3>
-              <p className="text-gray-500 dark:text-gray-300">
-                Every order is carefully tracked and confirmed upon delivery or
-                pickup.
-              </p>
-            </div>
+          {/* Feature Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
+            {[
+              {
+                title: "🕒 Fast Delivery",
+                text: "Expect delivery within 7 days of confirmation.",
+              },
+              {
+                title: "📍 Wide Coverage",
+                text: "Riders are stationed across all major states for pickup & drop.",
+              },
+              {
+                title: "🔒 Safe & Secure",
+                text: "Every order is tracked and confirmed upon delivery or pickup.",
+              },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className={`p-6 rounded-xl shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1
+          ${mode === "dark" ? "bg-[#202122]" : "bg-white"}
+        `}
+              >
+                <h3
+                  className={`font-semibold text-lg sm:text-xl mb-2 ${
+                    mode === "dark" ? "text-gray-100" : "text-gray-800"
+                  }`}
+                >
+                  {item.title}
+                </h3>
+                <p
+                  className={`text-sm sm:text-base ${
+                    mode === "dark" ? "text-gray-400" : "text-gray-600"
+                  }`}
+                >
+                  {item.text}
+                </p>
+              </div>
+            ))}
           </div>
 
-          <p className="mt-10 text-sm text-gray-500">
+          <p
+            className={`mt-10 text-xs sm:text-sm ${
+              mode === "dark" ? "text-gray-500" : "text-gray-500"
+            }`}
+          >
             For special delivery requests or updates, please contact our support
             team anytime.
           </p>
