@@ -1,0 +1,142 @@
+import { useLocation, useNavigate } from "react-router-dom";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import shallyLogo from "../../assets/logo.png"; 
+
+function TransactionStatus() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const { status, reference, total, cartItems, addressInfo } = location.state || {};
+
+  const downloadReceipt = () => {
+    const doc = new jsPDF();
+
+    // Logo
+    const imgWidth = 40;
+    const imgHeight = 40;
+    doc.addImage(shallyLogo, "PNG", 20, 10, imgWidth, imgHeight);
+
+    // Company Name
+    doc.setFontSize(20);
+    doc.setTextColor("#1d4ed8"); // Blue
+    doc.text("Shally Store", 105, 25, { align: "center" });
+
+    // Receipt Title
+    doc.setFontSize(16);
+    doc.setTextColor("#000000");
+    doc.text("Payment Receipt", 105, 50, { align: "center" });
+
+    // Transaction info
+    const currentDate = new Date();
+    const deliveryDate = new Date();
+    deliveryDate.setDate(currentDate.getDate() + 7);
+
+    const weekdays = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    const formatDate = (date) =>
+      `${weekdays[date.getDay()]}, ${date.getDate().toString().padStart(2,"0")}-${(date.getMonth()+1).toString().padStart(2,"0")}-${date.getFullYear()}`;
+
+    doc.setFontSize(12);
+    doc.setTextColor(
+      status === "success" ? "#16a34a" : status === "failed" ? "#dc2626" : "#ca8a04"
+    );
+    doc.text(`Transaction Status: ${status}`, 20, 70);
+    doc.setTextColor("#000000");
+    doc.text(`Reference: ${reference}`, 20, 78);
+    doc.text(`Total Paid: #${total}`, 20, 86);
+    doc.text(`Payment Date: ${formatDate(currentDate)}`, 20, 94);
+    doc.text(`Estimated Delivery: ${formatDate(deliveryDate)}`, 20, 102);
+
+    // Customer details
+    doc.setTextColor("#000000");
+    doc.text("Customer Details:", 20, 115);
+    doc.text(`Name: ${addressInfo?.name}`, 20, 123);
+    doc.text(`Phone: ${addressInfo?.phoneNumber}`, 20, 131);
+    doc.text(`Address: ${addressInfo?.address}`, 20, 139);
+    doc.text(`Postal Code: ${addressInfo?.pincode}`, 20, 147);
+    doc.text(`Delivery Type: ${addressInfo?.deliveryType}`, 20, 155);
+
+    // Items Table
+    const tableColumn = ["Item", "Price"];
+    const tableRows = cartItems.map((item) => [item.title, `#${item.price}`]);
+
+    autoTable(doc, {
+      startY: 165,
+      head: [tableColumn],
+      body: tableRows,
+      theme: "grid",
+      headStyles: { fillColor: [29, 78, 216], textColor: 255 },
+      alternateRowStyles: { fillColor: [240, 240, 240] },
+    });
+
+    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : 165;
+
+    // Footer
+    doc.setFontSize(12);
+    doc.setTextColor("#6b7280");
+    doc.text("Thank you for shopping with Shally Store!", 105, finalY + 15, {
+      align: "center",
+    });
+
+    doc.save(`receipt_${reference}.pdf`);
+  };
+
+  const redirectHome = () => {
+    navigate("/");
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-r from-green-100 to-blue-100 p-5">
+      <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full text-center">
+        <h1
+          className={`text-3xl font-bold mb-4 ${
+            status === "success"
+              ? "text-green-600"
+              : status === "failed"
+              ? "text-red-600"
+              : status === "cancelled"
+              ? "text-yellow-600"
+              : "text-black"
+          }`}
+        >
+          {status === "success" && "✅ Payment Successful!"}
+          {status === "failed" && "❌ Payment Failed"}
+          {status === "cancelled" && "⚠️ Payment Cancelled"}
+        </h1>
+
+        {status === "success" && (
+          <>
+            <p className="mb-4 text-gray-700 font-medium">
+              Reference: {reference}
+            </p>
+
+            <button
+              onClick={downloadReceipt}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 mb-4 transition-all duration-300"
+            >
+              Download Receipt (PDF)
+            </button>
+
+            <button
+              onClick={redirectHome}
+              className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300"
+            >
+              Back to Home
+            </button>
+          </>
+        )}
+
+        {(status === "failed" || status === "cancelled") && (
+          <button
+            onClick={redirectHome}
+            className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-300"
+          >
+            Back to Home
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default TransactionStatus;

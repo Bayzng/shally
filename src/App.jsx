@@ -18,6 +18,7 @@ import UpdateProduct from './pages/admin/page/UpdateProduct';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Allproducts from './pages/allproducts/Allproducts';
+import TransactionStatus from "./components/TransactionStatus/TransactionStatus";
 import MaintenancePage from "./components/MaintenancePage/MaintenancePage";
 // import Home from './pages/home/Home';
 
@@ -53,6 +54,9 @@ function App() {
             <ProtectedRouteForAdmin>
               <UpdateProduct/>
             </ProtectedRouteForAdmin>
+          } />
+          <Route path='/transaction-status' element={
+              <TransactionStatus/>
           } />
           <Route path="/*" element={<NoPage />} />
         </Routes>
