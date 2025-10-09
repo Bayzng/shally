@@ -7,12 +7,20 @@ import { getStorage } from "firebase/storage";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBs9hj0gXH2Bvyjq5zV2l6_QZg6UDfLWEM",
-  authDomain: "terabayz.firebaseapp.com",
-  projectId: "terabayz",
-  storageBucket: "terabayz.appspot.com",
-  messagingSenderId: "1046033561051",
-  appId: "1:1046033561051:web:9ddecf70d878cc229ca3fe"
+  // apiKey: "AIzaSyBs9hj0gXH2Bvyjq5zV2l6_QZg6UDfLWEM",
+  // authDomain: "terabayz.firebaseapp.com",
+  // projectId: "terabayz",
+  // storageBucket: "terabayz.appspot.com",
+  // messagingSenderId: "1046033561051",
+  // appId: "1:1046033561051:web:9ddecf70d878cc229ca3fe"
+
+  apiKey: "AIzaSyB67ywl5WBTRLpWTkv-vWPNQShqhgXBcL8",
+  authDomain: "store-2425b.firebaseapp.com",
+  projectId: "store-2425b",
+  storageBucket: "store-2425b.appspot.com",
+  messagingSenderId: "547968121207",
+  appId: "1:547968121207:web:b6a845cf972c6c20294972"
+  // measurementId: "G-84WK5CY12W"
 };
 
 // Initialize Firebase
