@@ -41,7 +41,7 @@ function Navbar() {
   };
 
   return (
-    <div className="bg-white sticky top-0 z-50">
+    <div className={`sticky top-0 z-50 ${isDark ? "bg-gray-900" : "bg-white"} shadow-md`}>
       <ToastContainer />
       {/* Mobile Menu */}
       <Transition.Root show={open} as={Fragment}>
