@@ -15,13 +15,12 @@ function Navbar() {
   const [open, setOpen] = useState(false);
   const user = JSON.parse(localStorage.getItem("user"));
   const cartItems = useSelector((state) => state.cart);
+  const isDark = mode === "dark";
 
   const logout = () => {
     localStorage.removeItem("user");
     window.location.href = "/login";
   };
-
-  const isDark = mode === "dark";
 
   // ✅ Handle cart click (prevent if empty)
   const handleCartClick = (e) => {
@@ -30,20 +29,19 @@ function Navbar() {
       toast.info("🛒 Your cart is empty!", {
         position: "top-center",
         autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
         theme: isDark ? "dark" : "light",
       });
-      return;
     }
   };
+
+  // ✅ Check if user is admin
+  const isAdmin = user?.user?.email === "leetsmeets@gmail.com";
 
   return (
     <div className={`sticky top-0 z-50 ${isDark ? "bg-gray-900" : "bg-white"} shadow-md`}>
       <ToastContainer />
-      {/* Mobile Menu */}
+
+      {/* ======= MOBILE MENU ======= */}
       <Transition.Root show={open} as={Fragment}>
         <Dialog as="div" className="relative z-40 lg:hidden" onClose={setOpen}>
           <Transition.Child
@@ -83,20 +81,22 @@ function Navbar() {
                   </button>
                 </div>
 
+                {/* ====== Mobile Links ====== */}
                 <div className="space-y-6 border-t border-gray-200 px-4 py-6">
                   <Link to="/allproducts" className="block font-medium">
                     All Products
                   </Link>
 
-                  {user && (
-                    <Link to="/order" className="block font-medium">
-                      Order
+                  {/* ✅ Show "Order" only for non-admin users */}
+                  {user && !isAdmin && (
+                    <Link to="/order-history" className="block font-medium">
+                      Orders
                     </Link>
                   )}
 
-                  {user?.user?.email === "leetsmeets@gmail.com" && (
+                  {isAdmin && (
                     <Link to="/dashboard" className="block font-medium">
-                      Admin
+                      Admin Dashboard
                     </Link>
                   )}
 
@@ -114,6 +114,7 @@ function Navbar() {
                   )}
                 </div>
 
+                {/* Footer Info */}
                 <div className="border-t border-gray-200 px-4 py-6">
                   <div className="flex items-center space-x-2">
                     <img
@@ -124,34 +125,13 @@ function Navbar() {
                     <span className="font-medium">NIGERIA</span>
                   </div>
                 </div>
-
-                <div className="px-4 py-4">
-                  {user ? (
-                    <h2 className="text-green-600 font-semibold text-lg">
-                      👋 Welcome back, smart shopper!
-                      <span className="block text-gray-600 text-sm">
-                        Great to see you again — amazing deals are waiting for
-                        you!
-                      </span>
-                    </h2>
-                  ) : (
-                    <h3 className="text-red-500 text-sm font-medium">
-                      🚀 Create your account today and start exploring our
-                      exclusive collections.
-                      <span className="block text-gray-600">
-                        Discover trending products, unbeatable discounts, and a
-                        shopping experience you’ll love.
-                      </span>
-                    </h3>
-                  )}
-                </div>
               </Dialog.Panel>
             </Transition.Child>
           </div>
         </Dialog>
       </Transition.Root>
 
-      {/* Desktop Navbar */}
+      {/* ======= DESKTOP NAVBAR ======= */}
       <header className={`${isDark ? "bg-gray-900 text-white" : "bg-white"}`}>
         <p
           className={`flex h-10 items-center justify-center text-sm font-medium ${
@@ -167,7 +147,7 @@ function Navbar() {
           }`}
         >
           <div className="flex h-16 items-center justify-between">
-            {/* Left: Mobile Menu + Logo */}
+            {/* Left: Logo + Mobile Button */}
             <div className="flex items-center">
               <button
                 className={`lg:hidden p-2 rounded-md ${
@@ -192,22 +172,22 @@ function Navbar() {
               </button>
 
               <div className="flex items-center space-x-1">
-                <img
-                  src={logo}
-                  alt="Shally Logo"
-                  className="w-12 h-12 object-contain"
-                />
+                <img src={logo} alt="Shally Logo" className="w-12 h-12" />
                 <Link to="/" className="text-2xl font-bold">
                   Shally
                 </Link>
               </div>
             </div>
 
-            {/* Right: Links, Theme, Cart */}
+            {/* Right: Desktop Links */}
             <div className="flex items-center space-x-6">
-              {user?.user?.email === "leetsmeets@gmail.com" && (
-                <Link to="/dashboard">Admin</Link>
+              {!isAdmin && user && (
+                <Link to="/order-history" className="font-medium">
+                  Orders
+                </Link>
               )}
+
+              {isAdmin && <Link to="/dashboard">Admin</Link>}
 
               {user ? (
                 <button
@@ -222,16 +202,11 @@ function Navbar() {
                 </Link>
               )}
 
-              {/* Theme Toggle */}
               <button onClick={toggleMode}>
-                {isDark ? (
-                  <BsFillCloudSunFill size={24} />
-                ) : (
-                  <FiSun size={24} />
-                )}
+                {isDark ? <BsFillCloudSunFill size={24} /> : <FiSun size={24} />}
               </button>
 
-              {/* ✅ Cart: Only opens when not empty */}
+              {/* Cart */}
               {user && (
                 <Link
                   to={cartItems.length > 0 ? "/cart" : "#"}

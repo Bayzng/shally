@@ -24,6 +24,17 @@ function DashboardTab() {
     fontWeight: "500",
   };
 
+  // Helper function to check if a date is today
+  const isToday = (dateString) => {
+    const today = new Date();
+    const date = new Date(dateString);
+    return (
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
+    );
+  };
+
   return (
     <div className="container mx-auto">
       <div className="tab container mx-auto">
@@ -212,7 +223,14 @@ function DashboardTab() {
                             color: mode === "dark" ? "white" : "",
                           }}
                         >
-                          <td className="px-6 py-4">{allorder.paymentId}</td>
+                          <td className="px-6 py-4">
+                            {allorder.paymentId}
+                            {isToday(allorder.date) && (
+                              <span className="ml-2 text-green-500 font-semibold">
+                                🆕 New Order (Today)
+                              </span>
+                            )}
+                          </td>
                           <td className="px-6 py-4">
                             <img
                               className="w-20 h-20 rounded object-cover"

@@ -1,13 +1,14 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import shallyLogo from "../../assets/logo.png"; 
+import shallyLogo from "../../assets/logo.png";
 
 function TransactionStatus() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { status, reference, total, cartItems, addressInfo } = location.state || {};
+  const { status, reference, total, cartItems, addressInfo } =
+    location.state || {};
 
   const downloadReceipt = () => {
     const doc = new jsPDF();
@@ -32,13 +33,30 @@ function TransactionStatus() {
     const deliveryDate = new Date();
     deliveryDate.setDate(currentDate.getDate() + 7);
 
-    const weekdays = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    const weekdays = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
     const formatDate = (date) =>
-      `${weekdays[date.getDay()]}, ${date.getDate().toString().padStart(2,"0")}-${(date.getMonth()+1).toString().padStart(2,"0")}-${date.getFullYear()}`;
+      `${weekdays[date.getDay()]}, ${date
+        .getDate()
+        .toString()
+        .padStart(2, "0")}-${(date.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}-${date.getFullYear()}`;
 
     doc.setFontSize(12);
     doc.setTextColor(
-      status === "success" ? "#16a34a" : status === "failed" ? "#dc2626" : "#ca8a04"
+      status === "success"
+        ? "#16a34a"
+        : status === "failed"
+        ? "#dc2626"
+        : "#ca8a04"
     );
     doc.text(`Transaction Status: ${status}`, 20, 70);
     doc.setTextColor("#000000");
@@ -110,19 +128,27 @@ function TransactionStatus() {
               Reference: {reference}
             </p>
 
-            <button
-              onClick={downloadReceipt}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 mb-4 transition-all duration-300"
-            >
-              Download Receipt (PDF)
-            </button>
+            {/* Buttons Container */}
+            <div className="flex flex-col sm:flex-row justify-center gap-4 mb-4">
+              <button
+                onClick={downloadReceipt}
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 w-full sm:w-auto"
+              >
+                Download Receipt (PDF)
+              </button>
 
-            <button
-              onClick={redirectHome}
-              className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300"
-            >
-              Back to Home
-            </button>
+              <button
+                onClick={redirectHome}
+                className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300 w-full sm:w-auto"
+              >
+                Back to Home
+              </button>
+            </div>
+
+            {/* Friendly message */}
+            <p className="text-gray-600 text-sm mt-2">
+              💡 Kindly download and keep your receipt for your payment record.
+            </p>
           </>
         )}
 

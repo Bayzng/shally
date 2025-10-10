@@ -3,18 +3,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import myContext from "../../context/data/myContext";
 import Layout from "../../components/layout/Layout";
-import { deleteFromCart } from "../../redux/cartSlice";
+import { deleteFromCart, clearCart } from "../../redux/cartSlice";
 import { toast } from "react-toastify";
 import { addDoc, collection } from "firebase/firestore";
 import { fireDB } from "../../fireabase/FirebaseConfig";
 import { PaystackButton } from "react-paystack";
 
 function Cart() {
-  const context = useContext(myContext);
-  const { mode } = context;
+  const { mode } = useContext(myContext);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const cartItems = useSelector((state) => state.cart);
 
   const deleteCart = (item) => {
@@ -45,7 +43,6 @@ function Cart() {
   const [selectedState, setSelectedState] = useState("");
   const [pickupLocation, setPickupLocation] = useState("");
   const [showModal, setShowModal] = useState(false);
-
   const [paystackProps, setPaystackProps] = useState(null);
 
   const pickupPoints = {
@@ -102,8 +99,10 @@ function Cart() {
             status: "success",
           });
 
-          // Clear cart and navigate to transaction page
-          dispatch({ type: "cart/clearCart" });
+          // ✅ Clear cart from Redux and localStorage after successful payment
+          dispatch(clearCart());
+          localStorage.removeItem("cart");
+
           navigate("/transaction-status", {
             state: {
               status: "success",
@@ -209,6 +208,7 @@ function Cart() {
           </div>
         </div>
 
+        {/* Delivery Modal */}
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
             <div
@@ -254,6 +254,7 @@ function Cart() {
                   <option value="home">Home Delivery</option>
                   <option value="pickup">Pickup Point</option>
                 </select>
+
                 {deliveryOption === "home" ? (
                   <input
                     type="text"
@@ -279,7 +280,9 @@ function Cart() {
                     {selectedState && (
                       <select
                         value={pickupLocation}
-                        onChange={(e) => setPickupLocation(e.target.value)}
+                        onChange={(e) =>
+                          setPickupLocation(e.target.value)
+                        }
                         className="w-full p-3 rounded-lg border"
                       >
                         <option value="">Select Pickup Point</option>
@@ -292,6 +295,7 @@ function Cart() {
                     )}
                   </>
                 )}
+
                 <input
                   type="text"
                   placeholder="Postal Code"
@@ -308,6 +312,7 @@ function Cart() {
                     Continue
                   </button>
                 )}
+
                 {paystackProps && (
                   <div className="w-full mt-4">
                     <PaystackButton

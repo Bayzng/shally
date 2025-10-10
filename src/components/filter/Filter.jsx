@@ -55,7 +55,7 @@ function Filter() {
             className="px-8 py-3 w-full rounded-md border-transparent outline-0 text-sm"
             style={{
               backgroundColor: mode === "dark" ? "rgb(64 66 70)" : "",
-              color: mode === "dark" ? "white" : "",
+              color: mode === "dark" ? "white" : "", fontSize: "16px",
             }}
           />
         </div>
@@ -81,7 +81,7 @@ function Filter() {
             className="px-4 py-3 w-full rounded-md border-transparent outline-0 text-sm"
             style={{
               backgroundColor: mode === "dark" ? "rgb(64 66 70)" : "",
-              color: mode === "dark" ? "white" : "",
+              color: mode === "dark" ? "white" : "", fontSize: "16px",
             }}
           >
             <option value="">All Categories</option>
@@ -99,7 +99,7 @@ function Filter() {
             className="px-4 py-3 w-full rounded-md border-transparent outline-0 text-sm"
             style={{
               backgroundColor: mode === "dark" ? "rgb(64 66 70)" : "",
-              color: mode === "dark" ? "white" : "",
+              color: mode === "dark" ? "white" : "", fontSize: "16px",
             }}
           >
             <option value="">All Prices</option>
