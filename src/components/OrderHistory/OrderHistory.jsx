@@ -10,6 +10,7 @@ function OrderHistory() {
   const [loading, setLoading] = useState(true);
 
   const user = JSON.parse(localStorage.getItem("user"));
+  const today = new Date();
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -35,16 +36,56 @@ function OrderHistory() {
     fetchOrders();
   }, [user]);
 
-  // helper: calculate delivery date (7 days after order)
-  const calculateDeliveryDate = (dateString) => {
-    const orderDate = new Date(dateString);
-    orderDate.setDate(orderDate.getDate() + 7);
-    return orderDate.toLocaleDateString("en-GB", {
+  // Helper: parse Firestore timestamp or string into Date
+  const parseDate = (dateValue) => {
+    try {
+      if (dateValue?.seconds) {
+        return new Date(dateValue.seconds * 1000);
+      } else if (typeof dateValue === "string") {
+        const parts = dateValue.split(/[\s,/:\-]+/);
+        if (parts.length >= 3) {
+          const [day, month, year] = parts.map(Number);
+          return new Date(year, month - 1, day);
+        } else {
+          return new Date(dateValue);
+        }
+      } else if (typeof dateValue === "number") {
+        return new Date(dateValue);
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
+  // Calculate expected delivery (+7 days)
+  const calculateDeliveryDate = (dateValue) => {
+    const orderDate = parseDate(dateValue);
+    if (!orderDate) return "Invalid date";
+
+    const deliveryDate = new Date(orderDate);
+    deliveryDate.setDate(orderDate.getDate() + 7);
+
+    return deliveryDate.toLocaleDateString("en-GB", {
       weekday: "long",
       day: "numeric",
       month: "long",
       year: "numeric",
     });
+  };
+
+  const isToday = (dateValue) => {
+    const date = parseDate(dateValue);
+    if (!date) return false;
+    return date.toDateString() === today.toDateString();
+  };
+
+  const isDelivered = (dateValue) => {
+    const orderDate = parseDate(dateValue);
+    if (!orderDate) return false;
+    const deliveryDate = new Date(orderDate);
+    deliveryDate.setDate(orderDate.getDate() + 7);
+    return deliveryDate <= today;
   };
 
   if (loading) {
@@ -60,119 +101,151 @@ function OrderHistory() {
   return (
     <Layout>
       <div
-        className="min-h-screen py-10 px-4 sm:px-10"
-        style={{
-          backgroundColor: mode === "dark" ? "#181a1b" : "#f8fafc",
-          color: mode === "dark" ? "white" : "",
-        }}
+        className={`min-h-screen py-10 px-4 sm:px-8 md:px-12 transition-colors duration-300 ${
+          mode === "dark" ? "bg-[#181a1b] text-white" : "bg-gray-50 text-gray-800"
+        }`}
       >
-        <h1 className="text-3xl font-bold text-center mb-8">
+        <h1 className="text-3xl md:text-4xl font-extrabold text-center mb-10 tracking-wide">
           🧾 My Order History
         </h1>
 
         {orders.length === 0 ? (
           <p className="text-center text-gray-500 text-lg">
-            You have not placed any orders yet 🛍️
+            You haven’t placed any orders yet 🛍️
           </p>
         ) : (
-          <div className="space-y-8 max-w-5xl mx-auto">
-            {orders.map((order) => (
-              <div
-                key={order.id}
-                className={`rounded-2xl shadow-xl border p-6 transition transform hover:scale-[1.01] ${
-                  mode === "dark"
-                    ? "bg-gray-800 border-gray-700"
-                    : "bg-white border-gray-200"
-                }`}
-              >
-                <div className="flex justify-between flex-wrap mb-4">
-                  <p>
-                    <strong>Order Date:</strong> {order.date}
-                  </p>
-                  <p>
-                    <strong>Payment ID:</strong> {order.paymentId}
-                  </p>
-                  <p>
-                    <strong>Status:</strong>{" "}
-                    <span
-                      className={`px-3 py-1 rounded-lg text-sm ${
-                        order.status === "success"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      {order.status.toUpperCase()}
+          <div className="space-y-10 max-w-5xl mx-auto">
+            {orders.map((order) => {
+              const orderIsToday = isToday(order.date);
+              const delivered = isDelivered(order.date);
+              const expectedDeliveryDate = calculateDeliveryDate(order.date);
+
+              return (
+                <div
+                  key={order.id}
+                  className={`rounded-2xl shadow-lg border p-6 sm:p-8 relative hover:shadow-2xl transition-transform transform hover:scale-[1.01] ${
+                    mode === "dark"
+                      ? "bg-gray-800 border-gray-700"
+                      : "bg-white border-gray-200"
+                  }`}
+                >
+                  {/* Status Badges */}
+                  {orderIsToday && !delivered && (
+                    <span className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md">
+                      🆕 New Order
                     </span>
-                  </p>
-                </div>
+                  )}
+                  {delivered && (
+                    <span className="absolute top-4 right-4 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md">
+                      ✅ Delivered
+                    </span>
+                  )}
 
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {order.cartItems.map((item, i) => (
-                    <div
-                      key={i}
-                      className={`flex items-center border rounded-xl overflow-hidden ${
-                        mode === "dark"
-                          ? "border-gray-700 bg-gray-900"
-                          : "border-gray-100 bg-gray-50"
+                  {/* Order Info */}
+                  <div className="flex mt-5 flex-wrap justify-between gap-y-2 mb-5 text-sm sm:text-base">
+                    <p>
+                      <strong>Order Date:</strong>{" "}
+                      {order.date?.seconds
+                        ? new Date(order.date.seconds * 1000).toLocaleString()
+                        : order.date || "N/A"}
+                    </p>
+                    <p>
+                      <strong>Payment ID:</strong> {order.paymentId || "N/A"}
+                    </p>
+                    <p>
+                      <strong>Status:</strong>{" "}
+                      <span
+                        className={`px-3 py-1 rounded-lg text-xs sm:text-sm font-semibold ${
+                          order.status === "success"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {order.status?.toUpperCase() || "UNKNOWN"}
+                      </span>
+                    </p>
+                  </div>
+
+                  {/* Ordered Items */}
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {order.cartItems?.map((item, i) => (
+                      <div
+                        key={i}
+                        className={`flex items-center border rounded-xl overflow-hidden shadow-sm ${
+                          mode === "dark"
+                            ? "border-gray-700 bg-gray-900"
+                            : "border-gray-100 bg-gray-50"
+                        }`}
+                      >
+                        <img
+                          src={item.imageUrl}
+                          alt={item.title}
+                          className="w-24 h-24 object-cover border-r border-gray-200"
+                        />
+                        <div className="p-3">
+                          <p className="font-semibold truncate">{item.title}</p>
+                          <p className="text-sm text-gray-500 mt-1">
+                            Price: #{item.price}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Delivery Info */}
+                  <div className="mt-6 border-t pt-4 text-sm sm:text-base space-y-1">
+                    <p>
+                      <strong>Customer:</strong> {order.addressInfo?.name}
+                    </p>
+                    <p>
+                      <strong>Phone:</strong> {order.addressInfo?.phoneNumber}
+                    </p>
+                    <p>
+                      <strong>Address:</strong> {order.addressInfo?.address}
+                    </p>
+                    <p>
+                      <strong>Postal Code:</strong> {order.addressInfo?.pincode}
+                    </p>
+                    <p>
+                      <strong>Delivery Type:</strong>{" "}
+                      {order.addressInfo?.deliveryType === "home"
+                        ? "Home Delivery"
+                        : "Pickup Point"}
+                    </p>
+
+                    <p
+                      className={`mt-2 font-medium ${
+                        delivered ? "text-green-600" : "text-blue-500"
                       }`}
                     >
-                      <img
-                        src={item.imageUrl}
-                        alt={item.title}
-                        className="w-24 h-24 object-cover"
-                      />
-                      <div className="p-3">
-                        <p className="font-semibold">{item.title}</p>
-                        <p className="text-sm text-gray-500">
-                          Price: #{item.price}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                      <strong>
+                        {delivered ? "Delivered:" : "Expected Delivery:"}
+                      </strong>{" "}
+                      {expectedDeliveryDate}
+                    </p>
+                  </div>
 
-                <div className="mt-5 border-t pt-4">
-                  <p>
-                    <strong>Customer:</strong> {order.addressInfo?.name}
-                  </p>
-                  <p>
-                    <strong>Phone:</strong> {order.addressInfo?.phoneNumber}
-                  </p>
-                  <p>
-                    <strong>Address:</strong> {order.addressInfo?.address}
-                  </p>
-                  <p>
-                    <strong>Postal Code:</strong> {order.addressInfo?.pincode}
-                  </p>
-                  <p>
-                    <strong>Delivery Type:</strong>{" "}
-                    {order.addressInfo?.deliveryType === "home"
-                      ? "Home Delivery"
-                      : "Pickup Point"}
-                  </p>
-                  <p className="mt-2">
-                    <strong>Expected Delivery:</strong>{" "}
-                    {calculateDeliveryDate(order.date)}
+                  {/* Total Section */}
+                  <div className="mt-6 text-right">
+                    <p className="text-lg sm:text-xl font-bold">
+                      Total Paid: #
+                      {order.cartItems
+                        ?.reduce(
+                          (acc, item) => acc + parseFloat(item.price || 0),
+                          0
+                        )
+                        .toLocaleString()}
+                    </p>
+                  </div>
+
+                  {/* Footer */}
+                  <p className="text-center mt-6 text-xs sm:text-sm text-gray-400 italic">
+                    🏬 Thank you for shopping with{" "}
+                    <strong>Shally Store</strong>
                   </p>
                 </div>
-
-                <div className="mt-6 text-right">
-                  <p className="text-lg font-bold">
-                    Total Paid: #
-                    {order.cartItems
-                      .reduce(
-                        (acc, item) => acc + parseFloat(item.price || 0),
-                        0
-                      )
-                      .toLocaleString()}
-                  </p>
-                </div>
-
-                <p className="text-center mt-6 text-sm text-gray-400">
-                  🏬 Thank you for shopping with <strong>Shally Store</strong>
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

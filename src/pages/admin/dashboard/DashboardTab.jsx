@@ -24,22 +24,35 @@ function DashboardTab() {
     fontWeight: "500",
   };
 
-  // Helper function to check if a date is today
+  // ✅ Helper function to check if date is today
+  // ✅ Robust check for "today" across multiple formats
   const isToday = (dateString) => {
+    if (!dateString) return false;
+  
+    // Example format: "18/10/2025, 22:26:31"
+    const [datePart] = dateString.split(","); // take "18/10/2025"
+    const parts = datePart.trim().split("/"); // ["18", "10", "2025"]
+  
+    if (parts.length !== 3) return false;
+  
+    const [day, month, year] = parts.map(Number);
+    const orderDate = new Date(year, month - 1, day);
+  
     const today = new Date();
-    const date = new Date(dateString);
     return (
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
+      orderDate.getDate() === today.getDate() &&
+      orderDate.getMonth() === today.getMonth() &&
+      orderDate.getFullYear() === today.getFullYear()
     );
   };
+  
+  
 
   return (
     <div className="container mx-auto">
       <div className="tab container mx-auto">
         <Tabs defaultIndex={0}>
-          {/* Tab Headers */}
+          {/* ===== Tabs Header ===== */}
           <TabList className="md:flex md:space-x-8 grid grid-cols-2 text-center gap-4 md:justify-center mb-10">
             <Tab>
               <button
@@ -73,7 +86,7 @@ function DashboardTab() {
             </Tab>
           </TabList>
 
-          {/* Products Tab */}
+          {/* ===== Products Tab ===== */}
           <TabPanel>
             <div className="px-4 md:px-0 mb-16">
               <h1
@@ -106,8 +119,7 @@ function DashboardTab() {
                     <thead
                       className="text-xs border border-gray-600 text-black uppercase bg-gray-200 shadow-[inset_0_0_8px_rgba(0,0,0,0.6)]"
                       style={{
-                        backgroundColor:
-                          mode === "dark" ? "rgb(46 49 55)" : "",
+                        backgroundColor: mode === "dark" ? "rgb(46 49 55)" : "",
                         color: mode === "dark" ? "white" : "",
                       }}
                     >
@@ -169,7 +181,7 @@ function DashboardTab() {
             </div>
           </TabPanel>
 
-          {/* Orders Tab */}
+          {/* ===== Orders Tab ===== */}
           <TabPanel>
             <div className="relative overflow-x-auto mb-16">
               <h1
@@ -193,8 +205,7 @@ function DashboardTab() {
                     <thead
                       className="text-xs text-black uppercase bg-gray-200"
                       style={{
-                        backgroundColor:
-                          mode === "dark" ? "rgb(46 49 55)" : "",
+                        backgroundColor: mode === "dark" ? "rgb(46 49 55)" : "",
                         color: mode === "dark" ? "white" : "",
                       }}
                     >
@@ -264,7 +275,7 @@ function DashboardTab() {
             </div>
           </TabPanel>
 
-          {/* Users Tab */}
+          {/* ===== Users Tab ===== */}
           <TabPanel>
             <div className="relative overflow-x-auto mb-10">
               <h1
@@ -284,8 +295,7 @@ function DashboardTab() {
                   <thead
                     className="text-xs text-black uppercase bg-gray-200"
                     style={{
-                      backgroundColor:
-                        mode === "dark" ? "rgb(46 49 55)" : "",
+                      backgroundColor: mode === "dark" ? "rgb(46 49 55)" : "",
                       color: mode === "dark" ? "white" : "",
                     }}
                   >

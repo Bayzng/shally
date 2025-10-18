@@ -180,7 +180,13 @@ function Cart() {
             )}
           </div>
 
-          <div className="mt-6 rounded-2xl border bg-white p-6 shadow-md md:mt-0 md:w-1/3 flex flex-col justify-between md:h-auto">
+          <div
+            style={{
+              backgroundColor: mode === "dark" ? "#181a1b" : "#f8fafc",
+              color: mode === "dark" ? "white" : "",
+            }}
+            className="mt-6 rounded-2xl border bg-white p-6 shadow-md md:mt-0 md:w-1/3 flex flex-col justify-between md:h-auto"
+          >
             <div>
               <h2 className="text-xl font-semibold mb-4 text-center">
                 🧾 Order Summary
@@ -247,6 +253,10 @@ function Cart() {
                   className="w-full p-3 rounded-lg border"
                 />
                 <select
+                  style={{
+                    backgroundColor: mode === "dark" ? "#181a1b" : "#f8fafc",
+                    color: mode === "dark" ? "white" : "",
+                  }}
                   value={deliveryOption}
                   onChange={(e) => setDeliveryOption(e.target.value)}
                   className="w-full p-3 rounded-lg border"
@@ -280,9 +290,7 @@ function Cart() {
                     {selectedState && (
                       <select
                         value={pickupLocation}
-                        onChange={(e) =>
-                          setPickupLocation(e.target.value)
-                        }
+                        onChange={(e) => setPickupLocation(e.target.value)}
                         className="w-full p-3 rounded-lg border"
                       >
                         <option value="">Select Pickup Point</option>

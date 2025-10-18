@@ -35,7 +35,7 @@ function Navbar() {
   };
 
   // ✅ Check if user is admin
-  const isAdmin = user?.user?.email === "leetsmeets@gmail.com";
+  const isAdmin = user?.user?.email === "admin@shally.com";
 
   return (
     <div className={`sticky top-0 z-50 ${isDark ? "bg-gray-900" : "bg-white"} shadow-md`}>
