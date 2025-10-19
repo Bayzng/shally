@@ -1,11 +1,15 @@
+import img from "../../assets/shally.jpg";
+
 function HeroSection() {
   return (
     <div>
-        <img src="https://static.vecteezy.com/system/resources/previews/027/185/473/large_2x/young-stylish-female-with-long-thick-hair-posing-against-gray-studio-background-left-space-for-advertising-haircare-products-concept-free-photo.jpg" alt="" />
-        {/* <img src="https://assets-static.invideo.io/images/large/181_Fashion_Clothing_Ads_1_33b060017f.webp" alt="" /> */}
-        {/* <img src="" alt="" /> */}
+      <img
+        src={img}
+        alt=""
+        className="w-full object-cover h-[200px] sm:h-[300px] md:h-[450px] lg:h-[550px]"
+      />
     </div>
-  )
+  );
 }
 
-export default HeroSection
+export default HeroSection;

@@ -55,7 +55,8 @@ function Filter() {
             className="px-8 py-3 w-full rounded-md border-transparent outline-0 text-sm"
             style={{
               backgroundColor: mode === "dark" ? "rgb(64 66 70)" : "",
-              color: mode === "dark" ? "white" : "", fontSize: "16px",
+              color: mode === "dark" ? "white" : "",
+              fontSize: "16px",
             }}
           />
         </div>
@@ -66,7 +67,10 @@ function Filter() {
           <button
             onClick={resetFilters}
             className="px-4 py-2 bg-gray-50 hover:bg-gray-200 text-gray-800 text-sm font-medium rounded-md"
-            style={{ color: mode === "dark" ? "white" : "" }}
+            style={{
+              backgroundColor: mode === "dark" ? "#181a1b" : "#f8fafc",
+              color: mode === "dark" ? "white" : "",
+            }}
           >
             Reset Filter
           </button>
@@ -81,7 +85,8 @@ function Filter() {
             className="px-4 py-3 w-full rounded-md border-transparent outline-0 text-sm"
             style={{
               backgroundColor: mode === "dark" ? "rgb(64 66 70)" : "",
-              color: mode === "dark" ? "white" : "", fontSize: "16px",
+              color: mode === "dark" ? "white" : "",
+              fontSize: "16px",
             }}
           >
             <option value="">All Categories</option>
@@ -99,7 +104,8 @@ function Filter() {
             className="px-4 py-3 w-full rounded-md border-transparent outline-0 text-sm"
             style={{
               backgroundColor: mode === "dark" ? "rgb(64 66 70)" : "",
-              color: mode === "dark" ? "white" : "", fontSize: "16px",
+              color: mode === "dark" ? "white" : "",
+              fontSize: "16px",
             }}
           >
             <option value="">All Prices</option>

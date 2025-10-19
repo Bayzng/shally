@@ -21,6 +21,13 @@ function ProductCard() {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
+  // Filtered product list
+  const filteredProducts = product
+    .filter((obj) => obj.title.toLowerCase().includes(searchkey.toLowerCase()))
+    .filter((obj) => obj.category.toLowerCase().includes(filterType.toLowerCase()))
+    .filter((obj) => (filterPrice ? obj.price.toString().includes(filterPrice) : true))
+    .slice(0, 8);
+
   return (
     <section
       className={`body-font ${
@@ -39,25 +46,24 @@ function ProductCard() {
               mode === "dark" ? "text-gray-300" : "text-gray-600"
             }`}
           >
-            Discover the newest arrivals and best-selling styles made just for
-            you.
+            Discover the newest arrivals and best-selling product made just for you.
           </p>
         </div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {product
-            .filter((obj) =>
-              obj.title.toLowerCase().includes(searchkey.toLowerCase())
-            )
-            .filter((obj) =>
-              obj.category.toLowerCase().includes(filterType.toLowerCase())
-            )
-            .filter((obj) =>
-              filterPrice ? obj.price.toString().includes(filterPrice) : true
-            )
-            .slice(0, 8)
-            .map((item, index) => {
+        {filteredProducts.length === 0 ? (
+          <div className="text-center py-20">
+            <p
+              className={`text-lg sm:text-xl font-medium ${
+                mode === "dark" ? "text-gray-400" : "text-gray-600"
+              }`}
+            >
+              🚫 No products available on the marketplace yet. <br /> Check back soon!
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {filteredProducts.map((item, index) => {
               const { title, price, imageUrl, id } = item;
               return (
                 <div
@@ -70,9 +76,7 @@ function ProductCard() {
                 >
                   {/* Image Section */}
                   <div
-                    onClick={() =>
-                      (window.location.href = `/productinfo/${id}`)
-                    }
+                    onClick={() => (window.location.href = `/productinfo/${id}`)}
                     className="relative cursor-pointer overflow-hidden rounded-t-2xl flex justify-center items-center"
                   >
                     <img
@@ -125,7 +129,8 @@ function ProductCard() {
                 </div>
               );
             })}
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );

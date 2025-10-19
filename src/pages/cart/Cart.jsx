@@ -239,6 +239,10 @@ function Cart() {
 
               <div className="space-y-3">
                 <input
+                  style={{
+                    backgroundColor: mode === "dark" ? "#181a1b" : "#f8fafc",
+                    color: mode === "dark" ? "white" : "",
+                  }}
                   type="text"
                   placeholder="Full Name"
                   value={name}
@@ -246,6 +250,10 @@ function Cart() {
                   className="w-full p-3 rounded-lg border"
                 />
                 <input
+                  style={{
+                    backgroundColor: mode === "dark" ? "#181a1b" : "#f8fafc",
+                    color: mode === "dark" ? "white" : "",
+                  }}
                   type="text"
                   placeholder="Phone Number"
                   value={phoneNumber}
@@ -267,6 +275,10 @@ function Cart() {
 
                 {deliveryOption === "home" ? (
                   <input
+                    style={{
+                      backgroundColor: mode === "dark" ? "#181a1b" : "#f8fafc",
+                      color: mode === "dark" ? "white" : "",
+                    }}
                     type="text"
                     placeholder="Delivery Address"
                     value={address}
@@ -276,6 +288,11 @@ function Cart() {
                 ) : (
                   <>
                     <select
+                      style={{
+                        backgroundColor:
+                          mode === "dark" ? "#181a1b" : "#f8fafc",
+                        color: mode === "dark" ? "white" : "",
+                      }}
                       value={selectedState}
                       onChange={(e) => setSelectedState(e.target.value)}
                       className="w-full p-3 rounded-lg border"
@@ -289,6 +306,11 @@ function Cart() {
                     </select>
                     {selectedState && (
                       <select
+                        style={{
+                          backgroundColor:
+                            mode === "dark" ? "#181a1b" : "#f8fafc",
+                          color: mode === "dark" ? "white" : "",
+                        }}
                         value={pickupLocation}
                         onChange={(e) => setPickupLocation(e.target.value)}
                         className="w-full p-3 rounded-lg border"
@@ -305,6 +327,10 @@ function Cart() {
                 )}
 
                 <input
+                  style={{
+                    backgroundColor: mode === "dark" ? "#181a1b" : "#f8fafc",
+                    color: mode === "dark" ? "white" : "",
+                  }}
                   type="text"
                   placeholder="Postal Code"
                   value={pincode}

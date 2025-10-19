@@ -28,6 +28,18 @@ function Allproducts() {
     window.scrollTo(0, 0);
   }, []);
 
+  // Filtered products
+  const filteredProducts = product
+    .filter((obj) =>
+      obj.title.toLowerCase().includes(searchkey.toLowerCase())
+    )
+    .filter((obj) =>
+      filterType ? obj.category.toLowerCase().includes(filterType) : true
+    )
+    .filter((obj) =>
+      filterPrice ? obj.price <= parseInt(filterPrice) : true
+    );
+
   return (
     <Layout>
       <Filter />
@@ -49,19 +61,22 @@ function Allproducts() {
             <div className="h-1 w-24 bg-pink-600 mx-auto mt-4 rounded-full"></div>
           </div>
 
-          {/* Products Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {product
-              .filter((obj) =>
-                obj.title.toLowerCase().includes(searchkey.toLowerCase())
-              )
-              .filter((obj) =>
-                filterType ? obj.category.toLowerCase().includes(filterType) : true
-              )
-              .filter((obj) =>
-                filterPrice ? obj.price <= parseInt(filterPrice) : true
-              )
-              .map((item, index) => {
+          {/* If no products */}
+          {filteredProducts.length === 0 ? (
+            <div className="text-center mt-20">
+              <p
+                className={`text-lg font-medium ${
+                  mode === "dark" ? "text-gray-400" : "text-gray-600"
+                }`}
+              >
+                🚫 No products available in the marketplace yet. <br />
+                Please check back later.
+              </p>
+            </div>
+          ) : (
+            // Products Grid
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              {filteredProducts.map((item, index) => {
                 const { title, price, imageUrl, id } = item;
 
                 return (
@@ -89,7 +104,7 @@ function Allproducts() {
                             mode === "dark" ? "text-pink-400" : "text-pink-600"
                           }`}
                         >
-                          Leemah_Hair
+                          Shally_Store
                         </h2>
                         <h1 className="text-lg font-bold truncate mb-1">
                           {title}
@@ -117,7 +132,8 @@ function Allproducts() {
                   </div>
                 );
               })}
-          </div>
+            </div>
+          )}
         </div>
       </section>
     </Layout>
