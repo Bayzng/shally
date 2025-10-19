@@ -88,7 +88,7 @@ function ProductInfo() {
                     mode === "dark" ? "text-pink-400" : "text-pink-600"
                   }`}
                 >
-                  Leemah_Hair
+                  Shally_Store
                 </h2>
                 <h1 className="text-3xl sm:text-4xl font-bold mb-3 leading-tight">
                   {products.title}
