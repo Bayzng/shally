@@ -19,7 +19,7 @@ function Navbar() {
 
   const logout = () => {
     localStorage.removeItem("user");
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   // ✅ Handle cart click (prevent if empty)

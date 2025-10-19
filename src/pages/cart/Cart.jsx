@@ -44,27 +44,70 @@ function Cart() {
   const [pickupLocation, setPickupLocation] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [paystackProps, setPaystackProps] = useState(null);
+  const [showAltAddress, setShowAltAddress] = useState(false);
+  const [altPickupAddress, setAltPickupAddress] = useState("");
 
   const pickupPoints = {
+    "Abia State": ["Aba Main Park", "Umuahia Central Bus Terminal"],
+    "Adamawa State": ["Jimeta Modern Market", "Mubi Roundabout"],
+    "Akwa Ibom State": ["Uyo Plaza", "Eket Motor Park"],
+    "Anambra State": ["Onitsha Upper Iweka", "Awka Park"],
+    "Bauchi State": ["Bauchi Central Market", "Yelwa Park"],
+    "Bayelsa State": ["Yenagoa Park", "Amassoma Junction"],
+    "Benue State": ["Makurdi Wurukum Market", "Gboko Park"],
+    "Borno State": ["Maiduguri Post Office", "Baga Road Market"],
+    "Cross River State": ["Calabar Main Park", "University of Calabar Gate"],
+    "Delta State": ["Warri Main Garage", "Asaba Park"],
+    "Ebonyi State": ["Abakaliki Central Park", "Presco Junction"],
+    "Edo State": ["Benin Uselu Market", "Ramat Park Benin"],
+    "Ekiti State": ["Ado-Ekiti Fajuyi Park", "Ekiti State University Gate"],
+    "Enugu State": ["Enugu Holy Ghost Park", "Nsukka Market"],
+    "Gombe State": ["Gombe Main Market", "Bajoga Junction"],
+    "Imo State": ["Owerri Control Post", "Douglas Road Park"],
+    "Jigawa State": ["Dutse Central Park", "Hadejia Market"],
+    "Kaduna State": ["Kaduna Central Market", "Kafanchan Roundabout"],
+    "Kano State": ["Sabon Gari Market", "Kano Central Park"],
+    "Katsina State": ["Katsina Central Park", "Funtua Junction"],
+    "Kebbi State": ["Birnin Kebbi Park", "Argungu Motor Park"],
+    "Kogi State": ["Lokoja Ganaja Junction", "Anyigba Park"],
     "Kwara State": ["Post Office Ilorin", "Challenge Park Ilorin"],
     "Lagos State": ["Ikeja Mall", "Yaba Tech Junction"],
+    "Nasarawa State": ["Lafia Park", "Keffi Roundabout"],
+    "Niger State": ["Minna Central Park", "Bida Main Garage"],
     "Ogun State": ["Abeokuta Central Park", "Sango Garage"],
+    "Ondo State": ["Akure Park", "Ondo Town Junction"],
     "Osun State": ["Osogbo Old Garage", "OAU Campus Gate"],
     "Oyo State": ["Dugbe Bus Stop", "UI Main Gate"],
+    "Plateau State": ["Jos Terminus Market", "Bukuru Junction"],
+    "Rivers State": ["Port Harcourt Garrison", "Mile 1 Park"],
+    "Sokoto State": ["Sokoto Central Market", "Usman Danfodiyo Gate"],
+    "Taraba State": ["Jalingo Park", "Wukari Junction"],
+    "Yobe State": ["Damaturu Central Park", "Potiskum Roundabout"],
+    "Zamfara State": ["Gusau Central Park", "Talata Mafara Market"],
+    "FCT Abuja": ["Utako Park", "Garki Market"],
   };
+  
 
   const buyNow = () => {
     if (!name || !pincode || !phoneNumber)
       return toast.error("All fields are required");
-    if (deliveryOption === "pickup" && (!selectedState || !pickupLocation))
-      return toast.error("Select your state & pickup point");
+
+    if (deliveryOption === "pickup") {
+      if (!selectedState)
+        return toast.error("Select your state for pickup delivery");
+      if (!pickupLocation && !altPickupAddress)
+        return toast.error(
+          "Select a pickup point or provide an alternative address"
+        );
+    }
+
     if (deliveryOption === "home" && !address)
       return toast.error("Enter delivery address");
 
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user) return toast.error("Please login to continue");
 
-    const publicKey = "pk_test_74f3976b0f222f4ca7e91a391c80002d962ddcf1"; // Paystack test key
+    const publicKey = "pk_test_74f3976b0f222f4ca7e91a391c80002d962ddcf1";
     const amountInKobo = grandTotal * 100;
     const email = user?.user?.email;
 
@@ -78,7 +121,9 @@ function Cart() {
           name,
           address:
             deliveryOption === "pickup"
-              ? `${pickupLocation}, ${selectedState}`
+              ? altPickupAddress
+                ? `${altPickupAddress}, ${selectedState}`
+                : `${pickupLocation}, ${selectedState}`
               : address,
           pincode,
           phoneNumber,
@@ -99,7 +144,6 @@ function Cart() {
             status: "success",
           });
 
-          // ✅ Clear cart from Redux and localStorage after successful payment
           dispatch(clearCart());
           localStorage.removeItem("cart");
 
@@ -238,64 +282,71 @@ function Cart() {
               </h2>
 
               <div className="space-y-3">
+                {/* Name */}
                 <input
-                  style={{
-                    backgroundColor: mode === "dark" ? "#181a1b" : "#f8fafc",
-                    color: mode === "dark" ? "white" : "",
-                  }}
                   type="text"
                   placeholder="Full Name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full p-3 rounded-lg border"
-                />
-                <input
                   style={{
                     backgroundColor: mode === "dark" ? "#181a1b" : "#f8fafc",
                     color: mode === "dark" ? "white" : "",
                   }}
+                />
+
+                {/* Phone */}
+                <input
                   type="text"
                   placeholder="Phone Number"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   className="w-full p-3 rounded-lg border"
-                />
-                <select
                   style={{
                     backgroundColor: mode === "dark" ? "#181a1b" : "#f8fafc",
                     color: mode === "dark" ? "white" : "",
                   }}
+                />
+
+                {/* Delivery Option */}
+                <select
                   value={deliveryOption}
                   onChange={(e) => setDeliveryOption(e.target.value)}
                   className="w-full p-3 rounded-lg border"
+                  style={{
+                    backgroundColor: mode === "dark" ? "#181a1b" : "#f8fafc",
+                    color: mode === "dark" ? "white" : "",
+                  }}
                 >
                   <option value="home">Home Delivery</option>
                   <option value="pickup">Pickup Point</option>
                 </select>
 
+                {/* Address or Pickup */}
                 {deliveryOption === "home" ? (
                   <input
-                    style={{
-                      backgroundColor: mode === "dark" ? "#181a1b" : "#f8fafc",
-                      color: mode === "dark" ? "white" : "",
-                    }}
                     type="text"
                     placeholder="Delivery Address"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     className="w-full p-3 rounded-lg border"
+                    style={{
+                      backgroundColor: mode === "dark" ? "#181a1b" : "#f8fafc",
+                      color: mode === "dark" ? "white" : "",
+                    }}
                   />
                 ) : (
                   <>
+                    {/* Select State */}
                     <select
+                      value={selectedState}
+                      onChange={(e) => setSelectedState(e.target.value)}
+                      className="w-full p-3 rounded-lg border"
                       style={{
                         backgroundColor:
                           mode === "dark" ? "#181a1b" : "#f8fafc",
                         color: mode === "dark" ? "white" : "",
                       }}
-                      value={selectedState}
-                      onChange={(e) => setSelectedState(e.target.value)}
-                      className="w-full p-3 rounded-lg border"
                     >
                       <option value="">Select State</option>
                       {Object.keys(pickupPoints).map((state) => (
@@ -304,16 +355,18 @@ function Cart() {
                         </option>
                       ))}
                     </select>
+
+                    {/* Select Pickup Point */}
                     {selectedState && (
                       <select
+                        value={pickupLocation}
+                        onChange={(e) => setPickupLocation(e.target.value)}
+                        className="w-full p-3 rounded-lg border"
                         style={{
                           backgroundColor:
                             mode === "dark" ? "#181a1b" : "#f8fafc",
                           color: mode === "dark" ? "white" : "",
                         }}
-                        value={pickupLocation}
-                        onChange={(e) => setPickupLocation(e.target.value)}
-                        className="w-full p-3 rounded-lg border"
                       >
                         <option value="">Select Pickup Point</option>
                         {pickupPoints[selectedState].map((point) => (
@@ -323,31 +376,62 @@ function Cart() {
                         ))}
                       </select>
                     )}
+
+                    {/* Alternative Address Option */}
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
+                        Can’t find your pickup point?{" "}
+                        <button
+                          onClick={() => setShowAltAddress(!showAltAddress)}
+                          className="text-blue-600 underline"
+                        >
+                          Click here
+                        </button>
+                      </p>
+                    </div>
+
+                    {/* Alternative Pickup Address Field */}
+                    {showAltAddress && (
+                      <input
+                        type="text"
+                        placeholder="Enter your alternative pickup address"
+                        value={altPickupAddress}
+                        onChange={(e) =>
+                          setAltPickupAddress(e.target.value)
+                        }
+                        className="w-full p-3 mt-2 rounded-lg border"
+                        style={{
+                          backgroundColor:
+                            mode === "dark" ? "#181a1b" : "#f8fafc",
+                          color: mode === "dark" ? "white" : "",
+                        }}
+                      />
+                    )}
                   </>
                 )}
 
+                {/* Postal Code */}
                 <input
-                  style={{
-                    backgroundColor: mode === "dark" ? "#181a1b" : "#f8fafc",
-                    color: mode === "dark" ? "white" : "",
-                  }}
                   type="text"
                   placeholder="Postal Code"
                   value={pincode}
                   onChange={(e) => setPincode(e.target.value)}
                   className="w-full p-3 rounded-lg border"
+                  style={{
+                    backgroundColor: mode === "dark" ? "#181a1b" : "#f8fafc",
+                    color: mode === "dark" ? "white" : "",
+                  }}
                 />
 
-                {!paystackProps && (
+                {/* Paystack or Continue */}
+                {!paystackProps ? (
                   <button
                     onClick={buyNow}
                     className="w-full mt-4 bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition-all duration-300"
                   >
                     Continue
                   </button>
-                )}
-
-                {paystackProps && (
+                ) : (
                   <div className="w-full mt-4">
                     <PaystackButton
                       {...paystackProps}
