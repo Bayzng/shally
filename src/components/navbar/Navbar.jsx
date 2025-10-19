@@ -197,7 +197,7 @@ function Navbar() {
                   Logout
                 </button>
               ) : (
-                <Link to="/signup" className="hidden md:block font-medium">
+                <Link to="/signup" className="font-medium">
                   Signup
                 </Link>
               )}
