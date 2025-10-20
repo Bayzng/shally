@@ -5,6 +5,9 @@ import { MdOutlineProductionQuantityLimits } from "react-icons/md";
 import { FaUser, FaCartPlus } from "react-icons/fa";
 import { AiFillShopping } from "react-icons/ai";
 import { Link } from "react-router-dom";
+import jsPDF from "jspdf";
+import logo from "../../../assets/logo.png";
+import html2canvas from "html2canvas";
 
 function DashboardTab() {
   const context = useContext(myContext);
@@ -24,20 +27,14 @@ function DashboardTab() {
     fontWeight: "500",
   };
 
-  // ✅ Helper function to check if date is today
-  // ✅ Robust check for "today" across multiple formats
+  // ✅ Check if order date is today
   const isToday = (dateString) => {
     if (!dateString) return false;
-  
-    // Example format: "18/10/2025, 22:26:31"
-    const [datePart] = dateString.split(","); // take "18/10/2025"
-    const parts = datePart.trim().split("/"); // ["18", "10", "2025"]
-  
+    const [datePart] = dateString.split(",");
+    const parts = datePart.trim().split("/");
     if (parts.length !== 3) return false;
-  
     const [day, month, year] = parts.map(Number);
     const orderDate = new Date(year, month - 1, day);
-  
     const today = new Date();
     return (
       orderDate.getDate() === today.getDate() &&
@@ -45,8 +42,67 @@ function DashboardTab() {
       orderDate.getFullYear() === today.getFullYear()
     );
   };
-  
-  
+
+  // ✅ Generate Attractive PDF Receipt
+  const downloadReceipt = async (orderIndex) => {
+    const element = document.getElementById(`order-receipt-${orderIndex}`);
+    if (!element) return;
+
+    // ✅ Force desktop-like rendering so size looks same across all devices
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      width: 1200, // 👈 Force large width for consistent PDF size
+      windowWidth: 1200, // 👈 Pretend the screen width is large
+      useCORS: true,
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF("p", "mm", "a4");
+    const imgWidth = 190;
+    const pageHeight = pdf.internal.pageSize.height;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    let heightLeft = imgHeight;
+
+    // 🧾 Add Logo
+    const logoWidth = 30;
+    const logoHeight = 30;
+    pdf.addImage(logo, "PNG", 15, 10, logoWidth, logoHeight);
+
+    // 🛍️ Add Header
+    pdf.setFontSize(18);
+    pdf.setTextColor(40, 40, 40);
+    pdf.text("SHALLY STORE", 105, 20, { align: "center" });
+    pdf.setFontSize(12);
+    pdf.text("Official Order Receipt", 105, 27, { align: "center" });
+    pdf.line(15, 32, 195, 32);
+
+    // 📦 Add Order Content Screenshot
+    let position = 40;
+    pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    // ➕ Handle Multiple Pages
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    // ❤️ Add Footer
+    pdf.setFontSize(11);
+    pdf.setTextColor(70, 70, 70);
+    pdf.text("Thank you for shopping with Shally", 105, 290, {
+      align: "center",
+    });
+    pdf.text("www.shally.com.ng | shally@gmail.com", 105, 296, {
+      align: "center",
+    });
+
+    // 💾 Save PDF
+    pdf.save(`Order_Receipt_${orderIndex + 1}.pdf`);
+  };
 
   return (
     <div className="container mx-auto">
@@ -90,92 +146,77 @@ function DashboardTab() {
           <TabPanel>
             <div className="px-4 md:px-0 mb-16">
               <h1
-                className="text-center mb-5 text-3xl font-semibold underline"
-                style={{ color: mode === "dark" ? "white" : "" }}
+                className={`text-center mb-5 text-3xl font-semibold underline ${
+                  mode === "dark" ? "text-white" : ""
+                }`}
               >
                 Product Details
               </h1>
 
-              <div className="flex justify-end">
+              <div className="flex justify-end mb-6">
                 <button
                   onClick={add}
-                  type="button"
-                  className="focus:outline-none text-white bg-pink-600 shadow-[inset_0_0_10px_rgba(0,0,0,0.6)] border hover:bg-pink-700 font-medium rounded-lg text-sm px-5 py-2.5 mb-2"
+                  className="flex gap-2 items-center bg-pink-600 hover:bg-pink-700 text-white px-5 py-2.5 rounded-lg font-medium transition duration-300"
                 >
-                  <div className="flex gap-2 items-center">
-                    Add Product <FaCartPlus size={20} />
-                  </div>
+                  Add Product <FaCartPlus size={20} />
                 </button>
               </div>
 
               {product.length === 0 ? (
-                <div style={noDataStyle}>
-                  🚀 No products available yet. Start adding some amazing items
-                  to your store!
+                <div style={noDataStyle} className="transition duration-300">
+                  🚀 No products available yet. Start adding some amazing items!
                 </div>
               ) : (
-                <div className="relative overflow-x-auto">
-                  <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                    <thead
-                      className="text-xs border border-gray-600 text-black uppercase bg-gray-200 shadow-[inset_0_0_8px_rgba(0,0,0,0.6)]"
-                      style={{
-                        backgroundColor: mode === "dark" ? "rgb(46 49 55)" : "",
-                        color: mode === "dark" ? "white" : "",
-                      }}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {product.map((item, index) => (
+                    <div
+                      key={item.id || index}
+                      className={`border rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition duration-300 ${
+                        mode === "dark"
+                          ? "bg-gray-800 text-white"
+                          : "bg-white text-gray-800"
+                      }`}
                     >
-                      <tr>
-                        <th className="px-6 py-3">S.No</th>
-                        <th className="px-6 py-3">Image</th>
-                        <th className="px-6 py-3">Title</th>
-                        <th className="px-6 py-3">Price</th>
-                        <th className="px-6 py-3">Category</th>
-                        <th className="px-6 py-3">Date</th>
-                        <th className="px-6 py-3">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {product.map((item, index) => (
-                        <tr
-                          key={item.id || index}
-                          className="bg-gray-50 border-b dark:border-gray-700"
-                          style={{
-                            backgroundColor:
-                              mode === "dark" ? "rgb(46 49 55)" : "",
-                            color: mode === "dark" ? "white" : "",
-                          }}
-                        >
-                          <td className="px-6 py-4">{index + 1}.</td>
-                          <td className="px-6 py-4">
-                            <img
-                              className="w-20 h-20 rounded object-cover"
-                              src={item.imageUrl}
-                              alt="product"
-                            />
-                          </td>
-                          <td className="px-6 py-4">{item.title}</td>
-                          <td className="px-6 py-4">#{item.price}</td>
-                          <td className="px-6 py-4">{item.category}</td>
-                          <td className="px-6 py-4">{item.date}</td>
-                          <td className="px-6 py-4 flex gap-3">
+                      <img
+                        src={item.imageUrl}
+                        alt={item.title}
+                        className="w-full h-48 object-cover"
+                      />
+                      <div className="p-4 flex flex-col gap-2">
+                        <h2 className="text-lg font-semibold">{item.title}</h2>
+                        <p className="text-pink-600 font-bold">₦{item.price}</p>
+                        <p className="text-sm text-gray-500">
+                          Category:{" "}
+                          <span
+                            className={`${
+                              mode === "dark" ? "text-gray-300" : ""
+                            }`}
+                          >
+                            {item.category}
+                          </span>
+                        </p>
+                        <p className="text-sm text-gray-400">
+                          Date: {item.date}
+                        </p>
+                        <div className="flex justify-between mt-3">
+                          <button
+                            onClick={() => deleteProduct(item)}
+                            className="text-red-500 hover:text-red-700 transition duration-300"
+                          >
+                            🗑️
+                          </button>
+                          <Link to="/updateproduct">
                             <button
-                              onClick={() => deleteProduct(item)}
-                              className="text-red-500 hover:text-red-700"
+                              onClick={() => editHandle(item)}
+                              className="text-blue-500 hover:text-blue-700 transition duration-300"
                             >
-                              🗑️
+                              ✏️
                             </button>
-                            <Link to="/updateproduct">
-                              <button
-                                onClick={() => editHandle(item)}
-                                className="text-blue-500 hover:text-blue-700"
-                              >
-                                ✏️
-                              </button>
-                            </Link>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -183,93 +224,131 @@ function DashboardTab() {
 
           {/* ===== Orders Tab ===== */}
           <TabPanel>
-            <div className="relative overflow-x-auto mb-16">
+            <div className="relative overflow-x-auto mb-16 px-4 sm:px-0">
               <h1
                 className="text-center mb-5 text-3xl font-semibold underline"
                 style={{ color: mode === "dark" ? "white" : "" }}
               >
-                Order Details
+                Order Receipts
               </h1>
 
               {order.length === 0 ? (
-                <div style={noDataStyle}>
-                  🛍️ No orders placed yet. Once customers start shopping, their
-                  orders will appear here.
-                </div>
+                <div style={noDataStyle}>🛍️ No orders placed yet.</div>
               ) : (
                 order.map((allorder, i) => (
-                  <table
-                    key={i}
-                    className="w-full text-sm text-left text-gray-500 dark:text-gray-400 mb-8"
-                  >
-                    <thead
-                      className="text-xs text-black uppercase bg-gray-200"
+                  <div key={i} className="mb-10">
+                    <div className="flex justify-end -mb-3">
+                      <button
+                        onClick={() => downloadReceipt(i)}
+                        className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:opacity-90 text-sm font-semibold shadow-md"
+                      >
+                        📄 Download Receipt
+                      </button>
+                    </div>
+
+                    <div
+                      id={`order-receipt-${i}`}
+                      className="border rounded-xl p-6 shadow-lg bg-white"
                       style={{
-                        backgroundColor: mode === "dark" ? "rgb(46 49 55)" : "",
-                        color: mode === "dark" ? "white" : "",
+                        backgroundColor:
+                          mode === "dark" ? "rgb(46 49 55)" : "white",
+                        color: mode === "dark" ? "white" : "black",
                       }}
                     >
-                      <tr>
-                        <th className="px-6 py-3">Payment Id</th>
-                        <th className="px-6 py-3">Image</th>
-                        <th className="px-6 py-3">Title</th>
-                        <th className="px-6 py-3">Price</th>
-                        <th className="px-6 py-3">Category</th>
-                        <th className="px-6 py-3">Name</th>
-                        <th className="px-6 py-3">Address</th>
-                        <th className="px-6 py-3">Pincode</th>
-                        <th className="px-6 py-3">Phone</th>
-                        <th className="px-6 py-3">Email</th>
-                        <th className="px-6 py-3">Date</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {allorder.cartItems.map((item, j) => (
-                        <tr
-                          key={j}
-                          className="bg-gray-50 border-b dark:border-gray-700"
-                          style={{
-                            backgroundColor:
-                              mode === "dark" ? "rgb(46 49 55)" : "",
-                            color: mode === "dark" ? "white" : "",
-                          }}
-                        >
-                          <td className="px-6 py-4">
-                            {allorder.paymentId}
-                            {isToday(allorder.date) && (
-                              <span className="ml-2 text-green-500 font-semibold">
-                                🆕 New Order (Today)
-                              </span>
-                            )}
-                          </td>
-                          <td className="px-6 py-4">
-                            <img
-                              className="w-20 h-20 rounded object-cover"
-                              src={item.imageUrl}
-                              alt="order"
-                            />
-                          </td>
-                          <td className="px-6 py-4">{item.title}</td>
-                          <td className="px-6 py-4">#{item.price}</td>
-                          <td className="px-6 py-4">{item.category}</td>
-                          <td className="px-6 py-4">
-                            {allorder.addressInfo?.name}
-                          </td>
-                          <td className="px-6 py-4">
+                      {/* Header */}
+                      <div className="text-center mb-6 border-b pb-4">
+                        <img
+                          src="https://cdn-icons-png.flaticon.com/512/891/891462.png"
+                          alt="Logo"
+                          className="mx-auto w-16 mb-2"
+                        />
+                        <h2 className="text-2xl font-bold text-pink-600">
+                          SHALLY STORE
+                        </h2>
+                        <p className="text-gray-400 text-sm">
+                          Ilorin, Kwara State Nigeria 🇳🇬
+                        </p>
+                      </div>
+
+                      {/* Order Items */}
+                      <table className="w-full text-sm text-left mb-4 border-t">
+                        <thead className="bg-pink-100 text-gray-700">
+                          <tr>
+                            <th className="px-4 py-2">Item</th>
+                            <th className="px-4 py-2">Category</th>
+                            <th className="px-4 py-2">Price</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {allorder.cartItems.map((item, j) => (
+                            <tr key={j} className="border-b">
+                              <td className="px-4 py-3 flex items-center gap-3">
+                                <img
+                                  src={item.imageUrl}
+                                  alt=""
+                                  className="w-10 h-10 rounded object-cover"
+                                />
+                                <span>{item.title}</span>
+                              </td>
+                              <td className="px-4 py-3">{item.category}</td>
+                              <td className="px-4 py-3 font-semibold">
+                                ₦{item.price}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+
+                      {/* Customer + Order Info */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <h3 className="font-semibold text-lg mb-1 text-pink-600">
+                            Customer Details
+                          </h3>
+                          <p>
+                            <strong>Name:</strong> {allorder.addressInfo?.name}
+                          </p>
+                          <p>
+                            <strong>Address:</strong>{" "}
                             {allorder.addressInfo?.address}
-                          </td>
-                          <td className="px-6 py-4">
-                            {allorder.addressInfo?.pincode}
-                          </td>
-                          <td className="px-6 py-4">
+                          </p>
+                          <p>
+                            <strong>Phone:</strong>{" "}
                             {allorder.addressInfo?.phoneNumber}
-                          </td>
-                          <td className="px-6 py-4">{allorder.email}</td>
-                          <td className="px-6 py-4">{allorder.date}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                          </p>
+                          <p>
+                            <strong>Email:</strong> {allorder.email}
+                          </p>
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-lg mb-1 text-pink-600">
+                            Order Info
+                          </h3>
+                          <p>
+                            <strong>Payment ID:</strong> {allorder.paymentId}
+                          </p>
+                          <p>
+                            <strong>Date:</strong> {allorder.date}
+                          </p>
+                          {isToday(allorder.date) && (
+                            <p className="text-green-500 font-semibold mt-1">
+                              🆕 New Order (Today)
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Footer */}
+                      <div className="border-t mt-6 pt-4 text-center">
+                        <p className="text-pink-600 font-semibold">
+                          Thank you for your purchase! 💖
+                        </p>
+                        <p className="text-gray-400 text-sm">
+                          Your satisfaction is our priority.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 ))
               )}
             </div>
@@ -286,14 +365,11 @@ function DashboardTab() {
               </h1>
 
               {user.length === 0 ? (
-                <div style={noDataStyle}>
-                  👤 No registered users yet. Once people sign up, their details
-                  will appear here.
-                </div>
+                <div style={noDataStyle}>👤 No registered users yet.</div>
               ) : (
-                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <table className="w-full text-sm text-left">
                   <thead
-                    className="text-xs text-black uppercase bg-gray-200"
+                    className="text-xs uppercase"
                     style={{
                       backgroundColor: mode === "dark" ? "rgb(46 49 55)" : "",
                       color: mode === "dark" ? "white" : "",
@@ -311,10 +387,9 @@ function DashboardTab() {
                     {user.map((item, index) => (
                       <tr
                         key={item.uid || index}
-                        className="bg-gray-50 border-b dark:border-gray-700"
                         style={{
                           backgroundColor:
-                            mode === "dark" ? "rgb(46 49 55)" : "",
+                            mode === "dark" ? "rgb(46 49 55)" : "#fafafa",
                           color: mode === "dark" ? "white" : "",
                         }}
                       >

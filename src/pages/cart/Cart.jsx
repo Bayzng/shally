@@ -86,7 +86,6 @@ function Cart() {
     "Zamfara State": ["Gusau Central Park", "Talata Mafara Market"],
     "FCT Abuja": ["Utako Park", "Garki Market"],
   };
-  
 
   const buyNow = () => {
     if (!name || !pincode || !phoneNumber)
@@ -341,11 +340,30 @@ function Cart() {
                     <select
                       value={selectedState}
                       onChange={(e) => setSelectedState(e.target.value)}
-                      className="w-full p-3 rounded-lg border"
+                      className={`
+                        w-full
+                        rounded-xl
+                        border
+                        border-gray-300
+                        focus:outline-none
+                        focus:ring-2
+                        transition-all
+                        duration-200
+                        text-sm
+                        sm:text-base
+                        font-medium
+                        shadow-sm
+                        ${
+                          mode === "dark"
+                            ? "bg-[#181a1b] text-white border-gray-600"
+                            : "bg-gray-50 text-gray-900"
+                        }
+                      `}
+                      size="6" // 👈 displays 6 items with scroll for longer lists
                       style={{
-                        backgroundColor:
-                          mode === "dark" ? "#181a1b" : "#f8fafc",
-                        color: mode === "dark" ? "white" : "",
+                        padding: "0.75rem 1rem",
+                        maxHeight: "250px", // 👈 limit visible height
+                        overflowY: "auto", // 👈 enables vertical scroll
                       }}
                     >
                       <option value="">Select State</option>
@@ -396,9 +414,7 @@ function Cart() {
                         type="text"
                         placeholder="Enter your alternative pickup address"
                         value={altPickupAddress}
-                        onChange={(e) =>
-                          setAltPickupAddress(e.target.value)
-                        }
+                        onChange={(e) => setAltPickupAddress(e.target.value)}
                         className="w-full p-3 mt-2 rounded-lg border"
                         style={{
                           backgroundColor:
