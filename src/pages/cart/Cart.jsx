@@ -259,13 +259,17 @@ function Cart() {
 
         {/* Delivery Modal */}
         {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 overflow-hidden">
             <div
-              className={`rounded-2xl p-6 w-[90%] sm:w-[500px] shadow-2xl relative ${
+              className={`rounded-2xl p-6 w-[90%] sm:w-[500px] shadow-2xl relative overflow-y-auto max-h-[90vh] ${
                 mode === "dark"
                   ? "bg-gray-900 text-white border border-gray-700"
                   : "bg-white text-gray-900"
               }`}
+              style={{
+                scrollbarWidth: "thin",
+                scrollbarColor: mode === "dark" ? "#555 #222" : "#999 #f1f1f1",
+              }}
             >
               <button
                 onClick={() => {
@@ -359,11 +363,11 @@ function Cart() {
                             : "bg-gray-50 text-gray-900"
                         }
                       `}
-                      size="6" // 👈 displays 6 items with scroll for longer lists
+                      size="6"
                       style={{
                         padding: "0.75rem 1rem",
-                        maxHeight: "250px", // 👈 limit visible height
-                        overflowY: "auto", // 👈 enables vertical scroll
+                        maxHeight: "250px",
+                        overflowY: "auto",
                       }}
                     >
                       <option value="">Select State</option>

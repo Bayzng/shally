@@ -146,77 +146,87 @@ function DashboardTab() {
           <TabPanel>
             <div className="px-4 md:px-0 mb-16">
               <h1
-                className={`text-center mb-5 text-3xl font-semibold underline ${
-                  mode === "dark" ? "text-white" : ""
-                }`}
+                className="text-center mb-5 text-3xl font-semibold underline"
+                style={{ color: mode === "dark" ? "white" : "" }}
               >
                 Product Details
               </h1>
-
-              <div className="flex justify-end mb-6">
+              <div className="flex justify-end">
                 <button
                   onClick={add}
-                  className="flex gap-2 items-center bg-pink-600 hover:bg-pink-700 text-white px-5 py-2.5 rounded-lg font-medium transition duration-300"
+                  className="focus:outline-none text-white bg-pink-600 hover:bg-pink-700 font-medium rounded-lg text-sm px-5 py-2.5 mb-2"
                 >
-                  Add Product <FaCartPlus size={20} />
+                  <div className="flex gap-2 items-center">
+                    Add Product <FaCartPlus size={20} />
+                  </div>
                 </button>
               </div>
 
               {product.length === 0 ? (
-                <div style={noDataStyle} className="transition duration-300">
+                <div style={noDataStyle}>
                   🚀 No products available yet. Start adding some amazing items!
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                  {product.map((item, index) => (
-                    <div
-                      key={item.id || index}
-                      className={`border rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition duration-300 ${
-                        mode === "dark"
-                          ? "bg-gray-800 text-white"
-                          : "bg-white text-gray-800"
-                      }`}
+                <div className="relative overflow-x-auto">
+                  <table className="w-full text-sm text-left">
+                    <thead
+                      className="text-xs uppercase"
+                      style={{
+                        backgroundColor: mode === "dark" ? "rgb(46 49 55)" : "",
+                        color: mode === "dark" ? "white" : "",
+                      }}
                     >
-                      <img
-                        src={item.imageUrl}
-                        alt={item.title}
-                        className="w-full h-48 object-cover"
-                      />
-                      <div className="p-4 flex flex-col gap-2">
-                        <h2 className="text-lg font-semibold">{item.title}</h2>
-                        <p className="text-pink-600 font-bold">₦{item.price}</p>
-                        <p className="text-sm text-gray-500">
-                          Category:{" "}
-                          <span
-                            className={`${
-                              mode === "dark" ? "text-gray-300" : ""
-                            }`}
-                          >
-                            {item.category}
-                          </span>
-                        </p>
-                        <p className="text-sm text-gray-400">
-                          Date: {item.date}
-                        </p>
-                        <div className="flex justify-between mt-3">
-                          <button
-                            onClick={() => deleteProduct(item)}
-                            className="text-red-500 hover:text-red-700 transition duration-300"
-                          >
-                            🗑️
-                          </button>
-                          <Link to="/updateproduct">
+                      <tr>
+                        <th className="px-6 py-3">S.No</th>
+                        <th className="px-6 py-3">Image</th>
+                        <th className="px-6 py-3">Title</th>
+                        <th className="px-6 py-3">Price</th>
+                        <th className="px-6 py-3">Category</th>
+                        <th className="px-6 py-3">Date</th>
+                        <th className="px-6 py-3">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {product.map((item, index) => (
+                        <tr
+                          key={item.id || index}
+                          style={{
+                            backgroundColor:
+                              mode === "dark" ? "rgb(46 49 55)" : "#fafafa",
+                            color: mode === "dark" ? "white" : "",
+                          }}
+                        >
+                          <td className="px-6 py-4">{index + 1}</td>
+                          <td className="px-6 py-4">
+                            <img
+                              src={item.imageUrl}
+                              className="w-16 h-16 rounded object-cover"
+                            />
+                          </td>
+                          <td className="px-6 py-4">{item.title}</td>
+                          <td className="px-6 py-4">₦{item.price}</td>
+                          <td className="px-6 py-4">{item.category}</td>
+                          <td className="px-6 py-4">{item.date}</td>
+                          <td className="px-6 py-4 flex gap-3">
                             <button
-                              onClick={() => editHandle(item)}
-                              className="text-blue-500 hover:text-blue-700 transition duration-300"
+                              onClick={() => deleteProduct(item)}
+                              className="text-red-500 hover:text-red-700"
                             >
-                              ✏️
+                              🗑️
                             </button>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                            <Link to="/updateproduct">
+                              <button
+                                onClick={() => editHandle(item)}
+                                className="text-blue-500 hover:text-blue-700"
+                              >
+                                ✏️
+                              </button>
+                            </Link>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </div>
