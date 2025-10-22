@@ -259,7 +259,7 @@ function Cart() {
 
         {/* Delivery Modal */}
         {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 overflow-hidden">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 overflow-y-auto overscroll-contain touch-auto">
             <div
               className={`rounded-2xl p-6 w-[90%] sm:w-[500px] shadow-2xl relative overflow-y-auto max-h-[90vh] ${
                 mode === "dark"
@@ -341,42 +341,37 @@ function Cart() {
                 ) : (
                   <>
                     {/* Select State */}
-                    <select
-                      value={selectedState}
-                      onChange={(e) => setSelectedState(e.target.value)}
-                      className={`
-                        w-full
-                        rounded-xl
-                        border
-                        border-gray-300
-                        focus:outline-none
-                        focus:ring-2
-                        transition-all
-                        duration-200
-                        text-sm
-                        sm:text-base
-                        font-medium
-                        shadow-sm
-                        ${
-                          mode === "dark"
-                            ? "bg-[#181a1b] text-white border-gray-600"
-                            : "bg-gray-50 text-gray-900"
-                        }
-                      `}
-                      size="6"
+                    <div
+                      className={`w-full rounded-xl border ${
+                        mode === "dark"
+                          ? "bg-[#181a1b] text-white border-gray-600"
+                          : "bg-gray-50 text-gray-900 border-gray-300"
+                      } p-3`}
                       style={{
-                        padding: "0.75rem 1rem",
                         maxHeight: "250px",
                         overflowY: "auto",
+                        WebkitOverflowScrolling: "touch", // ✅ allows scroll on iPhones
                       }}
                     >
-                      <option value="">Select State</option>
-                      {Object.keys(pickupPoints).map((state) => (
-                        <option key={state} value={state}>
-                          {state}
-                        </option>
-                      ))}
-                    </select>
+                      <p className="font-semibold mb-2">Select State</p>
+                      <ul className="space-y-2">
+                        {Object.keys(pickupPoints).map((state) => (
+                          <li
+                            key={state}
+                            onClick={() => setSelectedState(state)}
+                            className={`p-2 rounded-lg cursor-pointer ${
+                              selectedState === state
+                                ? "bg-blue-600 text-white"
+                                : mode === "dark"
+                                ? "hover:bg-gray-800"
+                                : "hover:bg-gray-200"
+                            }`}
+                          >
+                            {state}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
 
                     {/* Select Pickup Point */}
                     {selectedState && (
