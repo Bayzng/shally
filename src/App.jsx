@@ -20,8 +20,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import Allproducts from './pages/allproducts/Allproducts';
 import TransactionStatus from "./components/TransactionStatus/TransactionStatus";
 import OrderHistory from "./components/OrderHistory/OrderHistory";
-import MaintenancePage from "./components/MaintenancePage/MaintenancePage";
-// import Home from './pages/home/Home';
+// import MaintenancePage from "./components/MaintenancePage/MaintenancePage";
+import Home from './pages/home/Home';
 
 
 function App() {
@@ -29,8 +29,8 @@ function App() {
     <MyState>
       <Router>
         <Routes>
-          <Route path="/" element={<MaintenancePage />} /> 
-         {/*<Route path="/" element={<Home />} /> */}
+          {/* <Route path="/" element={<MaintenancePage />} /> */}
+         <Route path="/" element={<Home />} /> 
           <Route path="/allproducts" element={<Allproducts />} />
           <Route path="/order" element={
             <ProtectedRoute>
