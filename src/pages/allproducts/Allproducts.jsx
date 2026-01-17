@@ -9,7 +9,14 @@ import { useNavigate } from "react-router-dom";
 
 function Allproducts() {
   const context = useContext(myContext);
-  const { mode, product, searchkey, filterType, filterPrice } = context;
+  const {
+    mode,
+    product,
+    searchkey,
+    filterType,
+    filterPrice,
+    user, // ✅ get users from context
+  } = context;
 
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart);
@@ -17,7 +24,7 @@ function Allproducts() {
 
   const addCart = (product) => {
     dispatch(addToCart(product));
-    toast.success("Added to cart");
+    toast.success("🛒 Added to cart");
   };
 
   useEffect(() => {
@@ -28,9 +35,15 @@ function Allproducts() {
     window.scrollTo(0, 0);
   }, []);
 
+  // ✅ Resolve uploader name from userid
+  const getUploaderName = (userid) => {
+    const uploader = user?.find((u) => u.uid === userid);
+    return uploader ? uploader.name : "Marketplace Seller";
+  };
+
   // Filtered products
   const filteredProducts = product
-    .filter((obj) =>
+    ?.filter((obj) =>
       obj.title.toLowerCase().includes(searchkey.toLowerCase())
     )
     .filter((obj) =>
@@ -61,30 +74,33 @@ function Allproducts() {
             <div className="h-1 w-24 bg-pink-600 mx-auto mt-4 rounded-full"></div>
           </div>
 
-          {/* If no products */}
-          {filteredProducts.length === 0 ? (
+          {/* Empty State */}
+          {filteredProducts?.length === 0 ? (
             <div className="text-center mt-20">
               <p
                 className={`text-lg font-medium ${
                   mode === "dark" ? "text-gray-400" : "text-gray-600"
                 }`}
               >
-                🚫 No products available in the marketplace yet. <br />
+                🚫 No products available in the marketplace yet.
+                <br />
                 Please check back later.
               </p>
             </div>
           ) : (
-            // Products Grid
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            /* Products Grid */
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {filteredProducts.map((item, index) => {
-                const { title, price, imageUrl, id } = item;
+                const { title, price, imageUrl, id, userid } = item;
 
                 return (
                   <div
-                    key={index}
+                    key={id || index}
                     onClick={() => navigate(`/productinfo/${id}`)}
                     className={`relative rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transform transition-all duration-300 overflow-hidden cursor-pointer ${
-                      mode === "dark" ? "bg-gray-800" : "bg-white"
+                      mode === "dark"
+                        ? "bg-gray-800 border border-gray-700"
+                        : "bg-white border border-gray-200"
                     }`}
                   >
                     {/* Image */}
@@ -92,25 +108,33 @@ function Allproducts() {
                       <img
                         src={imageUrl}
                         alt={title}
-                        className="w-full h-64 sm:h-72 md:h-80 object-cover rounded-t-2xl group-hover:scale-110 transition-transform duration-500 ease-in-out"
+                        className="w-full h-40 sm:h-48 md:h-56 lg:h-64 object-cover rounded-t-2xl transition-transform duration-500 hover:scale-110"
+                        onError={(e) => {
+                          e.target.src =
+                            "https://via.placeholder.com/300x300.png?text=No+Image";
+                        }}
                       />
                     </div>
 
                     {/* Product Info */}
-                    <div className="p-5 border-t border-gray-200/40 flex flex-col justify-between">
+                    <div className="p-4 sm:p-5 border-t border-gray-200/40 flex flex-col justify-between">
                       <div>
                         <h2
-                          className={`text-xs uppercase tracking-widest font-semibold mb-2 ${
-                            mode === "dark" ? "text-pink-400" : "text-pink-600"
+                          className={`text-xs uppercase tracking-widest font-semibold mb-1 ${
+                            mode === "dark"
+                              ? "text-pink-400"
+                              : "text-pink-600"
                           }`}
                         >
-                          Shally_Store
+                          {getUploaderName(userid)}
                         </h2>
-                        <h1 className="text-lg font-bold truncate mb-1">
+
+                        <h1 className="text-sm sm:text-lg font-bold truncate mb-1">
                           {title}
                         </h1>
-                        <p className="text-base font-medium mb-3">
-                          ₦{price}
+
+                        <p className="text-sm sm:text-base font-medium mb-2">
+                          ₦{price.toLocaleString()}
                         </p>
                       </div>
 
@@ -121,14 +145,11 @@ function Allproducts() {
                           e.stopPropagation();
                           addCart(item);
                         }}
-                        className="w-full py-2 text-white bg-pink-600 hover:bg-pink-700 font-semibold rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pink-300"
+                        className="w-full py-2 text-sm sm:text-base text-white bg-pink-600 hover:bg-pink-700 font-semibold rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pink-300"
                       >
                         Add To Cart
                       </button>
                     </div>
-
-                    {/* Hover Glow Effect */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-all duration-500 bg-pink-500 blur-2xl"></div>
                   </div>
                 );
               })}

@@ -72,7 +72,7 @@ function DashboardTab() {
     // 🛍️ Add Header
     pdf.setFontSize(18);
     pdf.setTextColor(40, 40, 40);
-    pdf.text("SHALLY STORE", 105, 20, { align: "center" });
+    pdf.text("ALLMART STORE", 105, 20, { align: "center" });
     pdf.setFontSize(12);
     pdf.text("Official Order Receipt", 105, 27, { align: "center" });
     pdf.line(15, 32, 195, 32);
@@ -93,10 +93,10 @@ function DashboardTab() {
     // ❤️ Add Footer
     pdf.setFontSize(11);
     pdf.setTextColor(70, 70, 70);
-    pdf.text("Thank you for shopping with Shally", 105, 290, {
+    pdf.text("Thank you for shopping in AllMart Store!", 105, 290, {
       align: "center",
     });
-    pdf.text("www.shally.com.ng | shally@gmail.com", 105, 296, {
+    pdf.text("www.allmart.com.ng | allmart@gmail.com", 105, 296, {
       align: "center",
     });
 
@@ -273,10 +273,10 @@ function DashboardTab() {
                           className="mx-auto w-16 mb-2"
                         />
                         <h2 className="text-2xl font-bold text-pink-600">
-                          SHALLY STORE
+                          ALLMART STORE
                         </h2>
                         <p className="text-gray-400 text-sm">
-                          Ilorin, Kwara State Nigeria 🇳🇬
+                          Ikeja, Lagos State Nigeria 🇳🇬
                         </p>
                       </div>
 

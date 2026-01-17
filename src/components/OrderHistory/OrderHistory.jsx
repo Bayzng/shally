@@ -114,7 +114,7 @@ function OrderHistory() {
             You haven’t placed any orders yet 🛍️
           </p>
         ) : (
-          <div className="space-y-10 max-w-5xl mx-auto">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {orders.map((order) => {
               const orderIsToday = isToday(order.date);
               const delivered = isDelivered(order.date);
@@ -241,7 +241,7 @@ function OrderHistory() {
                   {/* Footer */}
                   <p className="text-center mt-6 text-xs sm:text-sm text-gray-400 italic">
                     🏬 Thank you for shopping with{" "}
-                    <strong>Shally Store</strong>
+                    <strong>AllMart Store</strong>
                   </p>
                 </div>
               );

@@ -76,7 +76,7 @@ function Track() {
                 </h2>
                 <p className="leading-relaxed">
                   Shop with confidence — all transactions are encrypted and 100%
-                  secure at Shally Store.
+                  secure at AllMart Store.
                 </p>
               </div>
             </div>

@@ -4,11 +4,13 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { FiSun } from "react-icons/fi";
 import { BsFillCloudSunFill } from "react-icons/bs";
+import { FaClipboardList } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import logo from "../../assets/logo.png";
 import myContext from "../../context/data/myContext";
+import { h1 } from "framer-motion/client";
 
 function Navbar() {
   const { mode, toggleMode } = useContext(myContext);
@@ -22,7 +24,6 @@ function Navbar() {
     window.location.href = "/";
   };
 
-  // ✅ Handle cart click (prevent if empty)
   const handleCartClick = (e) => {
     if (cartItems.length === 0) {
       e.preventDefault();
@@ -34,16 +35,20 @@ function Navbar() {
     }
   };
 
-  // ✅ Check if user is admin
-  const isAdmin = user?.user?.email === "admin@shally.com";
+  const isAdmin = user?.user?.email === "admin@allmart.com";
 
   return (
-    <div className={`sticky top-0 z-50 ${isDark ? "bg-gray-900" : "bg-white"} shadow-md`}>
+    <div
+      className={`sticky top-0 z-50 ${
+        isDark ? "bg-gray-900" : "bg-white"
+      } shadow-md`}
+    >
       <ToastContainer />
 
-      {/* ======= MOBILE MENU ======= */}
+      {/* ================= MOBILE MENU ================= */}
       <Transition.Root show={open} as={Fragment}>
         <Dialog as="div" className="relative z-40 lg:hidden" onClose={setOpen}>
+          {/* Overlay */}
           <Transition.Child
             as={Fragment}
             enter="transition-opacity ease-linear duration-300"
@@ -53,7 +58,7 @@ function Navbar() {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-black bg-opacity-25" />
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
           </Transition.Child>
 
           <div className="fixed inset-0 flex">
@@ -67,63 +72,105 @@ function Navbar() {
               leaveTo="-translate-x-full"
             >
               <Dialog.Panel
-                className={`relative flex w-full max-w-xs flex-col overflow-y-auto pb-12 shadow-xl ${
+                className={`relative flex w-full max-w-xs flex-col overflow-y-auto pb-10 shadow-2xl ${
                   isDark ? "bg-gray-900 text-white" : "bg-white text-gray-900"
                 }`}
               >
-                <div className="flex px-4 pb-2 pt-28">
+                {/* Header */}
+                <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200/20">
+                  <h2 className="text-lg font-bold">👋 Menu</h2>
                   <button
-                    type="button"
-                    className="inline-flex items-center justify-center rounded-md p-2 text-gray-400"
                     onClick={() => setOpen(false)}
+                    className="p-2 rounded-full hover:bg-gray-200/20 transition"
                   >
-                    <RxCross2 size={24} />
+                    <RxCross2 size={22} />
                   </button>
                 </div>
 
-                {/* ====== Mobile Links ====== */}
-                <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-                  <Link to="/allproducts" className="block font-medium">
-                    All Products
-                  </Link>
-
-                  {/* ✅ Show "Order" only for non-admin users */}
-                  {user && !isAdmin && (
-                    <Link to="/order-history" className="block font-medium">
-                      Orders
+                {/* Navigation */}
+                <div className="px-4 py-6 space-y-5 text-sm mt-10">
+                  <h1 className="flex items-center gap-2 font-medium hover:text-pink-500 transition">
+                    AllMart
+                  </h1>
+                  <hr className="border-gray-200/30" />
+                  {user && !isAdmin ? (
+                    <Link
+                      to="/allproducts"
+                      className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
+                    >
+                      🛍️ All Products
                     </Link>
+                  ) : (
+                    <div className="rounded-xl bg-pink-50 dark:bg-gray-800 p-4 text-center space-y-2">
+                      <h3 className="text-lg font-semibold">
+                        👋 Welcome to Allmart Marketplace
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
+                        Discover amazing products, deals & creators 💖
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        🔐 Login or Signup to start shopping
+                      </p>
+                    </div>
+                  )}
+
+                  <hr className="border-gray-200/30" />
+
+                  {user && !isAdmin && (
+                    <>
+                      <Link
+                        to="/order-history"
+                        className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
+                      >
+                        📦 My Orders
+                      </Link>
+
+                      <Link
+                        to="/creator"
+                        className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
+                      >
+                        ➕ Add Product
+                      </Link>
+
+                      <Link
+                        to="/my-products"
+                        className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
+                      >
+                        🧾 My Products
+                      </Link>
+
+                      <hr className="border-gray-200/30" />
+                    </>
                   )}
 
                   {isAdmin && (
-                    <Link to="/dashboard" className="block font-medium">
-                      Admin Dashboard
-                    </Link>
+                    <>
+                      <Link
+                        to="/dashboard"
+                        className="flex items-center gap-2 font-medium text-indigo-500 hover:text-indigo-600 transition"
+                      >
+                        🛠️ Admin Dashboard
+                      </Link>
+                      <hr className="border-gray-200/30" />
+                    </>
                   )}
 
+                  {/* Auth Action */}
                   {user ? (
                     <button
                       onClick={logout}
-                      className="block font-medium text-left cursor-pointer"
+                      className="flex items-center gap-2 font-semibold text-red-500 hover:text-red-600 transition w-full text-left"
                     >
-                      Logout
+                      🚪 Logout
                     </button>
                   ) : (
-                    <Link to="/signup" className="block font-medium">
-                      Signup
+                    <Link
+                      to="/signup"
+                      className="flex items-center gap-2 font-semibold text-green-500 hover:text-green-600 transition"
+                    >
+                      ✨ Signup
                     </Link>
                   )}
-                </div>
-
-                {/* Footer Info */}
-                <div className="border-t border-gray-200 px-4 py-6">
-                  <div className="flex items-center space-x-2">
-                    <img
-                      src="https://symbl-cdn.com/i/webp/0b/e342fb927a24503ca913445ad97323.webp"
-                      alt="Nigeria flag"
-                      className="w-5"
-                    />
-                    <span className="font-medium">NIGERIA</span>
-                  </div>
                 </div>
               </Dialog.Panel>
             </Transition.Child>
@@ -131,15 +178,17 @@ function Navbar() {
         </Dialog>
       </Transition.Root>
 
-      {/* ======= DESKTOP NAVBAR ======= */}
+      {/* ================= NAVBAR ================= */}
       <header className={`${isDark ? "bg-gray-900 text-white" : "bg-white"}`}>
-        <p
-          className={`flex h-10 items-center justify-center text-sm font-medium ${
+        <div
+          className={`relative overflow-hidden h-10 ${
             isDark ? "bg-gray-700 text-white" : "bg-green-600 text-white"
           }`}
         >
-          Get free delivery on orders over ₦50,000
-        </p>
+          <p className="absolute whitespace-nowrap flex items-center h-10 text-sm font-medium animate-marquee px-4">
+            🚚 Get free delivery on orders over ₦50,000
+          </p>
+        </div>
 
         <nav
           className={`px-4 sm:px-6 lg:px-8 shadow-md ${
@@ -147,53 +196,79 @@ function Navbar() {
           }`}
         >
           <div className="flex h-16 items-center justify-between">
-            {/* Left: Logo + Mobile Button */}
-            <div className="flex items-center">
+            {/* LEFT */}
+            <div className="flex items-center space-x-2">
               <button
                 className={`lg:hidden p-2 rounded-md ${
                   isDark ? "bg-gray-700 text-white" : "bg-white text-gray-600"
                 }`}
                 onClick={() => setOpen(true)}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-                  />
-                </svg>
+                ☰
               </button>
 
-              <div className="flex items-center space-x-1">
-                <img src={logo} alt="Shally Logo" className="w-12 h-12" />
-                <Link to="/" className="text-2xl font-bold">
-                  Shally
-                </Link>
-              </div>
+              <img src={logo} alt="Allmart Logo" className="w-10 h-10" />
+              <Link to="/" className="text-xl font-bold">
+                AllMart
+              </Link>
             </div>
 
-            {/* Right: Desktop Links */}
-            <div className="flex items-center space-x-6">
-              {!isAdmin && user && (
-                <Link to="/order-history" className="font-medium">
-                  Orders
+            {/* RIGHT — MOBILE ICONS */}
+            <div className="flex items-center space-x-4 lg:hidden">
+              {user && !isAdmin && (
+                <Link to="/order-history">
+                  <FaClipboardList size={20} />
                 </Link>
               )}
 
-              {isAdmin && <Link to="/dashboard">Admin</Link>}
+              <button onClick={toggleMode}>
+                {isDark ? (
+                  <BsFillCloudSunFill size={20} />
+                ) : (
+                  <FiSun size={20} />
+                )}
+              </button>
+
+              {user && (
+                <Link
+                  to={cartItems.length > 0 ? "/cart" : "#"}
+                  onClick={handleCartClick}
+                  className="relative"
+                >
+                  🛒
+                  {cartItems.length > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                      {cartItems.length}
+                    </span>
+                  )}
+                </Link>
+              )}
+            </div>
+
+            {/* DESKTOP LINKS */}
+            <div className="hidden lg:flex items-center space-x-6">
+              {user && !isAdmin && (
+                <>
+                  <Link to="/order-history" className="font-medium">
+                    Orders
+                  </Link>
+                  <Link to="/creator" className="font-medium">
+                    Add Product
+                  </Link>
+                  <Link to="/my-products" className="font-medium">
+                    My Product
+                  </Link>
+                </>
+              )}
+
+              {isAdmin && (
+                <Link to="/dashboard" className="font-medium">
+                  Admin
+                </Link>
+              )}
 
               {user ? (
-                <button
-                  onClick={logout}
-                  className="hidden md:block font-medium text-left cursor-pointer"
-                >
+                <button onClick={logout} className="font-medium">
                   Logout
                 </button>
               ) : (
@@ -203,31 +278,20 @@ function Navbar() {
               )}
 
               <button onClick={toggleMode}>
-                {isDark ? <BsFillCloudSunFill size={24} /> : <FiSun size={24} />}
+                {isDark ? (
+                  <BsFillCloudSunFill size={22} />
+                ) : (
+                  <FiSun size={22} />
+                )}
               </button>
 
-              {/* Cart */}
               {user && (
                 <Link
                   to={cartItems.length > 0 ? "/cart" : "#"}
                   onClick={handleCartClick}
                   className="flex items-center space-x-1"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
-                    />
-                  </svg>
-                  <span>{cartItems.length}</span>
+                  🛒 <span>{cartItems.length}</span>
                 </Link>
               )}
             </div>

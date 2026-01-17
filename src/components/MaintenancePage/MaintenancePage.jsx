@@ -25,7 +25,7 @@ const MaintenancePage = () => {
     leading-relaxed
   "
       >
-        🛠️ Shally is currently running in{" "}
+        🛠️ Allmart is currently running in{" "}
         <span className="mx-1 text-yellow-400 font-semibold">
           Development Mode
         </span>
@@ -36,7 +36,7 @@ const MaintenancePage = () => {
       <section className="bg-gradient-to-r from-pink-100 via-purple-100 to-indigo-100">
         <div className="container mx-auto px-6 py-20 flex flex-col lg:flex-row items-center">
           <div className="lg:w-1/2 mb-10 lg:mb-0">
-            <h1 className="text-5xl font-bold mb-6">Welcome to Shally</h1>
+            <h1 className="text-5xl font-bold mb-6">Welcome to Allmart</h1>
             <p className="text-lg mb-6">
               We’re currently fine-tuning our official website and testing new
               features to ensure the best experience for you. Explore what’s
@@ -49,7 +49,7 @@ const MaintenancePage = () => {
           <div className="lg:w-1/2">
             <img
               src={mainOne}
-              alt="Shally Preview"
+              alt="Allmart Preview"
               className="rounded-xl shadow-2xl"
             />
           </div>
@@ -123,7 +123,7 @@ const MaintenancePage = () => {
       {/* About Section */}
       <section className="bg-purple-50 py-20">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold mb-6">Shally in Progress 🚀</h2>
+          <h2 className="text-4xl font-bold mb-6">Allmart in Progress 🚀</h2>
           <p className="text-gray-700 mb-12 max-w-2xl mx-auto">
             We’re currently enhancing our platform to serve you better. Expect
             smoother navigation, better product selection, and a richer
@@ -158,7 +158,7 @@ const MaintenancePage = () => {
           <p className="mb-2 text-yellow-400 font-medium">
             ⚙️ This site is currently running in Development Mode
           </p>
-          <p className="mb-4 text-sm">© 2025 Shally. All rights reserved.</p>
+          <p className="mb-4 text-sm">© 2025 Allmart. All rights reserved.</p>
           <div className="flex justify-center gap-6">
             <a href="#" className="hover:text-purple-400">
               Instagram

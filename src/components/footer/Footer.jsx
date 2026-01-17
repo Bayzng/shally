@@ -1,6 +1,8 @@
 import { useContext } from "react";
 import myContext from "../../context/data/myContext";
 import { Link } from "react-router-dom";
+import { MdEmail, MdPhone, MdChat } from "react-icons/md";
+import { FaWhatsapp } from "react-icons/fa";
 
 function Footer() {
   const context = useContext(myContext);
@@ -8,92 +10,76 @@ function Footer() {
 
   return (
     <footer
+
+    
+    
       className={`body-font ${
-        mode === "dark"
-          ? "bg-gray-900 text-white"
-          : "bg-gray-100 text-gray-700"
+  mode === "dark" ? "bg-gray-900 text-white" : "bg-white text-gray-200"
       }`}
     >
-      {/* Top Section */}
       <hr/>
       <div className="container mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-10 text-center sm:text-left">
-          
-          {/* Categories */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 text-center sm:text-left">
+
+          {/* Customer Support */}
           <div>
-            <h2 className="text-lg font-semibold mb-4 uppercase tracking-wide">
-              Categories
+            <h2 className="text-2xl font-bold mb-6 uppercase tracking-wider text-pink-600">
+              Customer Support
             </h2>
-            <ul className="flex flex-row flex-wrap justify-center lg:flex-col lg:justify-start gap-4 text-sm sm:text-base">
-              <li>
-                <Link to="/" className="hover:text-pink-600 transition-colors">
-                  Home
-                </Link>
+            <ul className="flex flex-col gap-4">
+              {/* Email */}
+              <li className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer">
+                <MdEmail className="text-pink-600 text-2xl" />
+                <a
+                  href="mailto:support@allmart.com"
+                  className="font-medium hover:text-pink-700 transition-colors"
+                >
+                  support@allmart.com
+                </a>
               </li>
-              <li>
-                <Link to="/" className="hover:text-pink-600 transition-colors">
-                  Order
-                </Link>
+
+              {/* Phone */}
+              <li className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer">
+                <MdPhone className="text-pink-600 text-2xl" />
+                <a
+                  href="tel:+2348012345678"
+                  className="font-medium hover:text-pink-700 transition-colors"
+                >
+                  +234 81-4479-6373
+                </a>
               </li>
-              <li>
-                <Link to="/" className="hover:text-pink-600 transition-colors">
-                  Local for Vocal
-                </Link>
+
+              {/* WhatsApp */}
+              <li className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer">
+                <FaWhatsapp className="text-green-500 text-2xl" />
+                <a
+                  href="https://wa.me/08144796373"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium hover:text-green-600 transition-colors"
+                >
+                  WhatsApp Chat
+                </a>
               </li>
-              <li>
-                <Link to="/" className="hover:text-pink-600 transition-colors">
-                  Cart
-                </Link>
+
+              {/* Live Chat */}
+              <li className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer">
+                <MdChat className="text-pink-600 text-2xl" />
+                <span className="font-medium">Live Chat: 9am - 6pm</span>
               </li>
             </ul>
           </div>
 
-          {/* Customer Service */}
-          <div>
-            <h2 className="text-lg font-semibold mb-4 uppercase tracking-wide">
-              Customer Service
-            </h2>
-            <ul className="flex flex-row flex-wrap justify-center lg:flex-col lg:justify-start gap-4 text-sm sm:text-base">
-              <li>
-                <Link to="/" className="hover:text-pink-600 transition-colors">
-                  Return Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/" className="hover:text-pink-600 transition-colors">
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link to="/" className="hover:text-pink-600 transition-colors">
-                  Contact Us
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Services */}
-          <div>
-            <h2 className="text-lg font-semibold mb-4 uppercase tracking-wide">
-              Services
-            </h2>
-            <ul className="flex flex-row flex-wrap justify-center lg:flex-col lg:justify-start gap-4 text-sm sm:text-base">
-              <li>
-                <Link to="/" className="hover:text-pink-600 transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Payment Section */}
-          <div className="flex justify-center lg:justify-end items-center">
+          {/* Payment Options */}
+          {/* <div className="flex justify-center lg:justify-end items-center col-span-1 sm:col-span-2 lg:col-span-1">
             <img
               src="https://ecommerce-sk.vercel.app/pay.png"
               alt="Payment Options"
               className="w-52 sm:w-64 object-contain"
             />
-          </div>
+          </div> */}
+
+          {/* Optional extra sections if needed */}
         </div>
       </div>
 
@@ -107,25 +93,24 @@ function Footer() {
       {/* Bottom Section */}
       <div
         className={`${
-          mode === "dark" ? "bg-gray-800" : "bg-gray-200"
+          mode === "dark" ? "bg-gray-800" : "bg-gray-700"
         } border-t border-gray-300`}
       >
         <div className="container mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between text-center sm:text-left space-y-4 sm:space-y-0">
+
           {/* Brand + Email */}
           <div>
-            <h1 className="text-xl font-bold tracking-wide mb-1 sm:mb-0">
-              Shally
-            </h1>
+            <h1 className="text-xl font-bold tracking-wide mb-1 sm:mb-0">Allmart</h1>
             <a
-              href="mailto:shally@gmail.com"
+              href="mailto:allmart@gmail.com"
               className="text-sm hover:text-pink-600 transition-colors block sm:inline"
             >
-              shally@gmail.com
+              allmart@gmail.com
             </a>
           </div>
 
           {/* Social Links */}
-          <div className="flex justify-center sm:justify-end flex-wrap gap-5">
+          <div className="flex justify-center sm:justify-end flex-wrap gap-5 mt-4 sm:mt-0">
             <a href="#" className="hover:text-pink-600 transition-colors">
               <svg fill="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
                 <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" />
@@ -137,12 +122,7 @@ function Footer() {
               </svg>
             </a>
             <a href="#" className="hover:text-pink-600 transition-colors">
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                className="w-6 h-6"
-              >
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
                 <rect width={20} height={20} x={2} y={2} rx={5} ry={5} />
                 <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
               </svg>

@@ -5,15 +5,18 @@ import { addToCart } from "../../redux/cartSlice";
 import { toast } from "react-toastify";
 
 function ProductCard() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const currentUser = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user"))
+    : null;
+
   const context = useContext(myContext);
-  const { mode, product, searchkey, filterType, filterPrice } = context;
+  const { mode, product, searchkey, filterType, filterPrice, user } = context;
 
   const dispatch = useDispatch();
-  const cartItems = useSelector((state) => state.cart);
+  const cartItems = useSelector((state) => state.cart.cartItems);
 
-  const addCart = (product) => {
-    dispatch(addToCart(product));
+  const addCart = (item) => {
+    dispatch(addToCart(item));
     toast.success("🛒 Added to cart successfully!");
   };
 
@@ -21,12 +24,24 @@ function ProductCard() {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  // Filtered product list
+  // Filter products based on search and category
   const filteredProducts = product
-    .filter((obj) => obj.title.toLowerCase().includes(searchkey.toLowerCase()))
-    .filter((obj) => obj.category.toLowerCase().includes(filterType.toLowerCase()))
-    .filter((obj) => (filterPrice ? obj.price.toString().includes(filterPrice) : true))
+    ?.filter((obj) =>
+      obj.title.toLowerCase().includes(searchkey.toLowerCase())
+    )
+    .filter((obj) =>
+      obj.category.toLowerCase().includes(filterType.toLowerCase())
+    )
+    .filter((obj) =>
+      filterPrice ? obj.price.toString().includes(filterPrice) : true
+    )
     .slice(0, 8);
+
+  // Helper to get uploader's name
+  const getUploaderName = (userid) => {
+    const uploader = user?.find((u) => u.uid === userid);
+    return uploader ? uploader.name : "AllMart Store";
+  };
 
   return (
     <section
@@ -38,7 +53,7 @@ function ProductCard() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3">
-            Our Latest Collection
+            MarketPlace Collection
           </h1>
           <div className="h-1 w-20 mx-auto bg-pink-600 rounded"></div>
           <p
@@ -46,48 +61,48 @@ function ProductCard() {
               mode === "dark" ? "text-gray-300" : "text-gray-600"
             }`}
           >
-            Discover the newest arrivals and best-selling product made just for you.
+            Discover the newest arrivals and best-selling products made just for
+            you.
           </p>
         </div>
 
         {/* Product Grid */}
-        {filteredProducts.length === 0 ? (
+        {filteredProducts?.length === 0 ? (
           <div className="text-center py-20">
             <p
               className={`text-lg sm:text-xl font-medium ${
                 mode === "dark" ? "text-gray-400" : "text-gray-600"
               }`}
             >
-              🚫 No products available on the marketplace yet. <br /> Check back soon!
+              🚫 No products available on the marketplace yet. <br /> Check back
+              soon!
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {filteredProducts.map((item, index) => {
-              const { title, price, imageUrl, id } = item;
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {filteredProducts?.map((item, index) => {
+              const { title, price, imageUrl, id, userid } = item;
+
               return (
                 <div
-                  key={index}
-                  className={`rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300 ${
+                  key={id || index}
+                  className={`relative rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transform transition-all duration-300 overflow-hidden ${
                     mode === "dark"
                       ? "bg-gray-800 border border-gray-700"
                       : "bg-white border border-gray-200"
                   }`}
                 >
-                  {/* Image Section */}
+                  {/* Image */}
                   <div
-                    onClick={() => (window.location.href = `/productinfo/${id}`)}
-                    className="relative cursor-pointer overflow-hidden rounded-t-2xl flex justify-center items-center"
+                    onClick={() =>
+                      (window.location.href = `/productinfo/${id}`)
+                    }
+                    className="relative overflow-hidden rounded-t-2xl flex justify-center items-center cursor-pointer"
                   >
                     <img
                       src={imageUrl}
                       alt={title}
-                      className="object-cover rounded-t-2xl transform hover:scale-110 transition-transform duration-500 ease-in-out"
-                      style={{
-                        width: "100%",
-                        height: "270px",
-                        maxWidth: "100%",
-                      }}
+                      className="w-full h-32 sm:h-40 md:h-44 lg:h-48 object-cover rounded-t-2xl hover:scale-110 transition-transform duration-500"
                       onError={(e) => {
                         e.target.src =
                           "https://via.placeholder.com/300x300.png?text=Image+Unavailable";
@@ -99,28 +114,30 @@ function ProductCard() {
                   </div>
 
                   {/* Product Info */}
-                  <div className="p-5 sm:p-6 flex flex-col justify-between h-44">
+                  <div className="p-3 sm:p-4 flex flex-col justify-between">
                     <div>
                       <h2
                         className={`text-xs uppercase font-semibold tracking-widest ${
-                          mode === "dark" ? "text-pink-400" : "text-pink-600"
+                          mode === "dark"
+                            ? "text-pink-400"
+                            : "text-pink-600"
                         }`}
                       >
-                        Shally_Store
+                        {getUploaderName(userid)}
                       </h2>
-                      <h1 className="text-lg font-semibold mt-1 truncate">
+                      <h1 className="text-sm sm:text-lg font-bold truncate mt-1">
                         {title}
                       </h1>
-                      <p className="text-base font-bold mt-2">
+                      <p className="text-sm sm:text-base font-medium mt-2">
                         ₦{price.toLocaleString()}
                       </p>
                     </div>
 
-                    {user && (
+                    {currentUser && (
                       <button
                         type="button"
                         onClick={() => addCart(item)}
-                        className="w-full mt-3 py-2 text-sm sm:text-base font-medium text-white bg-pink-600 hover:bg-pink-700 rounded-lg transition-all"
+                        className="w-full mt-3 py-2 text-sm sm:text-base font-semibold text-white bg-pink-600 hover:bg-pink-700 rounded-lg transition-all duration-300"
                       >
                         Add to Cart
                       </button>

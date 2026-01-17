@@ -7,14 +7,21 @@ import { doc, getDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { addToCart } from "../../redux/cartSlice";
 import { fireDB } from "../../fireabase/FirebaseConfig";
+import { color } from "framer-motion";
 
 function ProductInfo() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const currentUser = JSON.parse(localStorage.getItem("user"));
   const context = useContext(myContext);
-  const { setLoading, mode } = context;
+  const { setLoading, mode, user } = context; // ✅ Added user from context
 
   const [products, setProducts] = useState("");
   const params = useParams();
+
+  // ✅ Get uploader's name
+  const getUploaderName = (userid) => {
+    const uploader = user?.find((u) => u.uid === userid);
+    return uploader ? uploader.name : "AllMart Store";
+  };
 
   const getProductData = async () => {
     setLoading(true);
@@ -83,12 +90,13 @@ function ProductInfo() {
 
               {/* 🛍️ Product Info */}
               <div className="w-full lg:w-1/2">
+                {/* ✅ Replaced AllMart with uploader's name */}
                 <h2
                   className={`text-xs uppercase tracking-widest font-semibold ${
                     mode === "dark" ? "text-pink-400" : "text-pink-600"
                   }`}
                 >
-                  Shally_Store
+                  {getUploaderName(products.userid)}
                 </h2>
                 <h1 className="text-3xl sm:text-4xl font-bold mb-3 leading-tight">
                   {products.title}
@@ -140,7 +148,7 @@ function ProductInfo() {
                   <span className="text-2xl font-bold text-pink-600">
                     ₦{products.price?.toLocaleString()}
                   </span>
-                  {user && (
+                  {currentUser && (
                     <button
                       onClick={() => addCart(products)}
                       className="ml-auto text-white bg-pink-600 hover:bg-pink-700 border-0 py-2 px-6 rounded-lg transition-all font-medium"
@@ -161,10 +169,12 @@ function ProductInfo() {
                     </svg>
                   </button>
                 </div>
+                  <hr style={{marginTop: "30px" }} />
               </div>
             </div>
           )}
         </div>
+
         {/* 🚚 Product Availability Note */}
         {products && (
           <div
@@ -261,6 +271,9 @@ function ProductInfo() {
                 <p className="text-sm font-medium">Secure Payment</p>
               </div>
             </div>
+
+            {/* Features Section */}
+            {/* ...same as before... */}
           </div>
         )}
       </section>

@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import shallyLogo from "../../assets/logo.png";
+import allMartLogo from "../../assets/logo.png";
 
 function TransactionStatus() {
   const location = useLocation();
@@ -16,12 +16,12 @@ function TransactionStatus() {
     // Logo
     const imgWidth = 40;
     const imgHeight = 40;
-    doc.addImage(shallyLogo, "PNG", 20, 10, imgWidth, imgHeight);
+    doc.addImage(allMartLogo, "PNG", 20, 10, imgWidth, imgHeight);
 
     // Company Name
     doc.setFontSize(20);
     doc.setTextColor("#1d4ed8"); // Blue
-    doc.text("Shally Store", 105, 25, { align: "center" });
+    doc.text("AllMart Store", 105, 25, { align: "center" });
 
     // Receipt Title
     doc.setFontSize(16);
@@ -92,7 +92,7 @@ function TransactionStatus() {
     // Footer
     doc.setFontSize(12);
     doc.setTextColor("#6b7280");
-    doc.text("Thank you for shopping with Shally Store!", 105, finalY + 15, {
+    doc.text("Thank you for shopping in AllMart Store!", 105, finalY + 15, {
       align: "center",
     });
 
