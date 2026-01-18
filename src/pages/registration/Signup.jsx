@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import myContext from '../../context/data/myContext';
-import { toast } from 'react-toastify';
+import toast, { Toaster } from 'react-hot-toast';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, fireDB } from '../../fireabase/FirebaseConfig';
 import { Timestamp, doc, setDoc } from 'firebase/firestore';
@@ -69,7 +69,7 @@ function Signup() {
       {loading && <Loader />}
       <div className='bg-gray-800 w-full max-w-md p-8 sm:p-10 rounded-xl shadow-lg'>
         <h1 className='text-center text-white text-2xl sm:text-3xl mb-6 font-bold'>Signup</h1>
-
+        <Toaster />
         <input
           type="text"
           value={name}
