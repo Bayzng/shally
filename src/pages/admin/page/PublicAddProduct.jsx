@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import Layout from "../../../components/layout/Layout";
 import myContext from "../../../context/data/myContext";
-import { toast } from "react-toastify";
+import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from "react-router-dom";
 
 function PublicAddProduct() {
@@ -97,7 +97,7 @@ function PublicAddProduct() {
 
     try {
       await addProduct(newProduct);
-      toast.success("✅ Product added to marketplace");
+      // toast.success("✅ Product added to marketplace");
 
       // Reset form
       setForm({
@@ -126,6 +126,7 @@ function PublicAddProduct() {
             : "bg-gray-100 text-gray-800"
         }`}
       >
+        <Toaster />
         <form
           onSubmit={handleSubmit}
           className={`w-full max-w-lg rounded-2xl p-8 shadow-2xl border ${

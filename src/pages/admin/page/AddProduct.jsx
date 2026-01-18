@@ -1,6 +1,5 @@
 import { useContext, useState } from "react";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import toast, { Toaster } from 'react-hot-toast';
 import myContext from "../../../context/data/myContext";
 
 function AddProduct() {
@@ -88,6 +87,7 @@ function AddProduct() {
         <h1 className="text-center text-yellow-400 text-3xl mb-6 font-extrabold tracking-wide">
           Add Product
         </h1>
+        <Toaster />
 
         <div className="space-y-5">
           {/* Product Title */}

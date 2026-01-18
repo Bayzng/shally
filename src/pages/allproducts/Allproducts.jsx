@@ -4,7 +4,7 @@ import Layout from "../../components/layout/Layout";
 import myContext from "../../context/data/myContext";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../redux/cartSlice";
-import { toast } from "react-toastify";
+import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from "react-router-dom";
 
 function Allproducts() {
@@ -62,6 +62,7 @@ function Allproducts() {
           mode === "dark" ? "bg-gray-900 text-white" : "text-gray-900"
         }`}
       >
+        <Toaster />
         <div className="container px-4 sm:px-6 lg:px-10 py-12 mx-auto">
           {/* Header */}
           <div className="text-center mb-10">

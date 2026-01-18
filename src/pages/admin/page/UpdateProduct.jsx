@@ -1,7 +1,6 @@
 import { useContext, useState } from "react";
 import myContext from "../../../context/data/myContext";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import toast, { Toaster } from 'react-hot-toast';
 
 function UpdateProduct() {
   const context = useContext(myContext);
@@ -82,6 +81,7 @@ function UpdateProduct() {
         <h1 className="text-center text-yellow-400 text-2xl mb-6 font-extrabold tracking-wide">
           Update Product
         </h1>
+         <Toaster />
 
         <div className="space-y-4">
           {/* Product Title */}

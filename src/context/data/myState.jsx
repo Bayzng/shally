@@ -12,7 +12,7 @@ import {
   query,
   setDoc,
 } from "firebase/firestore";
-import { toast } from "react-toastify";
+import toast, { Toaster } from 'react-hot-toast';
 import { fireDB } from "../../fireabase/FirebaseConfig";
 
 function MyState({ children }) {
@@ -223,6 +223,7 @@ function MyState({ children }) {
         setFilterPrice,
       }}
     >
+      <Toaster />
       {children}
     </MyContext.Provider>
   );

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import myContext from "../../context/data/myContext";
 import Layout from "../../components/layout/Layout";
 import { deleteFromCart, clearCart } from "../../redux/cartSlice";
-import { toast } from "react-toastify";
+import toast, { Toaster } from 'react-hot-toast';
 import { addDoc, collection } from "firebase/firestore";
 import { fireDB } from "../../fireabase/FirebaseConfig";
 import { PaystackButton } from "react-paystack";
@@ -183,6 +183,7 @@ if (!user?.uid || !user?.email) {
           color: mode === "dark" ? "white" : "",
         }}
       >
+         <Toaster />
         <h1 className="mb-6 text-center text-3xl font-bold tracking-wide">
           🛒 Your Shopping Cart
         </h1>

@@ -69,8 +69,8 @@ function UserDashboard() {
     );
   }
 
-  const accountBalance = 125000;
-  const escrowBalance = 45000;
+  const accountBalance = 0.00;
+  const escrowBalance = 0.00;
 
   return (
     <Layout>
@@ -83,7 +83,7 @@ function UserDashboard() {
             Welcome back, <span className="text-pink-500">{currentUser.name}</span>!
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2 text-lg">
-            Manage your wallet, escrow payments, orders & more — all in one place.
+            AllMart uses escrow payments, ensuring secure transactions for buyers and sellers.
           </p>
         </motion.div>
 
@@ -99,7 +99,7 @@ function UserDashboard() {
             <div className="space-y-2 text-sm">
               <p><span className="font-medium">Name:</span> {currentUser.name}</p>
               <p><span className="font-medium">Email:</span> {currentUser.email}</p>
-              <p><span className="font-medium">Account Type:</span> Buyer</p>
+              <p><span className="font-medium">Account Type:</span> Creator</p>
             </div>
           </motion.div>
 

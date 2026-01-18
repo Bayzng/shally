@@ -2,7 +2,7 @@ import { useContext, useEffect } from "react";
 import myContext from "../../context/data/myContext";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../redux/cartSlice";
-import { toast } from "react-toastify";
+import toast, { Toaster } from 'react-hot-toast';
 
 function ProductCard() {
   const currentUser = localStorage.getItem("user")
@@ -49,6 +49,7 @@ function ProductCard() {
         mode === "dark" ? "bg-gray-900 text-white" : "text-gray-900"
       }`}
     >
+      <Toaster />
       <div className="container mx-auto px-4 sm:px-6 py-10 md:py-16">
         {/* Header */}
         <div className="text-center mb-12">

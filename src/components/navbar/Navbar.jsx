@@ -9,13 +9,13 @@ import { RiAdminFill } from "react-icons/ri";
 import { RxCross2 } from "react-icons/rx";
 import { MdShoppingCartCheckout } from "react-icons/md";
 import { FaShoppingCart } from "react-icons/fa";
-import { ToastContainer, toast } from "react-toastify";
+import toast, { Toaster } from 'react-hot-toast';
 import { IoMdLogOut } from "react-icons/io";
 import { IoMenu } from "react-icons/io5";
 import { SiCoinmarketcap } from "react-icons/si";
 import { FaPlusCircle } from "react-icons/fa";
 
-import "react-toastify/dist/ReactToastify.css";
+
 import logo from "../../assets/logo.png";
 import myContext from "../../context/data/myContext";
 
@@ -24,6 +24,8 @@ function Navbar() {
   const [open, setOpen] = useState(false);
   const user = JSON.parse(localStorage.getItem("user"));
   const cartItems = useSelector((state) => state.cart);
+
+
   const isDark = mode === "dark";
 
   const logout = () => {
@@ -36,7 +38,7 @@ function Navbar() {
   const handleCartClick = (e) => {
     if (cartItems.length === 0) {
       e.preventDefault();
-      toast.info("🛒 Your cart is empty!", {
+      toast.error("🛒 Your cart is empty!", {
         position: "top-center",
         autoClose: 2000,
         theme: isDark ? "dark" : "light",
@@ -53,7 +55,7 @@ function Navbar() {
         isDark ? "bg-gray-900" : "bg-white"
       } shadow-md`}
     >
-      <ToastContainer />
+     <Toaster />
 
       {/* ================= MOBILE MENU ================= */}
       <Transition.Root show={open} as={Fragment}>
@@ -205,7 +207,7 @@ function Navbar() {
           }`}
         >
           <p className="absolute whitespace-nowrap flex items-center h-10 text-sm font-medium animate-marquee px-4">
-            🚚 Get free delivery on orders over ₦50,000
+            🚧 AllMart is currently in development & test mode. Some features are not available yet 🚀
           </p>
         </div>
 
