@@ -4,10 +4,10 @@ import myContext from "../../context/data/myContext";
 import { useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { doc, getDoc } from "firebase/firestore";
-import { toast } from "react-toastify";
+import toast, { Toaster } from 'react-hot-toast';
 import { addToCart } from "../../redux/cartSlice";
 import { fireDB } from "../../fireabase/FirebaseConfig";
-import { color } from "framer-motion";
+
 
 function ProductInfo() {
   const currentUser = JSON.parse(localStorage.getItem("user"));
@@ -60,6 +60,7 @@ function ProductInfo() {
             : "bg-gray-50 text-gray-800"
         }`}
       >
+        <Toaster />
         <div className="container mx-auto px-4 sm:px-6 py-10">
           {products && (
             <div className="flex flex-col lg:flex-row items-center gap-10">
