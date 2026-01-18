@@ -9,16 +9,16 @@ function OrderHistory() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const user = JSON.parse(localStorage.getItem("user"));
   const today = new Date();
+  const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        if (!user?.user?.uid) return;
+        if (!user?.uid) return; // ✅ fixed
         const q = query(
           collection(fireDB, "order"),
-          where("userid", "==", user.user.uid)
+          where("userid", "==", user.uid), // ✅ fixed
         );
         const querySnapshot = await getDocs(q);
         const userOrders = querySnapshot.docs.map((doc) => ({
@@ -102,7 +102,9 @@ function OrderHistory() {
     <Layout>
       <div
         className={`min-h-screen py-10 px-4 sm:px-8 md:px-12 transition-colors duration-300 ${
-          mode === "dark" ? "bg-[#181a1b] text-white" : "bg-gray-50 text-gray-800"
+          mode === "dark"
+            ? "bg-[#181a1b] text-white"
+            : "bg-gray-50 text-gray-800"
         }`}
       >
         <h1 className="text-3xl md:text-4xl font-extrabold text-center mb-10 tracking-wide">
@@ -232,7 +234,7 @@ function OrderHistory() {
                       {order.cartItems
                         ?.reduce(
                           (acc, item) => acc + parseFloat(item.price || 0),
-                          0
+                          0,
                         )
                         .toLocaleString()}
                     </p>

@@ -26,9 +26,11 @@ function Cart() {
 
   const [totalAmount, setTotalAmount] = useState(0);
   useEffect(() => {
-    setTotalAmount(
-      cartItems.reduce((total, item) => total + parseInt(item.price || 0), 0)
+    const total = cartItems.reduce(
+      (sum, item) => sum + Number(String(item.price).replace(/,/g, "") || 0),
+      0
     );
+    setTotalAmount(total);
   }, [cartItems]);
 
   const shipping = 100;
@@ -104,11 +106,14 @@ function Cart() {
       return toast.error("Enter delivery address");
 
     const user = JSON.parse(localStorage.getItem("user"));
-    if (!user) return toast.error("Please login to continue");
+if (!user?.uid || !user?.email) {
+  return toast.error("Please login to continue");
+}
+
 
     const publicKey = "pk_test_74f3976b0f222f4ca7e91a391c80002d962ddcf1";
     const amountInKobo = grandTotal * 100;
-    const email = user?.user?.email;
+    const email = user?.email;
 
     const componentProps = {
       email,
@@ -132,13 +137,12 @@ function Cart() {
         };
 
         try {
-          const orderRef = collection(fireDB, "order");
-          await addDoc(orderRef, {
+          await addDoc(collection(fireDB, "order"), {
             cartItems,
             addressInfo,
             date: new Date().toLocaleString(),
             email,
-            userid: user?.user?.uid,
+            userid: user?.uid,
             paymentId: reference.reference,
             status: "success",
           });
@@ -156,7 +160,7 @@ function Cart() {
             },
           });
         } catch (error) {
-          console.error("Error saving order:", error);
+          console.error(error);
           navigate("/transaction-status", {
             state: { status: "failed", reference: reference.reference },
           });
@@ -183,6 +187,7 @@ function Cart() {
           🛒 Your Shopping Cart
         </h1>
         <div className="mx-auto max-w-6xl px-6 md:flex md:space-x-8">
+          {/* Cart Items */}
           <div className="rounded-lg md:w-2/3">
             {cartItems.length > 0 ? (
               cartItems.map((item, index) => (
@@ -223,6 +228,7 @@ function Cart() {
             )}
           </div>
 
+          {/* Order Summary */}
           <div
             style={{
               backgroundColor: mode === "dark" ? "#181a1b" : "#f8fafc",
@@ -230,46 +236,40 @@ function Cart() {
             }}
             className="mt-6 rounded-2xl border bg-white p-6 shadow-md md:mt-0 md:w-1/3 flex flex-col justify-between md:h-auto"
           >
-            <div>
-              <h2 className="text-xl font-semibold mb-4 text-center">
-                🧾 Order Summary
-              </h2>
-              <div className="flex justify-between mb-3">
-                <p>Subtotal</p>
-                <p className="font-medium">#{totalAmount}</p>
-              </div>
-              <div className="flex justify-between mb-3">
-                <p>Shipping</p>
-                <p className="font-medium">#{shipping}</p>
-              </div>
-              <hr className="my-3" />
-              <div className="flex justify-between text-lg font-bold">
-                <p>Total</p>
-                <p>#{grandTotal}</p>
-              </div>
-              <button
-                onClick={() => setShowModal(true)}
-                className="mt-6 w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-lg"
-              >
-                Confirm Delivery Details
-              </button>
+            <h2 className="text-xl font-semibold mb-4 text-center">
+              🧾 Order Summary
+            </h2>
+            <div className="flex justify-between mb-3">
+              <p>Subtotal</p>
+              <p className="font-medium">#{totalAmount}</p>
             </div>
+            <div className="flex justify-between mb-3">
+              <p>Shipping</p>
+              <p className="font-medium">#{shipping}</p>
+            </div>
+            <hr className="my-3" />
+            <div className="flex justify-between text-lg font-bold">
+              <p>Total</p>
+              <p>#{grandTotal}</p>
+            </div>
+            <button
+              onClick={() => setShowModal(true)}
+              className="mt-6 w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-lg"
+            >
+              Confirm Delivery Details
+            </button>
           </div>
         </div>
 
         {/* Delivery Modal */}
         {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 overflow-y-auto overscroll-contain touch-auto">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 overflow-y-auto">
             <div
               className={`rounded-2xl p-6 w-[90%] sm:w-[500px] shadow-2xl relative overflow-y-auto max-h-[90vh] ${
                 mode === "dark"
                   ? "bg-gray-900 text-white border border-gray-700"
                   : "bg-white text-gray-900"
               }`}
-              style={{
-                scrollbarWidth: "thin",
-                scrollbarColor: mode === "dark" ? "#555 #222" : "#999 #f1f1f1",
-              }}
             >
               <button
                 onClick={() => {
@@ -280,12 +280,12 @@ function Cart() {
               >
                 ✕
               </button>
+
               <h2 className="text-2xl font-bold mb-4 text-center">
                 🚚 Delivery Information
               </h2>
 
               <div className="space-y-3">
-                {/* Name */}
                 <input
                   type="text"
                   placeholder="Full Name"
@@ -297,8 +297,6 @@ function Cart() {
                     color: mode === "dark" ? "white" : "",
                   }}
                 />
-
-                {/* Phone */}
                 <input
                   type="text"
                   placeholder="Phone Number"
@@ -310,8 +308,6 @@ function Cart() {
                     color: mode === "dark" ? "white" : "",
                   }}
                 />
-
-                {/* Delivery Option */}
                 <select
                   value={deliveryOption}
                   onChange={(e) => setDeliveryOption(e.target.value)}
@@ -325,7 +321,6 @@ function Cart() {
                   <option value="pickup">Pickup Point</option>
                 </select>
 
-                {/* Address or Pickup */}
                 {deliveryOption === "home" ? (
                   <input
                     type="text"
@@ -340,18 +335,14 @@ function Cart() {
                   />
                 ) : (
                   <>
-                    {/* Select State */}
+                    {/* Pickup State */}
                     <div
-                      className={`w-full rounded-xl border ${
+                      className={`w-full rounded-xl border p-3 ${
                         mode === "dark"
                           ? "bg-[#181a1b] text-white border-gray-600"
                           : "bg-gray-50 text-gray-900 border-gray-300"
-                      } p-3`}
-                      style={{
-                        maxHeight: "250px",
-                        overflowY: "auto",
-                        WebkitOverflowScrolling: "touch", // ✅ allows scroll on iPhones
-                      }}
+                      }`}
+                      style={{ maxHeight: "250px", overflowY: "auto" }}
                     >
                       <p className="font-semibold mb-2">Select State</p>
                       <ul className="space-y-2">
@@ -373,12 +364,12 @@ function Cart() {
                       </ul>
                     </div>
 
-                    {/* Select Pickup Point */}
+                    {/* Pickup Points */}
                     {selectedState && (
                       <select
                         value={pickupLocation}
                         onChange={(e) => setPickupLocation(e.target.value)}
-                        className="w-full p-3 rounded-lg border"
+                        className="w-full p-3 rounded-lg border mt-2"
                         style={{
                           backgroundColor:
                             mode === "dark" ? "#181a1b" : "#f8fafc",
@@ -394,27 +385,24 @@ function Cart() {
                       </select>
                     )}
 
-                    {/* Alternative Address Option */}
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Can’t find your pickup point?{" "}
-                        <button
-                          onClick={() => setShowAltAddress(!showAltAddress)}
-                          className="text-blue-600 underline"
-                        >
-                          Click here
-                        </button>
-                      </p>
-                    </div>
+                    {/* Alternative Pickup Address */}
+                    <p className="text-sm mt-2">
+                      Can’t find your pickup point?{" "}
+                      <button
+                        className="text-blue-600 underline"
+                        onClick={() => setShowAltAddress(!showAltAddress)}
+                      >
+                        Click here
+                      </button>
+                    </p>
 
-                    {/* Alternative Pickup Address Field */}
                     {showAltAddress && (
                       <input
                         type="text"
-                        placeholder="Enter your alternative pickup address"
+                        placeholder="Alternative Pickup Address"
                         value={altPickupAddress}
                         onChange={(e) => setAltPickupAddress(e.target.value)}
-                        className="w-full p-3 mt-2 rounded-lg border"
+                        className="w-full p-3 rounded-lg border mt-2"
                         style={{
                           backgroundColor:
                             mode === "dark" ? "#181a1b" : "#f8fafc",
@@ -425,20 +413,18 @@ function Cart() {
                   </>
                 )}
 
-                {/* Postal Code */}
                 <input
                   type="text"
                   placeholder="Postal Code"
                   value={pincode}
                   onChange={(e) => setPincode(e.target.value)}
-                  className="w-full p-3 rounded-lg border"
+                  className="w-full p-3 rounded-lg border mt-2"
                   style={{
                     backgroundColor: mode === "dark" ? "#181a1b" : "#f8fafc",
                     color: mode === "dark" ? "white" : "",
                   }}
                 />
 
-                {/* Paystack or Continue */}
                 {!paystackProps ? (
                   <button
                     onClick={buyNow}
@@ -447,19 +433,16 @@ function Cart() {
                     Continue
                   </button>
                 ) : (
-                  <div className="w-full mt-4">
-                    <PaystackButton
-                      {...paystackProps}
-                      className="w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition-all duration-300"
-                    />
-                  </div>
+                  <PaystackButton
+                    {...paystackProps}
+                    className="w-full mt-4 bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition-all duration-300"
+                  />
                 )}
               </div>
             </div>
           </div>
         )}
       </div>
-      {/* helo */}
     </Layout>
   );
 }

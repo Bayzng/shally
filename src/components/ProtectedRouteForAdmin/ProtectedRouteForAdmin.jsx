@@ -1,4 +1,3 @@
-// src/components/ProtectedRouteForAdmin.jsx
 import { Navigate } from "react-router-dom";
 
 const ProtectedRouteForAdmin = ({ children }) => {
@@ -8,7 +7,8 @@ const ProtectedRouteForAdmin = ({ children }) => {
 
   const admin = JSON.parse(storedUser);
 
-  if (admin?.user?.email === "admin@allmart.com") return children;
+  // ✅ Correct check
+  if (admin?.email === "admin@allmart.com") return children;
 
   return <Navigate to="/login" replace />;
 };

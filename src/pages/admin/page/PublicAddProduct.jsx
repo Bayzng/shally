@@ -82,7 +82,7 @@ function PublicAddProduct() {
 
     const user = JSON.parse(localStorage.getItem("user"));
 
-    if (!user?.user?.uid) {
+    if (!user?.uid) {
       toast.error("Please login to upload products");
       return;
     }
@@ -92,7 +92,7 @@ function PublicAddProduct() {
       price: Number(price),
       date: new Date().toISOString(),
       id: Date.now(),
-      userid: user.user.uid,
+      userid: user.uid, // ✅ fixed
     };
 
     try {
@@ -100,7 +100,13 @@ function PublicAddProduct() {
       toast.success("✅ Product added to marketplace");
 
       // Reset form
-      setForm({ title: "", price: "", imageUrl: "", category: "", description: "" });
+      setForm({
+        title: "",
+        price: "",
+        imageUrl: "",
+        category: "",
+        description: "",
+      });
       setPreview(null);
 
       // Redirect to user's products

@@ -1,119 +1,115 @@
 import { useContext, useState } from 'react';
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 import myContext from '../../context/data/myContext';
 import { toast } from 'react-toastify';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, fireDB } from '../../fireabase/FirebaseConfig';
-import { Timestamp, addDoc, collection } from 'firebase/firestore';
+import { Timestamp, doc, setDoc } from 'firebase/firestore';
 import Loader from '../../components/loader/Loader';
 
 function Signup() {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-    const context = useContext(myContext);
-    const { loading, setLoading } = context;
+  const context = useContext(myContext);
+  const { loading, setLoading } = context;
 
-    const signup = async () => {
-        setLoading(true);
+  const signup = async () => {
+    setLoading(true);
 
-        if (name === "" || email === "" || password === "") {
-            toast.error("All fields are required");
-            setLoading(false);
-            return;
-        }
+    if (!name || !email || !password) {
+      toast.error("All fields are required");
+      setLoading(false);
+      return;
+    }
 
-        if (password.length < 8) {
-            toast.error("Password must be at least 8 characters long");
-            setLoading(false);
-            return;
-        }
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters long");
+      setLoading(false);
+      return;
+    }
 
-        try {
-            const users = await createUserWithEmailAndPassword(auth, email, password);
+    try {
+      // Create user in Firebase Auth
+      const result = await createUserWithEmailAndPassword(auth, email, password);
 
-            const user = {
-                name: name,
-                uid: users.user.uid,
-                email: users.user.email,
-                time: Timestamp.now()
-            };
+      // Save user info in Firestore
+      await setDoc(doc(fireDB, "users", result.user.uid), {
+        name,
+        email: result.user.email,
+        uid: result.user.uid,
+        createdAt: Timestamp.now()
+      });
 
-            const userRef = collection(fireDB, "users");
-            await addDoc(userRef, user);
+      // Save user info locally for dashboard
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          uid: result.user.uid,
+          name,
+          email: result.user.email
+        })
+      );
 
-            toast.success("Signup Successfully");
-            setName("");
-            setEmail("");
-            setPassword("");
-        } catch (error) {
-            console.log(error);
-            toast.error("Signup failed. Please try again.");
-        } finally {
-            setLoading(false);
-        }
-    };
+      toast.success("Signup Successful");
+      setName("");
+      setEmail("");
+      setPassword("");
+    } catch (error) {
+      console.log(error);
+      toast.error("Signup failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return (
-        <div className='flex justify-center items-center h-screen'>
-            {loading && <Loader />}
-            <div className='bg-gray-800 px-10 py-10 rounded-xl'>
-                <div>
-                    <h1 className='text-center text-white text-xl mb-4 font-bold'>Signup</h1>
-                </div>
-                <div>
-                    <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        name='name'
-                        className='bg-gray-600 mb-4 px-2 py-2 w-full lg:w-[20em] rounded-lg text-white placeholder:text-gray-200 outline-none'
-                        placeholder='Name'
-                    />
-                </div>
+  return (
+    <div className='flex justify-center items-center min-h-screen bg-gray-900 px-4 sm:px-6'>
+      {loading && <Loader />}
+      <div className='bg-gray-800 w-full max-w-md p-8 sm:p-10 rounded-xl shadow-lg'>
+        <h1 className='text-center text-white text-2xl sm:text-3xl mb-6 font-bold'>Signup</h1>
 
-                <div>
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        name='email'
-                        className='bg-gray-600 mb-4 px-2 py-2 w-full lg:w-[20em] rounded-lg text-white placeholder:text-gray-200 outline-none'
-                        placeholder='Email'
-                    />
-                </div>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder='Name'
+          className='bg-gray-700 mb-4 px-4 py-3 w-full rounded-lg text-white placeholder:text-gray-300 outline-none focus:ring-2 focus:ring-red-500 transition'
+        />
 
-                <div>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        name='password'
-                        className='bg-gray-600 mb-4 px-2 py-2 w-full lg:w-[20em] rounded-lg text-white placeholder:text-gray-200 outline-none'
-                        placeholder='Password (min. 8 characters)'
-                    />
-                </div>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder='Email'
+          className='bg-gray-700 mb-4 px-4 py-3 w-full rounded-lg text-white placeholder:text-gray-300 outline-none focus:ring-2 focus:ring-red-500 transition'
+        />
 
-                <div className='flex justify-center mb-3'>
-                    <button
-                        onClick={signup}
-                        className='bg-red-500 w-full text-white font-bold px-2 py-2 rounded-lg'>
-                        Signup
-                    </button>
-                </div>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder='Password (min. 8 characters)'
+          className='bg-gray-700 mb-4 px-4 py-3 w-full rounded-lg text-white placeholder:text-gray-300 outline-none focus:ring-2 focus:ring-red-500 transition'
+        />
 
-                <div>
-                    <h2 className='text-white'>
-                        Have an account?{' '}
-                        <Link className='text-red-500 font-bold' to={'/login'}>
-                            Login
-                        </Link>
-                    </h2>
-                </div>
-            </div>
-        </div>
-    );
+        <button
+          onClick={signup}
+          className='w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-lg transition mb-3'
+        >
+          Signup
+        </button>
+
+        <p className='text-center text-gray-300 mt-4 text-sm sm:text-base'>
+          Already have an account?{' '}
+          <Link to='/login' className='text-red-500 font-bold hover:underline'>
+            Login
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
 }
 
 export default Signup;

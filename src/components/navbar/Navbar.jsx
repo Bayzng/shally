@@ -5,12 +5,19 @@ import { useSelector } from "react-redux";
 import { FiSun } from "react-icons/fi";
 import { BsFillCloudSunFill } from "react-icons/bs";
 import { FaClipboardList } from "react-icons/fa";
+import { RiAdminFill } from "react-icons/ri";
 import { RxCross2 } from "react-icons/rx";
+import { MdShoppingCartCheckout } from "react-icons/md";
+import { FaShoppingCart } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
+import { IoMdLogOut } from "react-icons/io";
+import { IoMenu } from "react-icons/io5";
+import { SiCoinmarketcap } from "react-icons/si";
+import { FaPlusCircle } from "react-icons/fa";
+
 import "react-toastify/dist/ReactToastify.css";
 import logo from "../../assets/logo.png";
 import myContext from "../../context/data/myContext";
-import { h1 } from "framer-motion/client";
 
 function Navbar() {
   const { mode, toggleMode } = useContext(myContext);
@@ -20,9 +27,11 @@ function Navbar() {
   const isDark = mode === "dark";
 
   const logout = () => {
-    localStorage.removeItem("user");
-    window.location.href = "/";
-  };
+  localStorage.removeItem("user");          // remove user info
+  sessionStorage.removeItem("welcomeModalShown"); // reset modal flag
+  window.location.href = "/";
+};
+
 
   const handleCartClick = (e) => {
     if (cartItems.length === 0) {
@@ -35,7 +44,8 @@ function Navbar() {
     }
   };
 
-  const isAdmin = user?.user?.email === "admin@allmart.com";
+  const isAdmin = user?.email === "admin@allmart.com"; // ✅ correct
+
 
   return (
     <div
@@ -89,7 +99,7 @@ function Navbar() {
 
                 {/* Navigation */}
                 <div className="px-4 py-6 space-y-5 text-sm mt-10">
-                  <h1 className="flex items-center gap-2 font-medium hover:text-pink-500 transition">
+                  <h1  className="flex items-center gap-2 font-medium hover:text-pink-500 transition">
                     AllMart
                   </h1>
                   <hr className="border-gray-200/30" />
@@ -113,8 +123,17 @@ function Navbar() {
                       </p>
                     </div>
                   )}
-
                   <hr className="border-gray-200/30" />
+                  {user && !isAdmin && (
+                    <Link
+                      to="/user-dashboard"
+                      className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
+                    >
+                      <RiAdminFill size={22} /> My DashBoard
+                    </Link>
+                  )}
+
+                  {/* <hr className="border-gray-200/30" /> */}
 
                   {user && !isAdmin && (
                     <>
@@ -122,21 +141,21 @@ function Navbar() {
                         to="/order-history"
                         className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
                       >
-                        📦 My Orders
+                        <MdShoppingCartCheckout size={22}/> My Orders
                       </Link>
 
                       <Link
                         to="/creator"
                         className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
                       >
-                        ➕ Add Product
+                        <FaPlusCircle size={22}/> Add Product
                       </Link>
 
                       <Link
                         to="/my-products"
                         className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
                       >
-                        🧾 My Products
+                        <SiCoinmarketcap size={22}/> My Products
                       </Link>
 
                       <hr className="border-gray-200/30" />
@@ -161,7 +180,7 @@ function Navbar() {
                       onClick={logout}
                       className="flex items-center gap-2 font-semibold text-red-500 hover:text-red-600 transition w-full text-left"
                     >
-                      🚪 Logout
+                      <IoMdLogOut size={25}/> Logout
                     </button>
                   ) : (
                     <Link
@@ -204,7 +223,7 @@ function Navbar() {
                 }`}
                 onClick={() => setOpen(true)}
               >
-                ☰
+                <IoMenu size={20} />
               </button>
 
               <img src={logo} alt="Allmart Logo" className="w-10 h-10" />
@@ -235,7 +254,7 @@ function Navbar() {
                   onClick={handleCartClick}
                   className="relative"
                 >
-                  🛒
+                  <FaShoppingCart size={20}/>
                   {cartItems.length > 0 && (
                     <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
                       {cartItems.length}
@@ -291,7 +310,7 @@ function Navbar() {
                   onClick={handleCartClick}
                   className="flex items-center space-x-1"
                 >
-                  🛒 <span>{cartItems.length}</span>
+                  <FaShoppingCart /> <span>{cartItems.length}</span>
                 </Link>
               )}
             </div>

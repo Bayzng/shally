@@ -27,6 +27,7 @@ import MyUploadedProducts from "./components/MyUploadedProducts/MyUploadedProduc
 import ProtectedRouteForAdmin from "./components/ProtectedRouteForAdmin/ProtectedRouteForAdmin";
 import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute";
 import ProtectedRouteUser from "./components/ProtectedRouteUser/ProtectedRouteUser";
+import UserDashboard from "./components/UserDashboard/UserDashboard";
 
 function App() {
   return (
@@ -114,6 +115,7 @@ function App() {
             }
           />
           <Route path="/creator" element={<Creator />} />
+          <Route path="/user-dashboard" element={<UserDashboard />} />
 
           <Route path="/*" element={<NoPage />} />
         </Routes>

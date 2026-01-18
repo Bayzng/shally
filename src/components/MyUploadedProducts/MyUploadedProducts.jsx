@@ -9,9 +9,8 @@ function MyUploadedProducts() {
   const navigate = useNavigate();
 
   // Filter only current user's products
-  const myProducts = product.filter(
-    (item) => item.userid === user?.user?.uid
-  );
+  // Filter only current user's products
+const myProducts = product.filter((item) => item.userid === user?.uid);
 
   const handleEdit = (item) => {
     editHandle(item);
