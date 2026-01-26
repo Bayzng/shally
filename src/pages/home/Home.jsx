@@ -5,6 +5,7 @@ import Layout from "../../components/layout/Layout";
 import HeroSection from "../../components/heroSection/HeroSection";
 import Filter from "../../components/filter/Filter";
 import ProductCard from "../../components/productCard/ProductCard";
+import LoadingOverlay from "../../components/LoadingOverlay/LoadingOverlay";
 import Confetti from "react-confetti";
 
 function Home() {
@@ -15,7 +16,9 @@ function Home() {
     width: window.innerWidth,
     height: window.innerHeight,
   });
+  const [loading, setLoading] = useState(true);
 
+  // Welcome modal
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     const modalShown = sessionStorage.getItem("welcomeModalShown");
@@ -23,18 +26,18 @@ function Home() {
     if (user?.name && !modalShown) {
       setUserName(user.name);
       setShowModal(true);
-      setConfetti(true); // start confetti
+      setConfetti(true);
 
-      // Stop confetti and auto-close modal after 5 seconds
       setTimeout(() => {
         setConfetti(false);
-        setShowModal(false); // auto-close modal
+        setShowModal(false);
       }, 5000);
 
       sessionStorage.setItem("welcomeModalShown", "true");
     }
   }, []);
 
+  // Window resize
   useEffect(() => {
     const handleResize = () => {
       setWindowSize({ width: window.innerWidth, height: window.innerHeight });
@@ -52,28 +55,23 @@ function Home() {
     <Layout>
       {/* ================== WELCOME MODAL ================== */}
       <Transition.Root show={showModal} as={Fragment}>
-        <Dialog
-          as="div"
-          className="relative z-50"
-          onClose={handleClose}
-        >
-          {/* ================== CONFETTI ================== */}
+        <Dialog as="div" className="relative z-50" onClose={handleClose}>
           {confetti && (
-        <Confetti
-          width={windowSize.width}
-          height={windowSize.height}
-          numberOfPieces={200}
-          gravity={0.3}
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            zIndex: 40, // ✅ LOWER than modal
-            pointerEvents: "none",
-          }}
-        />
-      )}
-          {/* Modal Overlay */}
+            <Confetti
+              width={windowSize.width}
+              height={windowSize.height}
+              numberOfPieces={200}
+              gravity={0.3}
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                zIndex: 40,
+                pointerEvents: "none",
+              }}
+            />
+          )}
+
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -102,7 +100,10 @@ function Home() {
                     Welcome, {userName}!
                   </h2>
                   <p className="text-gray-700 dark:text-gray-300 mb-6">
-                    Welcome to <span className="font-semibold text-pink-500">AllMart</span>, the marketplace for everyone. Explore amazing products and deals!
+                    Welcome to{" "}
+                    <span className="font-semibold text-pink-500">AllMart</span>
+                    , the marketplace for everyone. Explore amazing products and
+                    deals!
                   </p>
                   <button
                     onClick={handleClose}
@@ -121,128 +122,15 @@ function Home() {
       <div>
         <HeroSection />
         <Filter />
-        <ProductCard />
+
+        {/* FULLSCREEN LOADING OVERLAY */}
+        {loading && <LoadingOverlay />}
+
+        {/* ProductCard signals loading complete when all products/images loaded */}
+        <ProductCard onLoaded={() => setLoading(false)} />
       </div>
     </Layout>
   );
 }
 
 export default Home;
-
-
-
-
-
-// import { useState, useEffect } from "react";
-// import { Dialog, Transition } from "@headlessui/react";
-// import { Fragment } from "react";
-// import Layout from "../../components/layout/Layout";
-// import HeroSection from "../../components/heroSection/HeroSection";
-// import Filter from "../../components/filter/Filter";
-// import ProductCard from "../../components/productCard/ProductCard";
-// import Confetti from "react-confetti";
-
-// function Home() {
-//   const [showModal, setShowModal] = useState(false);
-//   const [userName, setUserName] = useState("");
-//   const [confetti, setConfetti] = useState(false);
-//   const [windowSize, setWindowSize] = useState({
-//     width: window.innerWidth,
-//     height: window.innerHeight,
-//   });
-
-//   useEffect(() => {
-//     const user = JSON.parse(localStorage.getItem("user"));
-//     const modalShown = sessionStorage.getItem("welcomeModalShown");
-
-//     if (user?.name && !modalShown) {
-//       setUserName(user.name);
-//       setShowModal(true);
-//       setConfetti(true);
-
-//       // stop confetti & auto-close modal
-//       setTimeout(() => {
-//         setConfetti(false);
-//         setShowModal(false);
-//       }, 5000);
-
-//       sessionStorage.setItem("welcomeModalShown", "true");
-//     }
-//   }, []);
-
-//   useEffect(() => {
-//     const handleResize = () =>
-//       setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-
-//     window.addEventListener("resize", handleResize);
-//     return () => window.removeEventListener("resize", handleResize);
-//   }, []);
-
-//   const handleClose = () => {
-//     setShowModal(false);
-//     setConfetti(false);
-//   };
-
-//   return (
-//     <Layout>
-//       {/* ================== CONFETTI (BEHIND MODAL) ================== */}
-//       {confetti && (
-//         <Confetti
-//           width={windowSize.width}
-//           height={windowSize.height}
-//           numberOfPieces={200}
-//           gravity={0.3}
-//           style={{
-//             position: "fixed",
-//             top: 0,
-//             left: 0,
-//             zIndex: 40, // ✅ LOWER than modal
-//             pointerEvents: "none",
-//           }}
-//         />
-//       )}
-
-//       {/* ================== WELCOME MODAL ================== */}
-//       <Transition.Root show={showModal} as={Fragment}>
-//         <Dialog as="div" className="relative z-50" onClose={handleClose}>
-//           {/* Overlay */}
-//           <Transition.Child as={Fragment}>
-//             <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50" />
-//           </Transition.Child>
-
-//           <div className="fixed inset-0 flex items-center justify-center p-4 z-50">
-//             <Transition.Child as={Fragment}>
-//               <Dialog.Panel className="relative z-60 w-full max-w-md rounded-2xl bg-white dark:bg-gray-800 p-6 sm:p-8 shadow-xl border">
-//                 <div className="text-center">
-//                   <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-//                     Welcome, {userName}!
-//                   </h2>
-//                   <p className="mb-6">
-//                     Welcome to{" "}
-//                     <span className="font-semibold text-pink-500">
-//                       AllMart
-//                     </span>
-//                     , the marketplace for everyone.
-//                   </p>
-//                   <button
-//                     onClick={handleClose}
-//                     className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-lg"
-//                   >
-//                     Let’s Go
-//                   </button>
-//                 </div>
-//               </Dialog.Panel>
-//             </Transition.Child>
-//           </div>
-//         </Dialog>
-//       </Transition.Root>
-
-//       {/* ================== HOME CONTENT ================== */}
-//       <HeroSection />
-//       <Filter />
-//       <ProductCard />
-//     </Layout>
-//   );
-// }
-
-// export default Home;

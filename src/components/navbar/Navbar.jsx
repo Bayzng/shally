@@ -279,6 +279,9 @@ function Navbar() {
                   <Link to="/my-products" className="font-medium">
                     My Product
                   </Link>
+                  <Link to="/user-dashboard" className="font-medium">
+                    My Dashboard
+                  </Link>
                 </>
               )}
 

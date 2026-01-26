@@ -4,17 +4,17 @@ import myContext from "../../context/data/myContext";
 import { useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { doc, getDoc } from "firebase/firestore";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 import { addToCart } from "../../redux/cartSlice";
 import { fireDB } from "../../fireabase/FirebaseConfig";
-
+import LoadingOverlay from "../../components/LoadingOverlay/LoadingOverlay"; // ✅ Import overlay
 
 function ProductInfo() {
   const currentUser = JSON.parse(localStorage.getItem("user"));
   const context = useContext(myContext);
-  const { setLoading, mode, user } = context; // ✅ Added user from context
+  const { setLoading, loading, mode, user } = context; // ✅ Added loading from context
 
-  const [products, setProducts] = useState("");
+  const [products, setProducts] = useState(null);
   const params = useParams();
 
   // ✅ Get uploader's name
@@ -23,6 +23,7 @@ function ProductInfo() {
     return uploader ? uploader.name : "AllMart Store";
   };
 
+  // ✅ Fetch product data
   const getProductData = async () => {
     setLoading(true);
     try {
@@ -30,6 +31,7 @@ function ProductInfo() {
       setProducts(productTemp.data());
     } catch (error) {
       console.log(error);
+      toast.error("Failed to load product.");
     } finally {
       setLoading(false);
     }
@@ -42,8 +44,8 @@ function ProductInfo() {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart);
 
-  const addCart = (products) => {
-    dispatch(addToCart(products));
+  const addCart = (product) => {
+    dispatch(addToCart(product));
     toast.success("🛍️ Product added to cart!");
   };
 
@@ -53,14 +55,16 @@ function ProductInfo() {
 
   return (
     <Layout>
+      {/* ================= FULLSCREEN LOADING OVERLAY ================= */}
+      {loading && <LoadingOverlay />}
+
       <section
         className={`body-font overflow-hidden ${
-          mode === "dark"
-            ? "bg-gray-900 text-white"
-            : "bg-gray-50 text-gray-800"
+          mode === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-800"
         }`}
       >
         <Toaster />
+
         <div className="container mx-auto px-4 sm:px-6 py-10">
           {products && (
             <div className="flex flex-col lg:flex-row items-center gap-10">
@@ -91,7 +95,6 @@ function ProductInfo() {
 
               {/* 🛍️ Product Info */}
               <div className="w-full lg:w-1/2">
-                {/* ✅ Replaced AllMart with uploader's name */}
                 <h2
                   className={`text-xs uppercase tracking-widest font-semibold ${
                     mode === "dark" ? "text-pink-400" : "text-pink-600"
@@ -105,7 +108,7 @@ function ProductInfo() {
 
                 {/* ⭐ Ratings */}
                 <div className="flex items-center mb-4">
-                  {[...Array(4)].map((_, i) => (
+                  {[...Array(5)].map((_, i) => (
                     <svg
                       key={i}
                       fill="currentColor"
@@ -119,20 +122,7 @@ function ProductInfo() {
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                     </svg>
                   ))}
-                  <svg
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    className="w-5 h-5 text-yellow-400"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                  </svg>
-                  <span className="ml-3 text-gray-500 text-sm">
-                    4.8 (120 reviews)
-                  </span>
+                  <span className="ml-3 text-gray-500 text-sm">4.8 (120 reviews)</span>
                 </div>
 
                 {/* 📝 Description */}
@@ -144,7 +134,7 @@ function ProductInfo() {
                   {products.description}
                 </p>
 
-                {/* 💰 Price and Buttons */}
+                {/* 💰 Price & Buttons */}
                 <div className="flex items-center">
                   <span className="text-2xl font-bold text-pink-600">
                     ₦{products.price?.toLocaleString()}
@@ -170,21 +160,21 @@ function ProductInfo() {
                     </svg>
                   </button>
                 </div>
-                  <hr style={{marginTop: "30px" }} />
+                <hr style={{ marginTop: "30px" }} />
               </div>
             </div>
           )}
         </div>
 
-        {/* 🚚 Product Availability Note */}
+        {/* 🚚 Product Availability */}
         {products && (
           <div
             className={`mt-12 mb-10 mx-auto px-4 sm:px-6 md:px-8 py-8 w-[92%] sm:w-[85%] md:w-[75%] lg:w-[74%] rounded-2xl shadow-xl border
-      ${
-        mode === "dark"
-          ? "bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700 text-gray-100"
-          : "bg-gradient-to-br from-white to-pink-50 border-gray-200 text-gray-700"
-      } transition-all duration-500`}
+          ${
+            mode === "dark"
+              ? "bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700 text-gray-100"
+              : "bg-gradient-to-br from-white to-pink-50 border-gray-200 text-gray-700"
+          } transition-all duration-500`}
           >
             <div className="text-center">
               <h3

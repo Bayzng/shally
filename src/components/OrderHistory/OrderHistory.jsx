@@ -3,6 +3,7 @@ import Layout from "../../components/layout/Layout";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { fireDB } from "../../fireabase/FirebaseConfig";
 import myContext from "../../context/data/myContext";
+import LoadingOverlay from "../../components/LoadingOverlay/LoadingOverlay";
 
 function OrderHistory() {
   const { mode } = useContext(myContext);
@@ -92,7 +93,7 @@ function OrderHistory() {
     return (
       <Layout>
         <div className="flex justify-center items-center h-screen">
-          <p className="text-lg animate-pulse">Loading your orders...</p>
+          {<LoadingOverlay />}
         </div>
       </Layout>
     );

@@ -14,6 +14,7 @@ import { fireDB } from "../../fireabase/FirebaseConfig";
 import Layout from "../layout/Layout";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import LoadingOverlay from "../LoadingOverlay/LoadingOverlay";
 
 /* ---------------- helpers ---------------- */
 const normalizeDate = (date) => {
@@ -152,7 +153,7 @@ function UserDashboard() {
           mode === "dark" ? "bg-[#181a1b] text-white" : "bg-gray-50 text-gray-800"
         }`}
       >
-        Loading dashboard...
+        {<LoadingOverlay />}
       </div>
     );
   }
@@ -175,21 +176,22 @@ function UserDashboard() {
         <motion.div
           initial={{ opacity: 0, y: -15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-6xl mx-auto mb-10"
+          className="max-w-6xl mx-auto mb-10 pl-2"
         >
           <h1 className="text-3xl font-bold">
             Hi,{" "}
             <span className="text-pink-500">{currentUser.name}</span>
           </h1>
-          <p className={`mt-2 ${mode === "dark" ? "text-gray-300" : "text-gray-500"}`}>
-            Track products sold and customer orders easily.
+          <p className={`mt-5 ${mode === "dark" ? "text-gray-300" : "text-gray-500"}`}>
+            Welcome back to your dashboard! Here you can manage your account, view earnings, and track your orders.
           </p>
         </motion.div>
 
         <div className="max-w-6xl mx-auto grid gap-6 md:grid-cols-3 mb-12">
           <InfoCard icon={<User />} title="Account" mode={mode}>
             <p>{currentUser.email}</p>
-            <p>Seller</p>
+            <hr style={{ margin: "10px 0" }} />
+            <p>Creator</p>
           </InfoCard>
 
           <GradientCard icon={<Wallet />} title="Total Earned" mode={mode}>
@@ -263,7 +265,7 @@ const OrdersSection = ({ title, orders, downloadReceipt, mode }) => (
         }`}
       >
         <p className="text-sm">
-          ⚠️ No orders to display. Only orders for products you’ve uploaded will appear here.
+          ⚠️ No orders yet. Only creators receive orders. Become a seller to start!
         </p>
       </div>
     ) : (
@@ -297,8 +299,14 @@ const OrderCard = ({ order, downloadReceipt, mode }) => {
       {/* Header */}
       <div className="flex justify-between mb-3">
         <p className="text-sm">
-          <strong>Order Date:</strong> {order.date.toDateString()}
+          <strong>Order Date:</strong>{" "}
+          {order.date
+            ? order.date.seconds
+              ? new Date(order.date.seconds * 1000).toLocaleString()
+              : new Date(order.date).toLocaleString()
+            : "N/A"}
         </p>
+
         <button
           onClick={() => downloadReceipt(order.id)}
           className="bg-pink-500 text-white px-3 py-1 rounded text-sm"

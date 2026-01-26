@@ -4,8 +4,9 @@ import Layout from "../../components/layout/Layout";
 import myContext from "../../context/data/myContext";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../redux/cartSlice";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import LoadingOverlay from "../../components/LoadingOverlay/LoadingOverlay"; // ✅ import
 
 function Allproducts() {
   const context = useContext(myContext);
@@ -15,7 +16,9 @@ function Allproducts() {
     searchkey,
     filterType,
     filterPrice,
-    user, // ✅ get users from context
+    user,
+    loading, // ✅ add loading state
+    setLoading,
   } = context;
 
   const dispatch = useDispatch();
@@ -41,6 +44,15 @@ function Allproducts() {
     return uploader ? uploader.name : "Marketplace Seller";
   };
 
+  // ✅ Show loading overlay while products are empty
+  useEffect(() => {
+    if (!product || product.length === 0) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [product, setLoading]);
+
   // Filtered products
   const filteredProducts = product
     ?.filter((obj) =>
@@ -55,6 +67,9 @@ function Allproducts() {
 
   return (
     <Layout>
+      {/* ================= FULLSCREEN LOADING OVERLAY ================= */}
+      {loading && <LoadingOverlay />}
+
       <Filter />
 
       <section
