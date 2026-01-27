@@ -114,7 +114,7 @@ function ProductCard({ onLoaded }) {
                       setImagesLoaded((prev) => prev + 1);
                     }}
                   />
-                  <div className="absolute top-3 left-3 bg-pink-600 text-white text-xs px-2 py-1 rounded-full shadow-md">
+                  <div className="absolute top-3 left-3 bg-green-550 text-white text-xs px-2 py-1 rounded-full shadow-md">
                     AllMart 🛒
                   </div>
                 </div>
@@ -123,7 +123,7 @@ function ProductCard({ onLoaded }) {
                   <div>
                     <h2
                       className={`text-xs uppercase font-semibold tracking-widest ${
-                        mode === "dark" ? "text-pink-400" : "text-pink-600"
+                        mode === "dark" ? "text-green-400" : "text-green-600"
                       }`}
                     >
                       {getUploaderName(userid)}
@@ -138,7 +138,7 @@ function ProductCard({ onLoaded }) {
                     <button
                       type="button"
                       onClick={() => addCart(item)}
-                      className="w-full mt-3 py-2 text-sm sm:text-base font-semibold text-white bg-pink-600 hover:bg-pink-700 rounded-lg transition-all duration-300"
+                      className="w-full mt-3 py-2 text-sm sm:text-base font-semibold text-white bg-green-600 hover:bg-greeb-700 rounded-lg transition-all duration-300"
                     >
                       Add to Cart
                     </button>

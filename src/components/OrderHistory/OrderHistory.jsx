@@ -22,6 +22,10 @@ function OrderHistory() {
   const today = new Date();
   const user = JSON.parse(localStorage.getItem("user"));
 
+  const [showModal, setShowModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedItemIndex, setSelectedItemIndex] = useState(null);
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -239,7 +243,7 @@ function OrderHistory() {
                         <img
                           src={item.imageUrl}
                           alt={item.title}
-                          className="w-24 h-24 object-cover border-r"
+                          className="ml-[1px] w-24 h-24 object-cover border-r rounded-lg"
                         />
                         <div className="p-3 flex-1">
                           <p className="font-semibold truncate">{item.title}</p>
@@ -249,12 +253,14 @@ function OrderHistory() {
 
                           {!item.delivered && (
                             <button
-                              onClick={() =>
-                                confirmProductReceived(order.id, i)
-                              }
+                              onClick={() => {
+                                setSelectedOrder(order);
+                                setSelectedItemIndex(i);
+                                setShowModal(true);
+                              }}
                               className="mt-2 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs"
                             >
-                              ✅ Product Received
+                              ✅ Release Fund
                             </button>
                           )}
 
@@ -330,6 +336,67 @@ function OrderHistory() {
                 </div>
               );
             })}
+          </div>
+        )}
+        {/* Modal */}
+        {showModal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50 backdrop-blur-sm transition-opacity">
+            <div className="bg-white dark:bg-gray-900 p-6 sm:p-8 rounded-2xl shadow-2xl max-w-md w-full mx-4 sm:mx-6 text-center transform scale-100 animate-fadeIn">
+              {/* Icon */}
+              <div className="mx-auto mb-4 w-16 h-16 flex items-center justify-center rounded-full bg-green-100 dark:bg-green-800">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8 text-green-600 dark:text-green-300"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+
+              <h2 className="text-xl sm:text-2xl font-extrabold mb-3 text-gray-800 dark:text-white">
+                Confirm Fund Release
+              </h2>
+              <p className="mb-6 text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed">
+                By releasing the fund, you confirm the product has been
+                received. This action is irreversible{" "}
+                <strong className="text-red-600 dark:text-red-400">
+                  cannot be undone
+                </strong>
+                .
+              </p>
+
+              <div className="flex justify-center gap-4 flex-wrap">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="px-5 py-2 sm:px-6 sm:py-3 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium transition-all shadow-sm hover:shadow-md"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={async () => {
+                    if (selectedOrder !== null && selectedItemIndex !== null) {
+                      await confirmProductReceived(
+                        selectedOrder.id,
+                        selectedItemIndex,
+                      );
+                      setShowModal(false); // close modal after success
+                      setSelectedOrder(null);
+                      setSelectedItemIndex(null);
+                    }
+                  }}
+                  className="px-5 py-2 sm:px-6 sm:py-3 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium transition-all shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

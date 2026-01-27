@@ -40,6 +40,7 @@ function UserDashboard() {
   const [totalEarned, setTotalEarned] = useState(0);
   const [showConfetti, setShowConfetti] = useState(true);
   const [escrowAmount, setEscrowAmount] = useState(0);
+  const [showEscrowModal, setShowEscrowModal] = useState(false);
 
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
@@ -52,6 +53,17 @@ function UserDashboard() {
       setWindowSize({ width: window.innerWidth, height: window.innerHeight });
     window.addEventListener("resize", resize);
     return () => window.removeEventListener("resize", resize);
+  }, []);
+
+  useEffect(() => {
+    // Show escrow info modal when page loads
+    setShowEscrowModal(true);
+
+    const timer = setTimeout(() => {
+      setShowEscrowModal(false);
+    }, 5000); // closes after 5 seconds
+
+    return () => clearTimeout(timer);
   }, []);
 
   /* ---------------- fetch data ---------------- */
@@ -235,6 +247,49 @@ function UserDashboard() {
           mode={mode}
         />
       </div>
+      {/* Escrow Info Modal */}
+      {showEscrowModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 backdrop-blur-sm transition-opacity">
+          <div className="bg-white dark:bg-gray-900 p-6 sm:p-8 rounded-3xl shadow-2xl max-w-md w-full mx-4 sm:mx-6 text-center transform transition-transform animate-fadeIn scale-95">
+            {/* Icon Circle with Gradient */}
+            <div className="mx-auto mb-4 w-20 h-20 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-blue-600 shadow-lg">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-10 w-10 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z"
+                />
+              </svg>
+            </div>
+
+            {/* Title */}
+            <h2 className="text-2xl sm:text-3xl font-extrabold mb-3 text-gray-900 dark:text-white">
+              Escrow Information
+            </h2>
+
+            {/* Description */}
+            <p className="mb-6 text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+              <strong>Note:</strong> Escrow funds cannot be received until the
+              product is delivered or the buyer manually releases the fund.
+            </p>
+
+            {/* Optional: Close Button */}
+            <button
+              onClick={() => setShowEscrowModal(false)}
+              className="mt-2 px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-full shadow-md transition-all duration-200"
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }
@@ -352,16 +407,50 @@ const OrderCard = ({ order, downloadReceipt, mode }) => {
       </div>
 
       {/* Items */}
+      {/* Items */}
       {order.cartItems.map((item, i) => (
-        <div key={i} className="flex gap-3 mb-3">
+        <div
+          key={i}
+          className={`flex items-start gap-4 mb-4 p-3 rounded-lg border ${
+            mode === "dark"
+              ? "border-gray-700 bg-gray-900"
+              : "border-gray-200 bg-gray-50"
+          }`}
+        >
+          {/* Product Image */}
           <img
             src={item.imageUrl}
             alt={item.title}
-            className="w-14 h-14 rounded object-cover"
+            className="w-14 h-14 rounded-md object-cover flex-shrink-0"
           />
-          <div>
-            <p className="font-semibold">{item.title}</p>
-            <p>₦{Number(item.price).toLocaleString()}</p>
+
+          {/* Product Info */}
+          <div className="flex-1">
+            <p className="font-semibold text-sm leading-tight mb-1">
+              {item.title}
+            </p>
+
+            <div className="flex items-center justify-between">
+              {/* Price */}
+              <p
+                className={`text-sm font-medium ${
+                  mode === "dark" ? "text-gray-300" : "text-gray-700"
+                }`}
+              >
+                ₦{Number(item.price).toLocaleString()}
+              </p>
+
+              {/* Fund Status Badge */}
+              <span
+                className={`text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap ${
+                  item.released
+                    ? "bg-green-100 text-green-700"
+                    : "bg-yellow-100 text-yellow-700"
+                }`}
+              >
+                {item.released ? "Fund Released" : "In Escrow"}
+              </span>
+            </div>
           </div>
         </div>
       ))}
