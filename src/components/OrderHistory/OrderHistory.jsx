@@ -79,26 +79,28 @@ function OrderHistory() {
 
   // Calculate expected delivery (+7 days)
   const calculateDeliveryDate = (orderDateValue, deliveredDateValue) => {
-    let deliveryDate;
+    let deliveryDate = null;
+
+    const toJSDate = (value) => {
+      if (!value) return null;
+      if (value.seconds !== undefined) return new Date(value.seconds * 1000); // Firestore Timestamp
+      if (typeof value === "string" || typeof value === "number")
+        return new Date(value);
+      if (value instanceof Date) return value;
+      return null;
+    };
 
     if (deliveredDateValue) {
-      // deliveredDate can be Timestamp or JS Date
-      if (deliveredDateValue.seconds !== undefined) {
-        deliveryDate = new Date(deliveredDateValue.seconds * 1000);
-      } else {
-        deliveryDate = new Date(deliveredDateValue);
-      }
+      deliveryDate = toJSDate(deliveredDateValue);
     } else if (orderDateValue) {
-      // expected delivery = order date + 7 days
-      const orderDate =
-        orderDateValue.seconds !== undefined
-          ? new Date(orderDateValue.seconds * 1000)
-          : new Date(orderDateValue);
-      deliveryDate = new Date(orderDate);
-      deliveryDate.setDate(orderDate.getDate() + 7);
-    } else {
-      return "N/A";
+      const orderDate = toJSDate(orderDateValue);
+      if (orderDate) {
+        deliveryDate = new Date(orderDate);
+        deliveryDate.setDate(orderDate.getDate() + 7);
+      }
     }
+
+    if (!deliveryDate || isNaN(deliveryDate.getTime())) return "N/A";
 
     return deliveryDate.toLocaleDateString("en-GB", {
       weekday: "long",
