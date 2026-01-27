@@ -39,6 +39,8 @@ function UserDashboard() {
   const [oldOrders, setOldOrders] = useState([]);
   const [totalEarned, setTotalEarned] = useState(0);
   const [showConfetti, setShowConfetti] = useState(true);
+  const [escrowAmount, setEscrowAmount] = useState(0);
+
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
@@ -83,7 +85,7 @@ function UserDashboard() {
 
           // Filter only items that belong to current seller
           const sellerItems = cartItems.filter(
-            (item) => item.userid === loggedUser.uid
+            (item) => item.userid === loggedUser.uid,
           );
           if (!sellerItems.length) continue; // Skip orders with no items by this seller
 
@@ -107,18 +109,29 @@ function UserDashboard() {
         sellerOrders.forEach((order) =>
           order.date.toDateString() === today.toDateString()
             ? todayOrders.push(order)
-            : previousOrders.push(order)
+            : previousOrders.push(order),
         );
 
         setRecentOrders(todayOrders);
         setOldOrders(previousOrders);
 
         // Calculate total earned
-        const earned = sellerOrders.reduce(
-          (acc, o) =>
-            acc + o.cartItems.reduce((sum, i) => sum + Number(i.price || 0), 0),
-          0
-        );
+        let earned = 0;
+        let escrow = 0;
+
+        sellerOrders.forEach((order) => {
+          order.cartItems.forEach((item) => {
+            if (item.released) {
+              earned += Number(item.price || 0);
+            } else {
+              escrow += Number(item.price || 0);
+            }
+          });
+        });
+
+        setTotalEarned(earned);
+        setEscrowAmount(escrow);
+
         setTotalEarned(earned);
       } catch (err) {
         console.error("Dashboard error:", err);
@@ -150,7 +163,9 @@ function UserDashboard() {
     return (
       <div
         className={`min-h-screen flex items-center justify-center ${
-          mode === "dark" ? "bg-[#181a1b] text-white" : "bg-gray-50 text-gray-800"
+          mode === "dark"
+            ? "bg-[#181a1b] text-white"
+            : "bg-gray-50 text-gray-800"
         }`}
       >
         {<LoadingOverlay />}
@@ -170,7 +185,9 @@ function UserDashboard() {
 
       <div
         className={`min-h-screen px-4 py-10 ${
-          mode === "dark" ? "bg-[#181a1b] text-white" : "bg-gray-50 text-gray-800"
+          mode === "dark"
+            ? "bg-[#181a1b] text-white"
+            : "bg-gray-50 text-gray-800"
         }`}
       >
         <motion.div
@@ -179,11 +196,13 @@ function UserDashboard() {
           className="max-w-6xl mx-auto mb-10 pl-2"
         >
           <h1 className="text-3xl font-bold">
-            Hi,{" "}
-            <span className="text-pink-500">{currentUser.name}</span>
+            Hi, <span className="text-pink-500">{currentUser.name}</span>
           </h1>
-          <p className={`mt-5 ${mode === "dark" ? "text-gray-300" : "text-gray-500"}`}>
-            Welcome back to your dashboard! Here you can manage your account, view earnings, and track your orders.
+          <p
+            className={`mt-5 ${mode === "dark" ? "text-gray-300" : "text-gray-500"}`}
+          >
+            Welcome back to your dashboard! Here you can manage your account,
+            view earnings, and track your orders.
           </p>
         </motion.div>
 
@@ -199,7 +218,7 @@ function UserDashboard() {
           </GradientCard>
 
           <InfoCard icon={<Lock />} title="Escrow" mode={mode}>
-            ₦0
+            ₦{escrowAmount.toLocaleString()}
           </InfoCard>
         </div>
 
@@ -225,7 +244,9 @@ function UserDashboard() {
 const InfoCard = ({ icon, title, children, mode }) => (
   <div
     className={`p-6 rounded-xl shadow ${
-      mode === "dark" ? "bg-gray-800 text-white border border-gray-700" : "bg-white"
+      mode === "dark"
+        ? "bg-gray-800 text-white border border-gray-700"
+        : "bg-white"
     }`}
   >
     <div className="flex gap-2 mb-3">
@@ -265,7 +286,8 @@ const OrdersSection = ({ title, orders, downloadReceipt, mode }) => (
         }`}
       >
         <p className="text-sm">
-          ⚠️ No orders yet. Only creators receive orders. Become a seller to start!
+          ⚠️ No orders yet. Only creators receive orders. Become a seller to
+          start!
         </p>
       </div>
     ) : (
@@ -284,10 +306,7 @@ const OrdersSection = ({ title, orders, downloadReceipt, mode }) => (
 );
 
 const OrderCard = ({ order, downloadReceipt, mode }) => {
-  const total = order.cartItems.reduce(
-    (s, i) => s + Number(i.price || 0),
-    0
-  );
+  const total = order.cartItems.reduce((s, i) => s + Number(i.price || 0), 0);
 
   return (
     <div
