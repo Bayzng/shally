@@ -96,8 +96,8 @@ function ProductInfo() {
               {/* 🛍️ Product Info */}
               <div className="w-full lg:w-1/2">
                 <h2
-                  className={`text-xs uppercase tracking-widest font-semibold ${
-                    mode === "dark" ? "text-pink-400" : "text-pink-600"
+                  className={`text-xs tracking-widest font-semibold ${
+                    mode === "dark" ? "text-green-400" : "text-green-600"
                   }`}
                 >
                   {getUploaderName(products.userid)}

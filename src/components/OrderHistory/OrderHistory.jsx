@@ -236,7 +236,7 @@ function OrderHistory() {
                   </div>
 
                   {/* Ordered Items */}
-                  <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="">
                     {(order.cartItems || []).map((item, i) => (
                       <div
                         key={i}

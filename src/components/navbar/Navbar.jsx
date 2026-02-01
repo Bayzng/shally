@@ -9,12 +9,11 @@ import { RiAdminFill } from "react-icons/ri";
 import { RxCross2 } from "react-icons/rx";
 import { MdShoppingCartCheckout } from "react-icons/md";
 import { FaShoppingCart } from "react-icons/fa";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 import { IoMdLogOut } from "react-icons/io";
 import { IoMenu } from "react-icons/io5";
 import { SiCoinmarketcap } from "react-icons/si";
 import { FaPlusCircle } from "react-icons/fa";
-
 
 import logo from "../../assets/logo.png";
 import myContext from "../../context/data/myContext";
@@ -25,15 +24,13 @@ function Navbar() {
   const user = JSON.parse(localStorage.getItem("user"));
   const cartItems = useSelector((state) => state.cart);
 
-
   const isDark = mode === "dark";
 
   const logout = () => {
-  localStorage.removeItem("user");          // remove user info
-  sessionStorage.removeItem("welcomeModalShown"); // reset modal flag
-  window.location.href = "/";
-};
-
+    localStorage.removeItem("user"); // remove user info
+    sessionStorage.removeItem("welcomeModalShown"); // reset modal flag
+    window.location.href = "/";
+  };
 
   const handleCartClick = (e) => {
     if (cartItems.length === 0) {
@@ -48,14 +45,13 @@ function Navbar() {
 
   const isAdmin = user?.email === "admin@allmart.com"; // ✅ correct
 
-
   return (
     <div
       className={`sticky top-0 z-50 ${
         isDark ? "bg-gray-900" : "bg-white"
       } shadow-md`}
     >
-     <Toaster />
+      <Toaster />
 
       {/* ================= MOBILE MENU ================= */}
       <Transition.Root show={open} as={Fragment}>
@@ -101,7 +97,7 @@ function Navbar() {
 
                 {/* Navigation */}
                 <div className="px-4 py-6 space-y-5 text-sm mt-10">
-                  <h1  className="flex items-center gap-2 font-medium hover:text-pink-500 transition">
+                  <h1 className="flex items-center gap-2 font-medium hover:text-pink-500 transition">
                     AllMart
                   </h1>
                   <hr className="border-gray-200/30" />
@@ -113,10 +109,11 @@ function Navbar() {
                       🛍️ All Products
                     </Link>
                   ) : (
-                    <div className="rounded-xl bg-pink-50 dark:bg-gray-800 p-4 text-center space-y-2">
+                    <div  className={`sticky top-0 z-50 ${isDark ? "bg-gray-900" : "bg-white"} rounded-xl p-4 text-center space-y-2`}>
                       <h3 className="text-lg font-semibold">
                         👋 Welcome to Allmart Marketplace
                       </h3>
+
                       <p className="text-sm text-gray-600 dark:text-gray-300">
                         Discover amazing products, deals & creators 💖
                       </p>
@@ -143,21 +140,21 @@ function Navbar() {
                         to="/order-history"
                         className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
                       >
-                        <MdShoppingCartCheckout size={22}/> My Orders
+                        <MdShoppingCartCheckout size={22} /> My Orders
                       </Link>
 
                       <Link
                         to="/creator"
                         className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
                       >
-                        <FaPlusCircle size={22}/> Add Product
+                        <FaPlusCircle size={22} /> Add Product
                       </Link>
 
                       <Link
                         to="/my-products"
                         className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
                       >
-                        <SiCoinmarketcap size={22}/> My Products
+                        <SiCoinmarketcap size={22} /> My Products
                       </Link>
 
                       <hr className="border-gray-200/30" />
@@ -182,14 +179,14 @@ function Navbar() {
                       onClick={logout}
                       className="flex items-center gap-2 font-semibold text-red-500 hover:text-red-600 transition w-full text-left"
                     >
-                      <IoMdLogOut size={25}/> Logout
+                      <IoMdLogOut size={25} /> Logout
                     </button>
                   ) : (
                     <Link
                       to="/signup"
-                      className="flex items-center gap-2 font-semibold text-green-500 hover:text-green-600 transition"
+                      className="flex items-center gap-2 font-bold bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-md transition"
                     >
-                      ✨ Signup
+                      🔐 Signup
                     </Link>
                   )}
                 </div>
@@ -207,7 +204,8 @@ function Navbar() {
           }`}
         >
           <p className="absolute whitespace-nowrap flex items-center h-10 text-sm font-medium animate-marquee px-4">
-            🚧 AllMart is currently in development & test mode. Some features are not available yet 🚀
+            🚧 AllMart is currently in development & test mode. Some features
+            are not available yet 🚀
           </p>
         </div>
 
@@ -256,7 +254,7 @@ function Navbar() {
                   onClick={handleCartClick}
                   className="relative"
                 >
-                  <FaShoppingCart size={20}/>
+                  <FaShoppingCart size={20} />
                   {cartItems.length > 0 && (
                     <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
                       {cartItems.length}

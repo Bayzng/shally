@@ -64,7 +64,7 @@ function Creator() {
                 mode === "dark" ? "text-gray-300" : "text-gray-600"
               }`}
             >
-              Empowering anyone to upload products directly to the marketplace —
+              Empowering anyone to upload products directly to the marketplace
               no barriers, no gatekeepers. Showcase your creations and reach buyers instantly.
             </motion.p>
 

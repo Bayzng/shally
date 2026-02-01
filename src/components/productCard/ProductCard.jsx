@@ -122,7 +122,7 @@ function ProductCard({ onLoaded }) {
                 <div className="p-3 sm:p-4 flex flex-col justify-between">
                   <div>
                     <h2
-                      className={`text-xs uppercase font-semibold tracking-widest ${
+                      className={`text-xs font-semibold tracking-widest ${
                         mode === "dark" ? "text-green-400" : "text-green-600"
                       }`}
                     >
@@ -132,6 +132,15 @@ function ProductCard({ onLoaded }) {
                     <p className="text-sm sm:text-base font-medium mt-2">
                       ₦{price.toLocaleString()}
                     </p>
+                    {/* {!currentUser && (
+                    <button
+                      type="button"
+                      onClick={() => addCart(item)}
+                      className="w-full mt-3 py-2 text-sm sm:text-base font-semibold text-white bg-green-600 hover:bg-greeb-700 rounded-lg transition-all duration-300"
+                    >
+                      Login to Add to Cart
+                    </button>
+                  )} */}
                   </div>
 
                   {currentUser && (
