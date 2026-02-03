@@ -12,7 +12,6 @@ import { fireDB } from "../../fireabase/FirebaseConfig";
 import myContext from "../../context/data/myContext";
 import LoadingOverlay from "../../components/LoadingOverlay/LoadingOverlay";
 import { Timestamp } from "firebase/firestore";
-// import { doc, updateDoc } from "firebase/firestore";
 
 function OrderHistory() {
   const { mode } = useContext(myContext);
@@ -79,36 +78,32 @@ function OrderHistory() {
 
   // Calculate expected delivery (+7 days)
   const calculateDeliveryDate = (orderDateValue, deliveredDateValue) => {
-    let deliveryDate = null;
-
-    const toJSDate = (value) => {
-      if (!value) return null;
-      if (value.seconds !== undefined) return new Date(value.seconds * 1000); // Firestore Timestamp
-      if (typeof value === "string" || typeof value === "number")
-        return new Date(value);
-      if (value instanceof Date) return value;
-      return null;
-    };
-
-    if (deliveredDateValue) {
-      deliveryDate = toJSDate(deliveredDateValue);
-    } else if (orderDateValue) {
-      const orderDate = toJSDate(orderDateValue);
-      if (orderDate) {
-        deliveryDate = new Date(orderDate);
-        deliveryDate.setDate(orderDate.getDate() + 7);
-      }
-    }
-
-    if (!deliveryDate || isNaN(deliveryDate.getTime())) return "N/A";
-
-    return deliveryDate.toLocaleDateString("en-GB", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
+  const toDate = (value) => {
+    if (!value) return null;
+    if (value.seconds) return new Date(value.seconds * 1000); // Firestore
+    if (value instanceof Date) return value;
+    return new Date(value);
   };
+
+  let baseDate = deliveredDateValue
+    ? toDate(deliveredDateValue)
+    : toDate(orderDateValue);
+
+  if (!baseDate || isNaN(baseDate.getTime())) return "N/A";
+
+  // ✅ add 7 days using milliseconds (timezone-safe)
+  const deliveryDate = deliveredDateValue
+    ? baseDate
+    : new Date(baseDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+  return deliveryDate.toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Africa/Lagos", // 🔥 force consistency
+  });
+};
 
   const isToday = (dateValue) => {
     const date = parseDate(dateValue);
@@ -116,13 +111,16 @@ function OrderHistory() {
     return date.toDateString() === today.toDateString();
   };
 
-  const isDelivered = (dateValue) => {
-    const orderDate = parseDate(dateValue);
-    if (!orderDate) return false;
-    const deliveryDate = new Date(orderDate);
-    deliveryDate.setDate(orderDate.getDate() + 7);
-    return deliveryDate <= today;
-  };
+  const isDelivered = (orderDateValue) => {
+  const orderDate = parseDate(orderDateValue);
+  if (!orderDate) return false;
+
+  const deliveryTime =
+    orderDate.getTime() + 7 * 24 * 60 * 60 * 1000;
+
+  return Date.now() >= deliveryTime;
+};
+
 
   if (loading) {
     return (
