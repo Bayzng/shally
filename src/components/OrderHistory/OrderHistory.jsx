@@ -77,33 +77,29 @@ function OrderHistory() {
   };
 
   // Calculate expected delivery (+7 days)
-  const calculateDeliveryDate = (orderDateValue, deliveredDateValue) => {
-  const toDate = (value) => {
-    if (!value) return null;
-    if (value.seconds) return new Date(value.seconds * 1000); // Firestore
-    if (value instanceof Date) return value;
-    return new Date(value);
-  };
+  const calculateExpectedDeliveryDate = (orderDateValue) => {
+  if (!orderDateValue) return "N/A";
 
-  let baseDate = deliveredDateValue
-    ? toDate(deliveredDateValue)
-    : toDate(orderDateValue);
+  const orderDate =
+    orderDateValue.seconds
+      ? new Date(orderDateValue.seconds * 1000)
+      : new Date(orderDateValue);
 
-  if (!baseDate || isNaN(baseDate.getTime())) return "N/A";
+  if (isNaN(orderDate.getTime())) return "N/A";
 
-  // ✅ add 7 days using milliseconds (timezone-safe)
-  const deliveryDate = deliveredDateValue
-    ? baseDate
-    : new Date(baseDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const expectedDate = new Date(
+    orderDate.getTime() + 7 * 24 * 60 * 60 * 1000
+  );
 
-  return deliveryDate.toLocaleDateString("en-GB", {
+  return expectedDate.toLocaleDateString("en-GB", {
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
-    timeZone: "Africa/Lagos", // 🔥 force consistency
+    timeZone: "Africa/Lagos",
   });
 };
+
 
   const isToday = (dateValue) => {
     const date = parseDate(dateValue);
@@ -112,15 +108,13 @@ function OrderHistory() {
   };
 
   const isDelivered = (orderDateValue) => {
-  const orderDate = parseDate(orderDateValue);
-  if (!orderDate) return false;
+    const orderDate = parseDate(orderDateValue);
+    if (!orderDate) return false;
 
-  const deliveryTime =
-    orderDate.getTime() + 7 * 24 * 60 * 60 * 1000;
+    const deliveryTime = orderDate.getTime() + 7 * 24 * 60 * 60 * 1000;
 
-  return Date.now() >= deliveryTime;
-};
-
+    return Date.now() >= deliveryTime;
+  };
 
   if (loading) {
     return (
@@ -185,7 +179,7 @@ function OrderHistory() {
             {orders.map((order) => {
               const orderIsToday = isToday(order.date);
               const delivered = isDelivered(order.date);
-              const expectedDeliveryDate = calculateDeliveryDate(order.date);
+              const expectedDeliveryDate = calculateExpectedDeliveryDate(order.date);
 
               return (
                 <div
@@ -197,11 +191,17 @@ function OrderHistory() {
                   }`}
                 >
                   {/* Status Badges */}
-                  {orderIsToday && !delivered && (
+                  {/* {orderIsToday && !delivered && (
                     <span className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md">
                       🆕 New Order
                     </span>
-                  )}
+                  )} */}
+                  {!order.cartItems.some((item) => item.delivered) && (
+  <span className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md">
+    New Order
+  </span>
+)}
+
                   {order.cartItems.some((item) => item.delivered) && (
                     <span className="absolute top-4 right-4 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md">
                       ✅ Delivered
@@ -296,23 +296,31 @@ function OrderHistory() {
                     </p>
 
                     <p
-                      className={`mt-2 font-medium ${
-                        order.cartItems.some((item) => item.delivered)
-                          ? "text-green-600"
-                          : "text-blue-500"
-                      }`}
-                    >
-                      <strong>
-                        {order.cartItems.some((item) => item.delivered)
-                          ? "Delivered:"
-                          : "Expected Delivery:"}
-                      </strong>{" "}
-                      {calculateDeliveryDate(
-                        order.date,
-                        order.cartItems.find((item) => item.delivered)
-                          ?.deliveredDate,
-                      )}
-                    </p>
+  className={`mt-2 font-medium ${
+    order.cartItems.some((item) => item.delivered)
+      ? "text-green-600"
+      : "text-blue-500"
+  }`}
+>
+  <strong>
+    {order.cartItems.some((item) => item.delivered)
+      ? "Delivered:"
+      : "Expected Delivery:"}
+  </strong>{" "}
+  {order.cartItems.some((item) => item.delivered)
+    ? new Date(
+        order.cartItems.find((item) => item.delivered).deliveredDate.seconds *
+          1000
+      ).toLocaleDateString("en-GB", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        timeZone: "Africa/Lagos",
+      })
+    : calculateExpectedDeliveryDate(order.date)}
+</p>
+
                   </div>
 
                   {/* Total Section */}
