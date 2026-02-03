@@ -6,6 +6,7 @@ import Layout from "../../components/layout/Layout";
 import { deleteFromCart, clearCart } from "../../redux/cartSlice";
 import toast, { Toaster } from 'react-hot-toast';
 import { addDoc, collection } from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
 import { fireDB } from "../../fireabase/FirebaseConfig";
 import { PaystackButton } from "react-paystack";
 
@@ -122,49 +123,53 @@ if (!user?.uid || !user?.email) {
       text: "Pay Now",
       onSuccess: async (reference) => {
         const addressInfo = {
-          name,
-          address:
-            deliveryOption === "pickup"
-              ? altPickupAddress
-                ? `${altPickupAddress}, ${selectedState}`
-                : `${pickupLocation}, ${selectedState}`
-              : address,
-          pincode,
-          phoneNumber,
-          deliveryType: deliveryOption,
-          expectedDelivery: "Within 7 days",
-          date: new Date().toLocaleString(),
-        };
+  name,
+  address:
+    deliveryOption === "pickup"
+      ? altPickupAddress
+        ? `${altPickupAddress}, ${selectedState}`
+        : `${pickupLocation}, ${selectedState}`
+      : address,
+  pincode,
+  phoneNumber,
+  deliveryType: deliveryOption,
+  expectedDelivery: Timestamp.fromDate(
+    new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // +7 days
+  ), // store expected delivery as Firestore timestamp
+  date: Timestamp.fromDate(new Date()), // store order date as Firestore timestamp
+};
 
-        try {
-          await addDoc(collection(fireDB, "order"), {
-            cartItems,
-            addressInfo,
-            date: new Date().toLocaleString(),
-            email,
-            userid: user?.uid,
-            paymentId: reference.reference,
-            status: "success",
-          });
+try {
+  await addDoc(collection(fireDB, "order"), {
+    cartItems,
+    addressInfo,
+    date: Timestamp.fromDate(new Date()), // ✅ correct timestamp
+    email,
+    userid: user?.uid,
+    paymentId: reference.reference,
+    status: "success",
+  });
 
-          dispatch(clearCart());
-          localStorage.removeItem("cart");
+  dispatch(clearCart());
+  localStorage.removeItem("cart");
 
-          navigate("/transaction-status", {
-            state: {
-              status: "success",
-              reference: reference.reference,
-              total: grandTotal,
-              cartItems,
-              addressInfo,
-            },
-          });
-        } catch (error) {
-          console.error(error);
-          navigate("/transaction-status", {
-            state: { status: "failed", reference: reference.reference },
-          });
-        }
+  navigate("/transaction-status", {
+    state: {
+      status: "success",
+      reference: reference.reference,
+      total: grandTotal,
+      cartItems,
+      addressInfo,
+    },
+  });
+} catch (error) {
+  console.error(error);
+  navigate("/transaction-status", {
+    state: { status: "failed", reference: reference.reference },
+  });
+}
+
+
       },
       onClose: () => {
         navigate("/transaction-status", { state: { status: "cancelled" } });
