@@ -76,57 +76,59 @@ function OrderHistory() {
     }
   };
 
-  // Calculate expected delivery (+7 days)
-  // const calculateExpectedDeliveryDate = (orderDateValue) => {
-  //   if (!orderDateValue) return "N/A";
+  const parseOrderDate = (dateValue) => {
+  if (!dateValue) return null;
 
-  //   const orderDate = orderDateValue.seconds
-  //     ? new Date(orderDateValue.seconds * 1000)
-  //     : new Date(orderDateValue);
+  // Firebase Timestamp
+  if (dateValue.seconds) return new Date(dateValue.seconds * 1000);
 
-  //   if (isNaN(orderDate.getTime())) return "N/A";
+  // ISO string or milliseconds
+  const parsed = new Date(dateValue);
+  return isNaN(parsed.getTime()) ? null : parsed;
+};
 
-  //   const expectedDate = new Date(
-  //     orderDate.getTime() + 7 * 24 * 60 * 60 * 1000,
-  //   );
 
-  //   return expectedDate.toLocaleDateString("en-GB", {
-  //     weekday: "long",
-  //     day: "numeric",
-  //     month: "long",
-  //     year: "numeric",
-  //     timeZone: "Africa/Lagos",
-  //   });
-  // };
+  // Expected delivery +7 days
+const calculateExpectedDeliveryDate = (orderDateValue) => {
+  const orderDate = parseOrderDate(orderDateValue);
+  if (!orderDate) return "N/A";
 
-  const calculateExpectedDeliveryDate = (orderDateValue) => {
-    if (!orderDateValue) return "N/A";
+  // Add 7 days using UTC to avoid time zone issues
+  const expectedDateUTC = Date.UTC(
+    orderDate.getUTCFullYear(),
+    orderDate.getUTCMonth(),
+    orderDate.getUTCDate() + 7,
+    orderDate.getUTCHours(),
+    orderDate.getUTCMinutes(),
+    orderDate.getUTCSeconds()
+  );
 
-    // Create a UTC date
-    const orderDate = orderDateValue.seconds
-      ? new Date(orderDateValue.seconds * 1000)
-      : new Date(orderDateValue);
+  return new Date(expectedDateUTC).toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Africa/Lagos",
+  });
+};
 
-    // Compute UTC milliseconds
-    const expectedDateUTC = Date.UTC(
-      orderDate.getUTCFullYear(),
-      orderDate.getUTCMonth(),
-      orderDate.getUTCDate() + 7,
-      orderDate.getUTCHours(),
-      orderDate.getUTCMinutes(),
-      orderDate.getUTCSeconds(),
-    );
+// Check if delivered
+// const isDelivered = (orderDateValue) => {
+//   const orderDate = parseOrderDate(orderDateValue);
+//   if (!orderDate) return false;
 
-    const expectedDate = new Date(expectedDateUTC);
+//   const deliveryTimeUTC = Date.UTC(
+//     orderDate.getUTCFullYear(),
+//     orderDate.getUTCMonth(),
+//     orderDate.getUTCDate() + 7,
+//     orderDate.getUTCHours(),
+//     orderDate.getUTCMinutes(),
+//     orderDate.getUTCSeconds()
+//   );
 
-    return expectedDate.toLocaleDateString("en-GB", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-      timeZone: "Africa/Lagos",
-    });
-  };
+//   return Date.now() >= deliveryTimeUTC;
+// };
+
 
   const isToday = (dateValue) => {
     const date = parseDate(dateValue);
@@ -134,14 +136,24 @@ function OrderHistory() {
     return date.toDateString() === today.toDateString();
   };
 
+  // const isDelivered = (orderDateValue) => {
+  //   const orderDate = parseDate(orderDateValue);
+  //   if (!orderDate) return false;
+
+  //   const deliveryTime = orderDate.getTime() + 7 * 24 * 60 * 60 * 1000;
+
+  //   return Date.now() >= deliveryTime;
+  // };
+
   const isDelivered = (orderDateValue) => {
-    const orderDate = parseDate(orderDateValue);
-    if (!orderDate) return false;
+  const orderDate = parseOrderDate(orderDateValue); // safer
+  if (!orderDate) return false;
 
-    const deliveryTime = orderDate.getTime() + 7 * 24 * 60 * 60 * 1000;
+  const deliveryTime = orderDate.getTime() + 7 * 24 * 60 * 60 * 1000;
 
-    return Date.now() >= deliveryTime;
-  };
+  return Date.now() >= deliveryTime;
+};
+
 
   if (loading) {
     return (
