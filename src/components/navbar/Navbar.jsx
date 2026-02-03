@@ -109,7 +109,9 @@ function Navbar() {
                       🛍️ All Products
                     </Link>
                   ) : (
-                    <div  className={`sticky top-0 z-50 ${isDark ? "bg-gray-900" : "bg-white"} rounded-xl p-4 text-center space-y-2`}>
+                    <div
+                      className={`sticky top-0 z-50 ${isDark ? "bg-gray-900" : "bg-white"} rounded-xl p-4 text-center space-y-2`}
+                    >
                       <h3 className="text-lg font-semibold">
                         👋 Welcome to Allmart Marketplace
                       </h3>
@@ -226,7 +228,17 @@ function Navbar() {
                 <IoMenu size={20} />
               </button>
 
-              <img src={logo} alt="Allmart Logo" className="w-10 h-10" />
+              {/* <img src={logo} alt="Allmart Logo" className="w-10 h-10" /> */}
+              <img
+                // <img style={{backgroundColor: "white"}}
+                // src={"https://dummyimage.com/50x50/000/fff&text=A"}
+                src={logo}
+                alt="AllMart Logo"
+                className={`${
+                  mode === "dark" ? "bg-white" : "bg-white"
+                } w-10 h-10 rounded-lg`}
+                // className="w-12 h-12 rounded-lg"
+              />
               <Link to="/" className="text-xl font-bold">
                 AllMart
               </Link>

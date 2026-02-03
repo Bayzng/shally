@@ -115,9 +115,30 @@ function App() {
               </ProtectedRouteUser>
             }
           />
-          <Route path="/creator" element={<Creator />} />
-          <Route path="/user-profile/:uid" element={<UserProfile />} />
-          <Route path="/user-dashboard" element={<UserDashboard />} />
+          <Route
+            path="/creator"
+            element={
+              <ProtectedRouteUser>
+                <Creator />
+              </ProtectedRouteUser>
+            }
+          />
+          <Route
+            path="/user-profile/:uid"
+            element={
+              <ProtectedRouteUser>
+                <UserProfile />
+              </ProtectedRouteUser>
+            }
+          />
+          <Route
+            path="/user-dashboard"
+            element={
+              <ProtectedRouteUser>
+                <UserDashboard />
+              </ProtectedRouteUser>
+            }
+          />
 
           <Route path="/*" element={<NoPage />} />
         </Routes>

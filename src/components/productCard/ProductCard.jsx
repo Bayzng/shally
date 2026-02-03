@@ -135,7 +135,7 @@ function ProductCard({ onLoaded }) {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3">
-            🎉 MarketPlace Picks
+            🛒 MarketPlace Picks
           </h1>
           <div className="h-1 w-20 mx-auto bg-pink-500 rounded"></div>
           <p
@@ -222,7 +222,7 @@ function ProductCard({ onLoaded }) {
                         <Link to={`/user-profile/${userid}`} className="flex-1">
                           <button
                             type="button"
-                            className="text-xs sm:text-sm font-medium hover:underline"
+                            className="text-xs sm:text-sm font-medium"
                           >
                             👤 Creator
                           </button>

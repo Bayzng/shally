@@ -1,11 +1,13 @@
 import { useContext, useState } from "react";
 import Layout from "../../../components/layout/Layout";
 import myContext from "../../../context/data/myContext";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 function PublicAddProduct() {
   const { addProduct, mode } = useContext(myContext);
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -92,12 +94,12 @@ function PublicAddProduct() {
       price: Number(price),
       date: new Date().toISOString(),
       id: Date.now(),
-      userid: user.uid, // ✅ fixed
+      userid: user.uid,
     };
 
     try {
+      setLoading(true); // ✅ start loading
       await addProduct(newProduct);
-      // toast.success("✅ Product added to marketplace");
 
       // Reset form
       setForm({
@@ -109,11 +111,13 @@ function PublicAddProduct() {
       });
       setPreview(null);
 
-      // Redirect to user's products
+      toast.success("✅ Product added to marketplace");
       navigate("/my-products");
     } catch (error) {
       console.error(error);
       toast.error("❌ Failed to add product");
+    } finally {
+      setLoading(false); // ✅ stop loading
     }
   };
 
@@ -143,7 +147,7 @@ function PublicAddProduct() {
           <input
             type="text"
             name="title"
-            placeholder="Product Title"
+            placeholder="Product Name"
             value={form.title}
             onChange={handleChange}
             className={`w-full mb-4 px-4 py-3 rounded-lg outline-none ${
@@ -223,9 +227,34 @@ function PublicAddProduct() {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 rounded-lg transition"
+            disabled={loading}
+            className={`w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 rounded-lg transition flex justify-center items-center ${
+              loading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
           >
-            Add Product to Marketplace
+            {loading ? (
+              <svg
+                className="animate-spin h-5 w-5 mr-3 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                ></path>
+              </svg>
+            ) : null}
+            {loading ? "Adding Product..." : "Add Product to Marketplace"}
           </button>
         </form>
       </div>

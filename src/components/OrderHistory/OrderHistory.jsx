@@ -78,28 +78,26 @@ function OrderHistory() {
 
   // Calculate expected delivery (+7 days)
   const calculateExpectedDeliveryDate = (orderDateValue) => {
-  if (!orderDateValue) return "N/A";
+    if (!orderDateValue) return "N/A";
 
-  const orderDate =
-    orderDateValue.seconds
+    const orderDate = orderDateValue.seconds
       ? new Date(orderDateValue.seconds * 1000)
       : new Date(orderDateValue);
 
-  if (isNaN(orderDate.getTime())) return "N/A";
+    if (isNaN(orderDate.getTime())) return "N/A";
 
-  const expectedDate = new Date(
-    orderDate.getTime() + 7 * 24 * 60 * 60 * 1000
-  );
+    const expectedDate = new Date(
+      orderDate.getTime() + 7 * 24 * 60 * 60 * 1000,
+    );
 
-  return expectedDate.toLocaleDateString("en-GB", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "Africa/Lagos",
-  });
-};
-
+    return expectedDate.toLocaleDateString("en-GB", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: "Africa/Lagos",
+    });
+  };
 
   const isToday = (dateValue) => {
     const date = parseDate(dateValue);
@@ -179,7 +177,9 @@ function OrderHistory() {
             {orders.map((order) => {
               const orderIsToday = isToday(order.date);
               const delivered = isDelivered(order.date);
-              const expectedDeliveryDate = calculateExpectedDeliveryDate(order.date);
+              const expectedDeliveryDate = calculateExpectedDeliveryDate(
+                order.date,
+              );
 
               return (
                 <div
@@ -191,16 +191,12 @@ function OrderHistory() {
                   }`}
                 >
                   {/* Status Badges */}
-                  {/* {orderIsToday && !delivered && (
-                    <span className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md">
-                      🆕 New Order
-                    </span>
-                  )} */}
+
                   {!order.cartItems.some((item) => item.delivered) && (
-  <span className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md">
-    New Order
-  </span>
-)}
+                    <span className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md">
+                      New Order
+                    </span>
+                  )}
 
                   {order.cartItems.some((item) => item.delivered) && (
                     <span className="absolute top-4 right-4 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md">
@@ -296,31 +292,30 @@ function OrderHistory() {
                     </p>
 
                     <p
-  className={`mt-2 font-medium ${
-    order.cartItems.some((item) => item.delivered)
-      ? "text-green-600"
-      : "text-blue-500"
-  }`}
->
-  <strong>
-    {order.cartItems.some((item) => item.delivered)
-      ? "Delivered:"
-      : "Expected Delivery:"}
-  </strong>{" "}
-  {order.cartItems.some((item) => item.delivered)
-    ? new Date(
-        order.cartItems.find((item) => item.delivered).deliveredDate.seconds *
-          1000
-      ).toLocaleDateString("en-GB", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-        timeZone: "Africa/Lagos",
-      })
-    : calculateExpectedDeliveryDate(order.date)}
-</p>
-
+                      className={`mt-2 font-medium ${
+                        order.cartItems.some((item) => item.delivered)
+                          ? "text-green-600"
+                          : "text-blue-500"
+                      }`}
+                    >
+                      <strong>
+                        {order.cartItems.some((item) => item.delivered)
+                          ? "Delivered:"
+                          : "Expected Delivery:"}
+                      </strong>{" "}
+                      {order.cartItems.some((item) => item.delivered)
+                        ? new Date(
+                            order.cartItems.find((item) => item.delivered)
+                              .deliveredDate.seconds * 1000,
+                          ).toLocaleDateString("en-GB", {
+                            weekday: "long",
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                            timeZone: "Africa/Lagos",
+                          })
+                        : calculateExpectedDeliveryDate(order.date)}
+                    </p>
                   </div>
 
                   {/* Total Section */}

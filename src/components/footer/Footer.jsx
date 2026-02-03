@@ -7,7 +7,7 @@ import {
   FaInstagram,
   FaLinkedinIn,
 } from "react-icons/fa";
-// import logo from "../../assets/logo.png";
+import logo from "../../assets/logo.png";
 
 function Footer() {
   const { mode } = useContext(myContext);
@@ -27,16 +27,21 @@ function Footer() {
           <div className="lg:col-span-2">
             <div className="flex items-center gap-3 mb-4">
               <img
-                src={"https://dummyimage.com/50x50/000/fff&text=A"}
-                // src={logo}
+                // <img style={{backgroundColor: "white"}}
+                // src={"https://dummyimage.com/50x50/000/fff&text=A"}
+                src={logo}
                 alt="AllMart Logo"
-                className="w-12 h-12 rounded-lg"
+                className={`${
+                  mode === "dark" ? "bg-white" : "bg-white"
+                } w-12 h-12 rounded-lg`}
+                // className="w-12 h-12 rounded-lg"
               />
               <h1 className="text-2xl font-bold">AllMart</h1>
             </div>
             <p className="text-sm leading-relaxed max-w-md">
-              AllMart is an all-in-one marketplace where a single account lets you buy and sell 
-              seamlessly connecting quality products, trusted sellers, and smooth shopping anytime, anywhere.
+              AllMart is an all-in-one marketplace where a single account lets
+              you buy and sell seamlessly connecting quality products, trusted
+              sellers, and smooth shopping anytime, anywhere.
             </p>
 
             {/* Socials */}
