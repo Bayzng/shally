@@ -77,18 +77,47 @@ function OrderHistory() {
   };
 
   // Calculate expected delivery (+7 days)
+  // const calculateExpectedDeliveryDate = (orderDateValue) => {
+  //   if (!orderDateValue) return "N/A";
+
+  //   const orderDate = orderDateValue.seconds
+  //     ? new Date(orderDateValue.seconds * 1000)
+  //     : new Date(orderDateValue);
+
+  //   if (isNaN(orderDate.getTime())) return "N/A";
+
+  //   const expectedDate = new Date(
+  //     orderDate.getTime() + 7 * 24 * 60 * 60 * 1000,
+  //   );
+
+  //   return expectedDate.toLocaleDateString("en-GB", {
+  //     weekday: "long",
+  //     day: "numeric",
+  //     month: "long",
+  //     year: "numeric",
+  //     timeZone: "Africa/Lagos",
+  //   });
+  // };
+
   const calculateExpectedDeliveryDate = (orderDateValue) => {
     if (!orderDateValue) return "N/A";
 
+    // Create a UTC date
     const orderDate = orderDateValue.seconds
       ? new Date(orderDateValue.seconds * 1000)
       : new Date(orderDateValue);
 
-    if (isNaN(orderDate.getTime())) return "N/A";
-
-    const expectedDate = new Date(
-      orderDate.getTime() + 7 * 24 * 60 * 60 * 1000,
+    // Compute UTC milliseconds
+    const expectedDateUTC = Date.UTC(
+      orderDate.getUTCFullYear(),
+      orderDate.getUTCMonth(),
+      orderDate.getUTCDate() + 7,
+      orderDate.getUTCHours(),
+      orderDate.getUTCMinutes(),
+      orderDate.getUTCSeconds(),
     );
+
+    const expectedDate = new Date(expectedDateUTC);
 
     return expectedDate.toLocaleDateString("en-GB", {
       weekday: "long",
