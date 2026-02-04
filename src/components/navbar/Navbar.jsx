@@ -80,7 +80,7 @@ function Navbar() {
               leaveTo="-translate-x-full"
             >
               <Dialog.Panel
-                className={`relative flex w-full max-w-xs flex-col overflow-y-auto pb-10 shadow-2xl ${
+                className={`relative flex w-full max-w-[280px] flex-col overflow-y-auto pb-10 shadow-2xl rounded-2xl transition-all duration-300 ${
                   isDark ? "bg-gray-900 text-white" : "bg-white text-gray-900"
                 }`}
               >
@@ -97,9 +97,13 @@ function Navbar() {
 
                 {/* Navigation */}
                 <div className="px-4 py-6 space-y-5 text-sm mt-10">
-                  <h1 className="flex items-center gap-2 font-medium hover:text-pink-500 transition">
-                    AllMart
+                  <h1
+                    className="flex items-center gap-2 font-semibold text-lg tracking-wide
+                    text-pink-500 transition-colors duration-300 cursor-pointer mb-10"
+                  >
+                    AllMart Marketplace
                   </h1>
+
                   <hr className="border-gray-200/30" />
                   {user && !isAdmin ? (
                     <Link

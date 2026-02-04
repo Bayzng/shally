@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
+import image from "../../assets/ecommerce.png.webp";
 
 const slides = [
   {
     title: "📦 Discover Amazing Deals",
     subtitle: "Top products across all categories",
     image:
-      "https://t3.ftcdn.net/jpg/07/94/93/06/360_F_794930659_piZR378W6GaXrVG5k7pxhGxp072KHyUL.jpg", // (replace with a real marketplace image)
+      "https://deerdesigner.com/wp-content/uploads/2024/05/Article-34-ecommerce-design-01.png", // (replace with a real marketplace image)
     cta: "/allproducts",
   },
   {
@@ -18,8 +19,7 @@ const slides = [
   {
     title: "🚚 Fast Shipping & Support",
     subtitle: "Quality service from start to finish",
-    image:
-      "https://youmatter.world/app/uploads/2019/11/travel-world.jpg", // (replace with another image)
+    image: image, // (replace with another image)
     cta: "/allproducts",
   },
 ];

@@ -14,6 +14,7 @@ import { fireDB } from "../../fireabase/FirebaseConfig";
 import Layout from "../layout/Layout";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import toast, { Toaster } from "react-hot-toast";
 import LoadingOverlay from "../LoadingOverlay/LoadingOverlay";
 
 /* ---------------- helpers ---------------- */
@@ -46,6 +47,19 @@ function UserDashboard() {
     width: window.innerWidth,
     height: window.innerHeight,
   });
+
+  const handleWithdraw = (e) => {
+    toast.success("Funds cannot be released. This is a test transaction.", {
+      style: {
+        background: "#16a34a", // Tailwind green-600
+        color: "#fff", // white text
+        fontWeight: "500",
+        borderRadius: "0.75rem", // optional rounded corners
+        padding: "12px 16px",
+      },
+      icon: "💰", // optional fun icon
+    });
+  };
 
   /* ---------------- resize ---------------- */
   useEffect(() => {
@@ -187,6 +201,7 @@ function UserDashboard() {
 
   return (
     <Layout>
+      <Toaster />
       {showConfetti && (
         <Confetti
           width={windowSize.width}
@@ -219,18 +234,88 @@ function UserDashboard() {
         </motion.div>
 
         <div className="max-w-6xl mx-auto grid gap-6 md:grid-cols-3 mb-12">
-          <InfoCard icon={<User />} title="Account" mode={mode}>
-            <p>{currentUser.email}</p>
-            <hr style={{ margin: "10px 0" }} />
-            <p>Creator</p>
+          <InfoCard icon={<User size={22} />} title="Account" mode={mode}>
+            <div className="flex items-center gap-4">
+              {/* Avatar */}
+              <div
+                className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 
+                flex items-center justify-center text-white font-bold text-lg shadow"
+              >
+                {currentUser.email?.charAt(0).toUpperCase()}
+              </div>
+
+              {/* Info */}
+              <div className="flex-1">
+                <p className="text-sm font-semibold truncate">
+                  {currentUser.email}
+                </p>
+
+                <span
+                  className="inline-block mt-1 px-2 py-[2px] text-xs font-medium rounded-full 
+                  bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                >
+                  Creator
+                </span>
+              </div>
+            </div>
           </InfoCard>
 
-          <GradientCard icon={<Wallet />} title="Total Earned" mode={mode}>
-            ₦{totalEarned.toLocaleString()}
+          <GradientCard
+            icon={<Wallet size={22} />}
+            title="Total Earned"
+            mode={mode}
+          >
+            <div className="flex flex-col gap-4">
+              {/* Amount */}
+              <p className="text-3xl font-extrabold tracking-tight">
+                ₦{totalEarned.toLocaleString()}
+              </p>
+
+              {/* Action */}
+              <div className="flex justify-end">
+                <button
+                  onClick={handleWithdraw} // add your logic
+                  className="
+                      px-5 py-2 text-sm font-semibold rounded-xl
+                      bg-gradient-to-r from-green-500 to-emerald-600
+                      text-white shadow-lg
+                      hover:shadow-green-500/40 hover:scale-[1.03]
+                      transition-all duration-300
+                      flex items-center gap-2
+                    "
+                >
+                  <Wallet size={16} />
+                  Withdraw
+                </button>
+              </div>
+            </div>
           </GradientCard>
 
-          <InfoCard icon={<Lock />} title="Escrow" mode={mode}>
-            ₦{escrowAmount.toLocaleString()}
+          <InfoCard icon={<Lock size={22} />} title="Escrow" mode={mode}>
+            <div className="flex flex-col gap-3">
+              {/* Amount (Dimmed) */}
+              <p className="text-2xl font-bold tracking-tight text-gray-400 dark:text-gray-500">
+                ₦{escrowAmount.toLocaleString()}
+              </p>
+
+              {/* Status Badge */}
+              <div className="flex items-center gap-2">
+                <span
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full
+                    text-xs font-semibold
+                    bg-yellow-100 text-yellow-700
+                    dark:bg-yellow-900/40 dark:text-yellow-300"
+                >
+                  <Lock size={12} />
+                  Locked in Escrow
+                </span>
+              </div>
+
+              {/* Hint Text */}
+              <p className="text-xs text-gray-500 dark:text-gray-400 leading-snug">
+                Funds will be released once the buyer confirms product delivery.
+              </p>
+            </div>
           </InfoCard>
         </div>
 

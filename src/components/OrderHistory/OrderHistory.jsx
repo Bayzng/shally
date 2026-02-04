@@ -13,22 +13,68 @@ import { fireDB } from "../../fireabase/FirebaseConfig";
 import myContext from "../../context/data/myContext";
 import LoadingOverlay from "../../components/LoadingOverlay/LoadingOverlay";
 
+// ...imports stay the same
+
 function OrderHistory() {
   const { mode } = useContext(myContext);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const user = JSON.parse(localStorage.getItem("user"));
-
   const [showModal, setShowModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+
+  const handleConfirmRelease = async () => {
+    try {
+      setConfirmLoading(true);
+
+      await confirmProductReceived(selectedOrder.id, selectedItemIndex);
+
+      setShowModal(false);
+      setSelectedOrder(null);
+      setSelectedItemIndex(null);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setConfirmLoading(false);
+    }
+  };
+
+  const getDeliveryCountdown = (orderDate) => {
+    const date = parseDate(orderDate);
+    if (!date) return null;
+
+    const deliveryTime = date.getTime() + 7 * 24 * 60 * 60 * 1000;
+    const diff = deliveryTime - Date.now();
+
+    if (diff <= 0) return null;
+
+    const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+    const hours = Math.floor((diff / (60 * 60 * 1000)) % 24);
+    const minutes = Math.floor((diff / (60 * 1000)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    return { days, hours, minutes, seconds };
+  };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setOrders((prev) => [...prev]); // trigger re-render
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         if (!user?.uid) return;
-        const q = query(collection(fireDB, "order"), where("userid", "==", user.uid));
+        const q = query(
+          collection(fireDB, "order"),
+          where("userid", "==", user.uid),
+        );
         const querySnapshot = await getDocs(q);
 
         const userOrders = querySnapshot.docs.map((doc) => {
@@ -51,7 +97,6 @@ function OrderHistory() {
     fetchOrders();
   }, [user]);
 
-  // Parse Firestore Timestamp safely
   const parseDate = (value) => {
     if (!value) return null;
     if (value instanceof Timestamp) return value.toDate();
@@ -59,19 +104,22 @@ function OrderHistory() {
     return new Date(value);
   };
 
-  // Check if delivered (7 days after order)
-  const isDelivered = (orderDate) => {
-    const date = parseDate(orderDate);
-    if (!date) return false;
-    const deliveryTime = date.getTime() + 7 * 24 * 60 * 60 * 1000;
-    return Date.now() >= deliveryTime;
-  };
+  // Check if an individual item is delivered
+  const isItemDelivered = (item) => item.delivered;
 
-  // Calculate expected delivery date
-  const calculateExpectedDeliveryDate = (orderDate) => {
+  const calculateExpectedDeliveryDate = (orderDate, item) => {
+    if (item?.deliveredDate) {
+      // Use delivered date if fund released
+      return parseDate(item.deliveredDate).toLocaleDateString("en-GB", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        timeZone: "Africa/Lagos",
+      });
+    }
     const date = parseDate(orderDate);
     if (!date) return "N/A";
-
     const expected = new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000);
     return expected.toLocaleDateString("en-GB", {
       weekday: "long",
@@ -101,7 +149,9 @@ function OrderHistory() {
 
       // Update UI instantly
       setOrders((prev) =>
-        prev.map((o) => (o.id === orderId ? { ...o, cartItems: updatedItems } : o))
+        prev.map((o) =>
+          o.id === orderId ? { ...o, cartItems: updatedItems } : o,
+        ),
       );
     } catch (err) {
       console.error("Failed to release escrow:", err);
@@ -121,7 +171,9 @@ function OrderHistory() {
     <Layout>
       <div
         className={`min-h-screen py-10 px-4 sm:px-8 md:px-12 transition-colors duration-300 ${
-          mode === "dark" ? "bg-[#181a1b] text-white" : "bg-gray-50 text-gray-800"
+          mode === "dark"
+            ? "bg-[#181a1b] text-white"
+            : "bg-gray-50 text-gray-800"
         }`}
       >
         <h1 className="text-3xl md:text-4xl font-extrabold text-center mb-10 tracking-wide">
@@ -135,22 +187,28 @@ function OrderHistory() {
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {orders.map((order) => {
-              const delivered = isDelivered(order.date);
+              const anyDelivered = order.cartItems.some((item) =>
+                isItemDelivered(item),
+              );
 
               return (
                 <div
                   key={order.id}
                   className={`rounded-2xl shadow-lg border p-6 sm:p-8 relative hover:shadow-2xl transition-transform transform hover:scale-[1.01] ${
-                    mode === "dark" ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+                    mode === "dark"
+                      ? "bg-gray-800 border-gray-700"
+                      : "bg-white border-gray-200"
                   }`}
                 >
                   {/* Status Badge */}
                   <span
                     className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-semibold shadow-md ${
-                      delivered ? "bg-green-600 text-white" : "bg-blue-600 text-white"
+                      anyDelivered
+                        ? "bg-green-600 text-white"
+                        : "bg-blue-600 text-white"
                     }`}
                   >
-                    {delivered ? "✅ Delivered" : "New Order"}
+                    {anyDelivered ? "✅ Delivered" : "New Order"}
                   </span>
 
                   {/* Order Info */}
@@ -179,7 +237,7 @@ function OrderHistory() {
                   {/* Ordered Items */}
                   <div>
                     {order.cartItems.map((item, i) => {
-                      const itemDelivered = item.delivered;
+                      const delivered = isItemDelivered(item);
                       return (
                         <div
                           key={i}
@@ -191,12 +249,14 @@ function OrderHistory() {
                             className="ml-[1px] w-24 h-24 object-cover border-r rounded-lg"
                           />
                           <div className="p-3 flex-1">
-                            <p className="font-semibold truncate">{item.title}</p>
+                            <p className="font-semibold truncate">
+                              {item.title}
+                            </p>
                             <p className="text-sm text-gray-500">
                               Price: ₦{Number(item.price).toLocaleString()}
                             </p>
 
-                            {!itemDelivered && (
+                            {!delivered && (
                               <button
                                 onClick={() => {
                                   setSelectedOrder(order);
@@ -209,7 +269,7 @@ function OrderHistory() {
                               </button>
                             )}
 
-                            {itemDelivered && (
+                            {delivered && (
                               <p className="mt-2 text-green-500 text-xs font-semibold">
                                 ✔ Fund Released
                               </p>
@@ -242,22 +302,41 @@ function OrderHistory() {
                     </p>
                     <p
                       className={`mt-2 font-medium ${
-                        delivered ? "text-green-600" : "text-blue-500"
+                        anyDelivered ? "text-green-600" : "text-blue-500"
                       }`}
                     >
-                      <strong>{delivered ? "Delivered:" : "Expected Delivery:"}</strong>{" "}
-                      {delivered
-                        ? parseDate(
-                            order.cartItems.find((item) => item.delivered)
-                              ?.deliveredDate
-                          )?.toLocaleDateString("en-GB", {
-                            weekday: "long",
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                            timeZone: "Africa/Lagos",
-                          })
-                        : calculateExpectedDeliveryDate(order.date)}
+                      <strong>
+                        {anyDelivered ? "Delivered:" : "Expected Delivery:"}
+                      </strong>{" "}
+                      {anyDelivered ? (
+                        parseDate(
+                          order.cartItems.find((i) => i.delivered)
+                            ?.deliveredDate,
+                        )?.toLocaleDateString("en-GB", {
+                          weekday: "long",
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                          timeZone: "Africa/Lagos",
+                        })
+                      ) : (
+                        <>
+                          {calculateExpectedDeliveryDate(order.date)}
+                          {(() => {
+                            const countdown = getDeliveryCountdown(order.date);
+                            return countdown ? (
+                              <span className="block text-sm text-orange-500 mt-1">
+                                ⏳ {countdown.days}d {countdown.hours}h{" "}
+                                {countdown.minutes}m {countdown.seconds}s
+                              </span>
+                            ) : (
+                              <span className="block text-sm text-green-600 mt-1">
+                                ✅ Delivery window reached
+                              </span>
+                            );
+                          })()}
+                        </>
+                      )}
                     </p>
                   </div>
 
@@ -266,7 +345,10 @@ function OrderHistory() {
                     <p className="text-lg sm:text-xl font-bold">
                       Total Paid: #
                       {order.cartItems
-                        ?.reduce((acc, item) => acc + parseFloat(item.price || 0), 0)
+                        ?.reduce(
+                          (acc, item) => acc + parseFloat(item.price || 0),
+                          0,
+                        )
                         .toLocaleString()}
                     </p>
                   </div>
@@ -285,29 +367,62 @@ function OrderHistory() {
               </h2>
               <p className="mb-6 text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed">
                 By releasing the fund, you confirm the product has been
-                received. This action <strong className="text-red-600 dark:text-red-400">cannot be undone</strong>.
+                received. This action{" "}
+                <strong className="text-red-600 dark:text-red-400">
+                  cannot be undone
+                </strong>
+                .
               </p>
 
               <div className="flex justify-center gap-4 flex-wrap">
                 <button
+                  disabled={confirmLoading}
                   onClick={() => setShowModal(false)}
-                  className="px-5 py-2 sm:px-6 sm:py-3 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium transition-all"
+                  className="px-5 py-2 sm:px-6 sm:py-3 rounded-lg bg-gray-200 hover:bg-gray-300
+                  disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
+
                 <button
-                  onClick={async () => {
-                    await confirmProductReceived(
-                      selectedOrder.id,
-                      selectedItemIndex
-                    );
-                    setShowModal(false);
-                    setSelectedOrder(null);
-                    setSelectedItemIndex(null);
-                  }}
-                  className="px-5 py-2 sm:px-6 sm:py-3 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium transition-all"
+                  onClick={handleConfirmRelease}
+                  disabled={confirmLoading}
+                  className={`px-5 py-2 sm:px-6 sm:py-3 rounded-lg 
+                    text-white font-medium transition-all flex items-center justify-center gap-2
+                      ${
+                        confirmLoading
+                          ? "bg-green-400 cursor-not-allowed"
+                          : "bg-green-600 hover:bg-green-700"
+                      }
+                    `}
                 >
-                  Confirm
+                  {confirmLoading ? (
+                    <>
+                      <svg
+                        className="animate-spin h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        />
+                      </svg>
+                      Processing...
+                    </>
+                  ) : (
+                    "Confirm"
+                  )}
                 </button>
               </div>
             </div>

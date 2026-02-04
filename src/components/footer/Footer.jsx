@@ -97,27 +97,27 @@ function Footer() {
             <h2 className="font-semibold text-lg mb-4">Quick Links</h2>
             <ul className="space-y-3 text-sm">
               <li>
-                <Link to="/shop" className="hover:text-pink-600">
+                <Link to="#" className="hover:text-pink-600">
                   Shop
                 </Link>
               </li>
               <li>
-                <Link to="/orders" className="hover:text-pink-600">
+                <Link to="/order-history" className="hover:text-pink-600">
                   My Orders
                 </Link>
               </li>
               <li>
-                <Link to="/sell" className="hover:text-pink-600">
+                <Link to="/creator" className="hover:text-pink-600">
                   Become a Seller
                 </Link>
               </li>
               <li>
-                <Link to="/support" className="hover:text-pink-600">
+                <Link to="#" className="hover:text-pink-600">
                   Help Center
                 </Link>
               </li>
               <li>
-                <Link to="/returns" className="hover:text-pink-600">
+                <Link to="#" className="hover:text-pink-600">
                   Returns & Refunds
                 </Link>
               </li>
