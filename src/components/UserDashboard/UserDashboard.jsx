@@ -49,7 +49,7 @@ function UserDashboard() {
   });
 
   const handleWithdraw = (e) => {
-    toast.success("Funds cannot be released. This is a test transaction.", {
+    toast.success("Withdrawal is currently not available.", {
       style: {
         background: "#16a34a", // Tailwind green-600
         color: "#fff", // white text
@@ -313,7 +313,8 @@ function UserDashboard() {
 
               {/* Hint Text */}
               <p className="text-xs text-gray-500 dark:text-gray-400 leading-snug">
-                Funds will be released once the buyer confirms product delivery.
+                Funds will remain locked until the buyer confirms product
+                delivery or manually releases the funds.
               </p>
             </div>
           </InfoCard>
@@ -411,39 +412,43 @@ const GradientCard = ({ icon, title, children, mode }) => (
   </div>
 );
 
-const OrdersSection = ({ title, orders, downloadReceipt, mode }) => (
-  <div className="max-w-6xl mx-auto mb-12">
-    <h2 className="text-2xl font-bold mb-4 flex gap-2">
-      <Package /> {title}
-    </h2>
+const OrdersSection = ({ title, orders, downloadReceipt, mode }) => {
+  const emptyMessage =
+    title === "Recent Orders"
+      ? "📦 No recent orders today. New orders will appear here once customers place them."
+      : "🕘 No previous orders yet. Your completed orders history will show here.";
 
-    {orders.length === 0 ? (
-      <div
-        className={`p-4 rounded-md border-l-4 ${
-          mode === "dark"
-            ? "bg-gray-700 border-yellow-400 text-yellow-200"
-            : "bg-yellow-50 border-yellow-400 text-yellow-800"
-        }`}
-      >
-        <p className="text-sm">
-          ⚠️ No orders yet. Only creators receive orders. Become a seller to
-          start!
-        </p>
-      </div>
-    ) : (
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {orders.map((order) => (
-          <OrderCard
-            key={order.id}
-            order={order}
-            downloadReceipt={downloadReceipt}
-            mode={mode}
-          />
-        ))}
-      </div>
-    )}
-  </div>
-);
+  return (
+    <div className="max-w-6xl mx-auto mb-12">
+      <h2 className="text-2xl font-bold mb-4 flex gap-2">
+        <Package /> {title}
+      </h2>
+
+      {orders.length === 0 ? (
+        <div
+          className={`p-4 rounded-md border-l-4 ${
+            mode === "dark"
+              ? "bg-gray-700 border-yellow-400 text-yellow-200"
+              : "bg-yellow-50 border-yellow-400 text-yellow-800"
+          }`}
+        >
+          <p className="text-sm">{emptyMessage}</p>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {orders.map((order) => (
+            <OrderCard
+              key={order.id}
+              order={order}
+              downloadReceipt={downloadReceipt}
+              mode={mode}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const OrderCard = ({ order, downloadReceipt, mode }) => {
   const total = order.cartItems.reduce((s, i) => s + Number(i.price || 0), 0);

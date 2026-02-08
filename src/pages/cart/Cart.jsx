@@ -17,6 +17,11 @@ function Cart() {
   const navigate = useNavigate();
   const cartItems = useSelector((state) => state.cart);
 
+  const [name, setName] = useState(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    return user?.name || ""; // fallback to empty string if no user
+  });
+
   const deleteCart = (item) => {
     dispatch(deleteFromCart(item));
     toast.success("Item removed from cart");
@@ -24,14 +29,17 @@ function Cart() {
 
   useEffect(() => {
     if (cartItems.length === 0) {
-      // Close any open modal
-      setShowModal(false);
-      setPaystackProps(null);
+      // Only redirect if user is NOT coming from a payment success
+      const locationState =
+        JSON.parse(localStorage.getItem("fromPayment")) || false;
+      if (!locationState) {
+        setShowModal(false);
+        setPaystackProps(null);
 
-      // Small delay so toast can show
-      setTimeout(() => {
-        navigate("/");
-      }, 800);
+        setTimeout(() => {
+          navigate("/");
+        }, 800);
+      }
     }
   }, [cartItems, navigate]);
 
@@ -52,7 +60,7 @@ function Cart() {
   const grandTotal = totalAmount + shipping;
 
   // Delivery info states
-  const [name, setName] = useState("");
+  // const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [pincode, setPincode] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -105,8 +113,8 @@ function Cart() {
   };
 
   const buyNow = () => {
-    if (!name || !pincode || !phoneNumber)
-      return toast.error("All fields are required");
+    // Only check fields the user fills
+    if (!phoneNumber) return toast.error("Phone number is required");
 
     if (deliveryOption === "pickup") {
       if (!selectedState)
@@ -136,7 +144,7 @@ function Cart() {
       text: "Pay Now",
       onSuccess: async (reference) => {
         const addressInfo = {
-          name,
+          name, // already from localStorage
           address:
             deliveryOption === "pickup"
               ? altPickupAddress
@@ -147,16 +155,16 @@ function Cart() {
           phoneNumber,
           deliveryType: deliveryOption,
           expectedDelivery: Timestamp.fromDate(
-            new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // +7 days
-          ), // store expected delivery as Firestore timestamp
-          date: Timestamp.fromDate(new Date()), // store order date as Firestore timestamp
+            new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          ),
+          date: Timestamp.fromDate(new Date()),
         };
 
         try {
           await addDoc(collection(fireDB, "order"), {
             cartItems,
             addressInfo,
-            date: Timestamp.fromDate(new Date()), // ✅ correct timestamp
+            date: Timestamp.fromDate(new Date()),
             email,
             userid: user?.uid,
             paymentId: reference.reference,
@@ -164,8 +172,7 @@ function Cart() {
           });
 
           dispatch(clearCart());
-          localStorage.removeItem("cart");
-
+          localStorage.setItem("fromPayment", true); // mark that we are coming from payment
           navigate("/transaction-status", {
             state: {
               status: "success",
@@ -201,7 +208,7 @@ function Cart() {
       >
         <Toaster />
         <h1 className="mb-6 text-center text-3xl font-bold tracking-wide">
-          🛒 Your Shopping Cart
+          🛒 My Shopping Cart
         </h1>
         <div className="mx-auto max-w-6xl px-6 md:flex md:space-x-8">
           {/* Cart Items */}
@@ -285,7 +292,7 @@ function Cart() {
               <p className="font-medium">#{totalAmount}</p>
             </div>
             <div className="flex justify-between mb-3">
-              <p>Shipping</p>
+              <p>Transaction Fee</p>
               <p className="font-medium">#{shipping}</p>
             </div>
             <hr className="my-3" />
@@ -343,13 +350,14 @@ function Cart() {
                   type="text"
                   placeholder="Full Name"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  readOnly
                   className="w-full p-3 rounded-lg border"
                   style={{
                     backgroundColor: mode === "dark" ? "#181a1b" : "#f8fafc",
                     color: mode === "dark" ? "white" : "",
                   }}
                 />
+
                 <input
                   type="text"
                   placeholder="Phone Number"
@@ -465,18 +473,6 @@ function Cart() {
                     )}
                   </>
                 )}
-
-                <input
-                  type="text"
-                  placeholder="Postal Code"
-                  value={pincode}
-                  onChange={(e) => setPincode(e.target.value)}
-                  className="w-full p-3 rounded-lg border mt-2"
-                  style={{
-                    backgroundColor: mode === "dark" ? "#181a1b" : "#f8fafc",
-                    color: mode === "dark" ? "white" : "",
-                  }}
-                />
 
                 {!paystackProps ? (
                   <button

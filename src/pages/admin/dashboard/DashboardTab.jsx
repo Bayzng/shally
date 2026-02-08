@@ -14,6 +14,17 @@ function DashboardTab() {
   const context = useContext(myContext);
   const { mode, product, editHandle, deleteProduct, order, user } = context;
 
+  // Converts Firestore Timestamp to a readable date string
+  const timestampToDate = (timestamp) => {
+    if (!timestamp) return ""; // no timestamp
+    // Firestore Timestamp object
+    if (timestamp.seconds) {
+      return new Date(timestamp.seconds * 1000).toLocaleString();
+    }
+    // Already a Date or string
+    return new Date(timestamp).toLocaleString();
+  };
+
   const add = () => {
     window.location.href = "/addproduct";
   };
@@ -35,16 +46,13 @@ function DashboardTab() {
     let orderDate;
 
     // Firestore Timestamp
-    if (dateInput.toDate) {
+    if (dateInput.seconds) {
+      orderDate = new Date(dateInput.seconds * 1000);
+    } else if (dateInput.toDate) {
       orderDate = dateInput.toDate();
-    }
-    // JS Date object
-    else if (dateInput instanceof Date) {
+    } else if (dateInput instanceof Date) {
       orderDate = dateInput;
-    }
-    // String
-    else if (typeof dateInput === "string") {
-      // try parsing with Date constructor
+    } else if (typeof dateInput === "string") {
       orderDate = new Date(dateInput);
       if (isNaN(orderDate.getTime())) return false;
     } else {
@@ -354,8 +362,10 @@ function DashboardTab() {
                             <strong>Payment ID:</strong> {allorder.paymentId}
                           </p>
                           <p>
-                            <strong>Date:</strong> {allorder.date}
+                            <strong>Date:</strong>{" "}
+                            {timestampToDate(allorder.date)}
                           </p>
+
                           {isToday(allorder.date) && (
                             <p className="text-green-500 font-semibold mt-1">
                               🆕 New Order (Today)

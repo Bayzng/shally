@@ -145,7 +145,7 @@ function UserSettings() {
               <div
                 className={`flex items-center gap-2 px-3 py-1 rounded-full shadow-lg transition-all duration-300 ${
                   currentUser.verified
-                    ? "bg-green-100 text-green-700"
+                    ? "bg-blue-100 text-blue-700"
                     : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
                 }`}
               >
@@ -153,7 +153,7 @@ function UserSettings() {
                   size={24}
                   className={`transition-transform duration-500 ${
                     currentUser.verified
-                      ? "text-green-500 animate-bounce"
+                      ? "text-blue-500 animate-bounce"
                       : "text-gray-400 dark:text-gray-300"
                   }`}
                 />

@@ -233,7 +233,7 @@ function ProductCard({ onLoaded }) {
                         <button
                           type="button"
                           onClick={() => addCart(item)}
-                          className="flex-1 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-black 
+                          className="flex-1 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold 
                             bg-black-500 hover:bg-black-600 rounded-xl transition-all duration-500 shadow hover:shadow-lg"
                         >
                           Add Cart

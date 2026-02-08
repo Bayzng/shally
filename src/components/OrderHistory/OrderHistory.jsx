@@ -292,9 +292,6 @@ function OrderHistory() {
                       <strong>Address:</strong> {order.addressInfo?.address}
                     </p>
                     <p>
-                      <strong>Postal Code:</strong> {order.addressInfo?.pincode}
-                    </p>
-                    <p>
                       <strong>Delivery Type:</strong>{" "}
                       {order.addressInfo?.deliveryType === "home"
                         ? "Home Delivery"
