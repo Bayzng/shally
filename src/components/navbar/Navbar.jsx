@@ -14,6 +14,7 @@ import { IoMdLogOut } from "react-icons/io";
 import { IoMenu } from "react-icons/io5";
 import { SiCoinmarketcap } from "react-icons/si";
 import { FaPlusCircle } from "react-icons/fa";
+import { IoSettingsSharp } from "react-icons/io5";
 
 import logo from "../../assets/logo.png";
 import myContext from "../../context/data/myContext";
@@ -80,7 +81,7 @@ function Navbar() {
               leaveTo="-translate-x-full"
             >
               <Dialog.Panel
-                className={`relative flex w-full max-w-[280px] flex-col overflow-y-auto pb-10 shadow-2xl rounded-2xl transition-all duration-300 ${
+                className={`relative flex w-full max-w-[260px] h-screen flex-col overflow-y-auto pb-10 shadow-2xl rounded-2xl transition-all duration-300 ${
                   isDark ? "bg-gray-900 text-white" : "bg-white text-gray-900"
                 }`}
               >
@@ -161,6 +162,12 @@ function Navbar() {
                         className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
                       >
                         <SiCoinmarketcap size={22} /> My Products
+                      </Link>
+                      <Link
+                        to="/user-settings"
+                        className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
+                      >
+                        <IoSettingsSharp size={22} /> Settings
                       </Link>
 
                       <hr className="border-gray-200/30" />
@@ -295,6 +302,9 @@ function Navbar() {
                   </Link>
                   <Link to="/user-dashboard" className="font-medium">
                     My Dashboard
+                  </Link>
+                  <Link to="/user-settings" className="font-medium">
+                    Settings
                   </Link>
                 </>
               )}

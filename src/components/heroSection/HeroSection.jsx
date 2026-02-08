@@ -7,20 +7,20 @@ const slides = [
     subtitle: "Top products across all categories",
     image:
       "https://deerdesigner.com/wp-content/uploads/2024/05/Article-34-ecommerce-design-01.png", // (replace with a real marketplace image)
-    cta: "/allproducts",
+    cta: "#",
   },
   {
     title: "🛍️ Shop What You Love",
     subtitle: "Find your next must-have items",
     image:
       "https://img.freepik.com/premium-photo/woman-is-sitting-globe-with-clock-city-background_984237-89720.jpg?semt=ais_hybrid&w=740&q=80", // (replace with another image)
-    cta: "/allproducts",
+    cta: "#",
   },
   {
     title: "🚚 Fast Shipping & Support",
     subtitle: "Quality service from start to finish",
     image: image, // (replace with another image)
-    cta: "/allproducts",
+    cta: "#",
   },
 ];
 

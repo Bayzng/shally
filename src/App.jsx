@@ -29,6 +29,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute";
 import ProtectedRouteUser from "./components/ProtectedRouteUser/ProtectedRouteUser";
 import UserDashboard from "./components/UserDashboard/UserDashboard";
 import UserProfile from "./components/UserProfile/UserProfile";
+import UserSettings from "./components/UserSettings/UserSettings";
 
 function App() {
   return (
@@ -136,6 +137,14 @@ function App() {
             element={
               <ProtectedRouteUser>
                 <UserDashboard />
+              </ProtectedRouteUser>
+            }
+          />
+          <Route
+            path="/user-settings"
+            element={
+              <ProtectedRouteUser>
+                <UserSettings />
               </ProtectedRouteUser>
             }
           />

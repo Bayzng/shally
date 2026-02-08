@@ -4,11 +4,12 @@ import { useNavigate } from "react-router-dom";
 import myContext from "../../context/data/myContext";
 import Layout from "../../components/layout/Layout";
 import { deleteFromCart, clearCart } from "../../redux/cartSlice";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 import { addDoc, collection } from "firebase/firestore";
 import { Timestamp } from "firebase/firestore";
 import { fireDB } from "../../fireabase/FirebaseConfig";
 import { PaystackButton } from "react-paystack";
+import { IoMdClose } from "react-icons/io";
 
 function Cart() {
   const { mode } = useContext(myContext);
@@ -22,6 +23,19 @@ function Cart() {
   };
 
   useEffect(() => {
+    if (cartItems.length === 0) {
+      // Close any open modal
+      setShowModal(false);
+      setPaystackProps(null);
+
+      // Small delay so toast can show
+      setTimeout(() => {
+        navigate("/");
+      }, 800);
+    }
+  }, [cartItems, navigate]);
+
+  useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
@@ -29,7 +43,7 @@ function Cart() {
   useEffect(() => {
     const total = cartItems.reduce(
       (sum, item) => sum + Number(String(item.price).replace(/,/g, "") || 0),
-      0
+      0,
     );
     setTotalAmount(total);
   }, [cartItems]);
@@ -99,7 +113,7 @@ function Cart() {
         return toast.error("Select your state for pickup delivery");
       if (!pickupLocation && !altPickupAddress)
         return toast.error(
-          "Select a pickup point or provide an alternative address"
+          "Select a pickup point or provide an alternative address",
         );
     }
 
@@ -107,10 +121,9 @@ function Cart() {
       return toast.error("Enter delivery address");
 
     const user = JSON.parse(localStorage.getItem("user"));
-if (!user?.uid || !user?.email) {
-  return toast.error("Please login to continue");
-}
-
+    if (!user?.uid || !user?.email) {
+      return toast.error("Please login to continue");
+    }
 
     const publicKey = "pk_test_74f3976b0f222f4ca7e91a391c80002d962ddcf1";
     const amountInKobo = grandTotal * 100;
@@ -123,53 +136,51 @@ if (!user?.uid || !user?.email) {
       text: "Pay Now",
       onSuccess: async (reference) => {
         const addressInfo = {
-  name,
-  address:
-    deliveryOption === "pickup"
-      ? altPickupAddress
-        ? `${altPickupAddress}, ${selectedState}`
-        : `${pickupLocation}, ${selectedState}`
-      : address,
-  pincode,
-  phoneNumber,
-  deliveryType: deliveryOption,
-  expectedDelivery: Timestamp.fromDate(
-    new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // +7 days
-  ), // store expected delivery as Firestore timestamp
-  date: Timestamp.fromDate(new Date()), // store order date as Firestore timestamp
-};
+          name,
+          address:
+            deliveryOption === "pickup"
+              ? altPickupAddress
+                ? `${altPickupAddress}, ${selectedState}`
+                : `${pickupLocation}, ${selectedState}`
+              : address,
+          pincode,
+          phoneNumber,
+          deliveryType: deliveryOption,
+          expectedDelivery: Timestamp.fromDate(
+            new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // +7 days
+          ), // store expected delivery as Firestore timestamp
+          date: Timestamp.fromDate(new Date()), // store order date as Firestore timestamp
+        };
 
-try {
-  await addDoc(collection(fireDB, "order"), {
-    cartItems,
-    addressInfo,
-    date: Timestamp.fromDate(new Date()), // ✅ correct timestamp
-    email,
-    userid: user?.uid,
-    paymentId: reference.reference,
-    status: "success",
-  });
+        try {
+          await addDoc(collection(fireDB, "order"), {
+            cartItems,
+            addressInfo,
+            date: Timestamp.fromDate(new Date()), // ✅ correct timestamp
+            email,
+            userid: user?.uid,
+            paymentId: reference.reference,
+            status: "success",
+          });
 
-  dispatch(clearCart());
-  localStorage.removeItem("cart");
+          dispatch(clearCart());
+          localStorage.removeItem("cart");
 
-  navigate("/transaction-status", {
-    state: {
-      status: "success",
-      reference: reference.reference,
-      total: grandTotal,
-      cartItems,
-      addressInfo,
-    },
-  });
-} catch (error) {
-  console.error(error);
-  navigate("/transaction-status", {
-    state: { status: "failed", reference: reference.reference },
-  });
-}
-
-
+          navigate("/transaction-status", {
+            state: {
+              status: "success",
+              reference: reference.reference,
+              total: grandTotal,
+              cartItems,
+              addressInfo,
+            },
+          });
+        } catch (error) {
+          console.error(error);
+          navigate("/transaction-status", {
+            state: { status: "failed", reference: reference.reference },
+          });
+        }
       },
       onClose: () => {
         navigate("/transaction-status", { state: { status: "cancelled" } });
@@ -188,7 +199,7 @@ try {
           color: mode === "dark" ? "white" : "",
         }}
       >
-         <Toaster />
+        <Toaster />
         <h1 className="mb-6 text-center text-3xl font-bold tracking-wide">
           🛒 Your Shopping Cart
         </h1>
@@ -220,12 +231,36 @@ try {
                         <span className="font-medium">#{item.price}</span>
                       </p>
                     </div>
-                    <div
+                    <button
+                      type="button"
                       onClick={() => deleteCart(item)}
-                      className="text-red-500 hover:text-red-600 flex items-center cursor-pointer mt-3"
+                      className="
+                        mt-3 inline-flex items-center gap-2
+                        px-4 py-2 text-sm font-medium
+                        text-red-600 bg-red-200
+                        rounded-xl
+                        hover:bg-red-100 hover:text-red-700
+                        active:scale-95
+                        transition-all duration-200
+                        shadow-sm hover:shadow-md
+                      "
                     >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0H7m3-3h4a1 1 0 011 1v1H9V5a1 1 0 011-1z"
+                        />
+                      </svg>
                       Remove
-                    </div>
+                    </button>
                   </div>
                 </div>
               ))
@@ -278,13 +313,25 @@ try {
               }`}
             >
               <button
+                type="button"
+                aria-label="Close modal"
                 onClick={() => {
                   setShowModal(false);
                   setPaystackProps(null);
                 }}
-                className="absolute top-3 right-3 text-gray-400 hover:text-red-500"
+                className="
+                  absolute top-2 right-4
+                  flex items-center justify-center
+                  w-7 h-7
+                  rounded-full
+                  bg-red-600
+                  text-white
+                  hover:bg-red-700
+                  transition-all duration-200
+                  active:scale-95
+                "
               >
-                ✕
+                <IoMdClose className="w-5 h-5" />
               </button>
 
               <h2 className="text-2xl font-bold mb-4 text-center">
@@ -360,8 +407,8 @@ try {
                               selectedState === state
                                 ? "bg-blue-600 text-white"
                                 : mode === "dark"
-                                ? "hover:bg-gray-800"
-                                : "hover:bg-gray-200"
+                                  ? "hover:bg-gray-800"
+                                  : "hover:bg-gray-200"
                             }`}
                           >
                             {state}

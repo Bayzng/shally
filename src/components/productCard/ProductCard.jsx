@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../redux/cartSlice";
 import { Link } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import { MdVerified } from "react-icons/md";
 
 function ProductCard({ onLoaded }) {
   const currentUser = localStorage.getItem("user")
@@ -117,9 +118,18 @@ function ProductCard({ onLoaded }) {
     adCycle(); // start the cycle
   }, []);
 
-  const getUploaderName = (userid) => {
-    const uploader = user?.find((u) => u.uid === userid);
-    return uploader ? uploader.name : "AllMart Store";
+  // const getUploaderName = (userid) => {
+  //   const uploader = user?.find((u) => u.uid === userid);
+  //   return uploader ? uploader.name : "AllMart Store";
+  // };
+
+  const getUploader = (userid) => {
+    return (
+      user?.find((u) => u.uid === userid) || {
+        name: "AllMart Store",
+        verified: false,
+      }
+    );
   };
 
   if (!productsReady || !filteredProducts) return null;
@@ -194,12 +204,20 @@ function ProductCard({ onLoaded }) {
                   <div className="p-3 sm:p-4 flex flex-col justify-between">
                     <div>
                       <h2
-                        className={`text-xs font-semibold tracking-widest ${
+                        className={`flex items-center gap-1 text-xs font-semibold tracking-widest ${
                           mode === "dark" ? "text-green-400" : "text-green-600"
                         }`}
                       >
-                        {getUploaderName(userid)} ✨
+                        {getUploader(userid).name}
+                        <MdVerified
+                          className={
+                            getUploader(userid).verified
+                              ? "text-blue-500" // ✅ Green if verified
+                              : "text-gray-400" // ⚪ Gray if not verified
+                          }
+                        />
                       </h2>
+
                       <h1 className="text-sm sm:text-lg font-bold truncate mt-1">
                         {title}
                       </h1>

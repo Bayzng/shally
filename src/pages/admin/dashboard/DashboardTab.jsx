@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import jsPDF from "jspdf";
 import logo from "../../../assets/logo.png";
 import html2canvas from "html2canvas";
+import UsersTab from "./UsersTab";
 
 function DashboardTab() {
   const context = useContext(myContext);
@@ -28,13 +29,28 @@ function DashboardTab() {
   };
 
   // ✅ Check if order date is today
-  const isToday = (dateString) => {
-    if (!dateString) return false;
-    const [datePart] = dateString.split(",");
-    const parts = datePart.trim().split("/");
-    if (parts.length !== 3) return false;
-    const [day, month, year] = parts.map(Number);
-    const orderDate = new Date(year, month - 1, day);
+  const isToday = (dateInput) => {
+    if (!dateInput) return false;
+
+    let orderDate;
+
+    // Firestore Timestamp
+    if (dateInput.toDate) {
+      orderDate = dateInput.toDate();
+    }
+    // JS Date object
+    else if (dateInput instanceof Date) {
+      orderDate = dateInput;
+    }
+    // String
+    else if (typeof dateInput === "string") {
+      // try parsing with Date constructor
+      orderDate = new Date(dateInput);
+      if (isNaN(orderDate.getTime())) return false;
+    } else {
+      return false; // unsupported type
+    }
+
     const today = new Date();
     return (
       orderDate.getDate() === today.getDate() &&
@@ -366,54 +382,7 @@ function DashboardTab() {
 
           {/* ===== Users Tab ===== */}
           <TabPanel>
-            <div className="relative overflow-x-auto mb-10">
-              <h1
-                className="text-center mb-5 text-3xl font-semibold underline"
-                style={{ color: mode === "dark" ? "white" : "" }}
-              >
-                User Details
-              </h1>
-
-              {user.length === 0 ? (
-                <div style={noDataStyle}>👤 No registered users yet.</div>
-              ) : (
-                <table className="w-full text-sm text-left">
-                  <thead
-                    className="text-xs uppercase"
-                    style={{
-                      backgroundColor: mode === "dark" ? "rgb(46 49 55)" : "",
-                      color: mode === "dark" ? "white" : "",
-                    }}
-                  >
-                    <tr>
-                      <th className="px-6 py-3">S.No</th>
-                      <th className="px-6 py-3">Name</th>
-                      <th className="px-6 py-3">Email</th>
-                      <th className="px-6 py-3">Date</th>
-                      <th className="px-6 py-3">UID</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {user.map((item, index) => (
-                      <tr
-                        key={item.uid || index}
-                        style={{
-                          backgroundColor:
-                            mode === "dark" ? "rgb(46 49 55)" : "#fafafa",
-                          color: mode === "dark" ? "white" : "",
-                        }}
-                      >
-                        <td className="px-6 py-4">{index + 1}.</td>
-                        <td className="px-6 py-4">{item.name}</td>
-                        <td className="px-6 py-4">{item.email}</td>
-                        <td className="px-6 py-4">{item.date}</td>
-                        <td className="px-6 py-4">{item.uid}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
+            <UsersTab mode={mode} />
           </TabPanel>
         </Tabs>
       </div>

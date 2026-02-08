@@ -4,6 +4,7 @@ import { Package, Store, Mail, ShieldCheck, User } from "lucide-react";
 import Layout from "../layout/Layout";
 import myContext from "../../context/data/myContext";
 import LoadingOverlay from "../LoadingOverlay/LoadingOverlay";
+import { MdVerified } from "react-icons/md";
 
 function UserProfile() {
   const { mode, product, user } = useContext(myContext);
@@ -34,7 +35,7 @@ function UserProfile() {
 
   /* -------- seller products -------- */
   const sellerProducts = product.filter(
-    (item) => item.userid === currentUser.uid
+    (item) => item.userid === currentUser.uid,
   );
 
   return (
@@ -49,9 +50,7 @@ function UserProfile() {
         {/* ================= SELLER HEADER ================= */}
         <div
           className={`max-w-6xl mx-auto mb-10 p-6 sm:p-8 rounded-3xl shadow-lg ${
-            mode === "dark"
-              ? "bg-gray-800 border border-gray-700"
-              : "bg-white"
+            mode === "dark" ? "bg-gray-800 border border-gray-700" : "bg-white"
           }`}
         >
           <div className="flex flex-col md:flex-row items-center gap-8">
@@ -62,13 +61,21 @@ function UserProfile() {
 
             {/* Seller Info */}
             <div className="flex-1 text-center md:text-left space-y-4">
-              <h1 className="text-3xl sm:text-4xl font-extrabold">
-                {currentUser.name}
+              <h1 className="flex items-center justify-center sm:justify-start gap-2 text-3xl sm:text-4xl font-extrabold text-center sm:text-left">
+                <span>{currentUser.name}</span>
+                <MdVerified
+                  className={
+                    currentUser.verified
+                      ? "text-blue-500 text-2xl sm:text-3xl" // ✅ green if verified
+                      : "text-gray-400 text-2xl sm:text-3xl" // ⚪ gray if not verified
+                  }
+                />
               </h1>
 
               <div className="flex flex-wrap justify-center md:justify-start gap-4 text-sm text-gray-400">
                 <span className="flex items-center gap-1">
-                  <Store size={14} /> Verified Seller
+                  <Store size={14} />
+                  {currentUser.verified ? "Verified Seller" : "Emerging Seller"}
                 </span>
                 <span className="flex items-center gap-1">
                   <ShieldCheck size={14} /> Trusted Account
@@ -92,9 +99,7 @@ function UserProfile() {
               {/* Stats */}
               <div className="flex justify-center md:justify-start gap-8 pt-4">
                 <div className="text-center">
-                  <p className="text-2xl font-bold">
-                    {sellerProducts.length}
-                  </p>
+                  <p className="text-2xl font-bold">{sellerProducts.length}</p>
                   <p className="text-xs text-gray-500">Products</p>
                 </div>
 
@@ -115,17 +120,16 @@ function UserProfile() {
         {/* ================= ABOUT SELLER ================= */}
         <div
           className={`max-w-6xl mx-auto mb-12 p-6 rounded-2xl ${
-            mode === "dark"
-              ? "bg-gray-800 border border-gray-700"
-              : "bg-white"
+            mode === "dark" ? "bg-gray-800 border border-gray-700" : "bg-white"
           }`}
         >
           <h2 className="text-xl font-bold mb-3">About Seller</h2>
           <p className="text-sm leading-relaxed text-gray-500">
-            {currentUser.name} is a verified merchant on our platform, focused on
-            delivering quality products, fast responses, and secure
-            transactions. Every product is reviewed to ensure a trusted
-            shopping experience for buyers.
+            {currentUser.name} is a{" "}
+            {currentUser.verified ? "Verified Merchant" : "merchant"} on our
+            platform, focused on delivering quality products, fast responses,
+            and secure transactions. Every product is reviewed to ensure a
+            trusted shopping experience for buyers.
           </p>
         </div>
 
@@ -166,9 +170,7 @@ function UserProfile() {
                   />
 
                   <div className="p-4 space-y-1">
-                    <h3 className="font-bold text-sm truncate">
-                      {item.title}
-                    </h3>
+                    <h3 className="font-bold text-sm truncate">{item.title}</h3>
 
                     <p className="text-[11px] text-gray-500 truncate">
                       {item.category}
