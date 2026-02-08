@@ -8,6 +8,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { addToCart } from "../../redux/cartSlice";
 import { fireDB } from "../../fireabase/FirebaseConfig";
 import LoadingOverlay from "../../components/LoadingOverlay/LoadingOverlay"; // ✅ Import overlay
+import { MdVerified } from "react-icons/md";
 
 function ProductInfo() {
   const currentUser = JSON.parse(localStorage.getItem("user"));
@@ -18,10 +19,17 @@ function ProductInfo() {
   const params = useParams();
 
   // ✅ Get uploader's name
-  const getUploaderName = (userid) => {
-    const uploader = user?.find((u) => u.uid === userid);
-    return uploader ? uploader.name : "AllMart Store";
+  // const getUploaderName = (userid) => {
+  //   const uploader = user?.find((u) => u.uid === userid);
+  //   return uploader ? uploader.name : "AllMart Store";
+  // };
+  const getUploader = (userid) => {
+  return user?.find((u) => u.uid === userid) || {
+    name: "AllMart Store",
+    verified: false,
   };
+};
+
 
   // ✅ Fetch product data
   const getProductData = async () => {
@@ -95,13 +103,22 @@ function ProductInfo() {
 
               {/* 🛍️ Product Info */}
               <div className="w-full lg:w-1/2">
-                <h2
-                  className={`text-xs tracking-widest font-semibold ${
-                    mode === "dark" ? "text-green-400" : "text-green-600"
-                  }`}
-                >
-                  {getUploaderName(products.userid)}
-                </h2>
+                {products && (() => {
+  const uploader = getUploader(products.userid);
+  return (
+    <h2
+      className={`flex items-center gap-1 text-xs tracking-widest font-semibold mb-3 ${
+        mode === "dark" ? "text-green-400" : "text-green-600"
+      }`}
+    >
+      {uploader.name}
+      <MdVerified
+        className={uploader.verified ? "text-blue-500" : "text-gray-400"}
+      />
+    </h2>
+  );
+})()}
+
                 <h1 className="text-3xl sm:text-4xl font-bold mb-3 leading-tight">
                   {products.title}
                 </h1>

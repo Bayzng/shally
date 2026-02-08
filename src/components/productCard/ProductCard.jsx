@@ -5,6 +5,7 @@ import { addToCart } from "../../redux/cartSlice";
 import { Link } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { MdVerified } from "react-icons/md";
+import { IoIosPricetag } from "react-icons/io";
 
 function ProductCard({ onLoaded }) {
   const currentUser = localStorage.getItem("user")
@@ -221,8 +222,9 @@ function ProductCard({ onLoaded }) {
                       <h1 className="text-sm sm:text-lg font-bold truncate mt-1">
                         {title}
                       </h1>
-                      <p className="text-sm sm:text-base font-semibold mt-2 text-pink-600">
-                        ₦{price.toLocaleString()} 💰
+                      <p className="flex items-center gap-1 text-sm sm:text-base font-semibold mt-2 text-pink-600">
+                        ₦{price.toLocaleString()}{" "}
+                        <IoIosPricetag className="text-base sm:text-lg" />
                       </p>
                     </div>
 
@@ -231,8 +233,8 @@ function ProductCard({ onLoaded }) {
                         <button
                           type="button"
                           onClick={() => addCart(item)}
-                          className="flex-1 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white 
-                            bg-pink-500 hover:bg-pink-600 rounded-xl transition-all duration-500 shadow hover:shadow-lg"
+                          className="flex-1 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-black 
+                            bg-black-500 hover:bg-black-600 rounded-xl transition-all duration-500 shadow hover:shadow-lg"
                         >
                           Add Cart
                         </button>
@@ -240,7 +242,7 @@ function ProductCard({ onLoaded }) {
                         <Link to={`/user-profile/${userid}`} className="flex-1">
                           <button
                             type="button"
-                            className="text-xs sm:text-sm font-medium"
+                            className="text-xs mt-2 sm:text-sm font-medium"
                           >
                             👤 Creator
                           </button>
