@@ -7,6 +7,7 @@ import { addToCart } from "../../redux/cartSlice";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import LoadingOverlay from "../../components/LoadingOverlay/LoadingOverlay"; // ✅ import
+import { MdVerified } from "react-icons/md";
 
 function Allproducts() {
   const context = useContext(myContext);
@@ -39,9 +40,23 @@ function Allproducts() {
   }, []);
 
   // ✅ Resolve uploader name from userid
-  const getUploaderName = (userid) => {
+  // const getUploaderName = (userid) => {
+  //   const uploader = user?.find((u) => u.uid === userid);
+  //   return uploader ? uploader.name : "Marketplace Seller";
+  // };
+
+  const getUploaderInfo = (userid) => {
     const uploader = user?.find((u) => u.uid === userid);
-    return uploader ? uploader.name : "Marketplace Seller";
+
+    return uploader
+      ? {
+          name: uploader.name,
+          verified: uploader.verified,
+        }
+      : {
+          name: "Marketplace Seller",
+          verified: false,
+        };
   };
 
   // ✅ Show loading overlay while products are empty
@@ -55,15 +70,11 @@ function Allproducts() {
 
   // Filtered products
   const filteredProducts = product
-    ?.filter((obj) =>
-      obj.title.toLowerCase().includes(searchkey.toLowerCase())
-    )
+    ?.filter((obj) => obj.title.toLowerCase().includes(searchkey.toLowerCase()))
     .filter((obj) =>
-      filterType ? obj.category.toLowerCase().includes(filterType) : true
+      filterType ? obj.category.toLowerCase().includes(filterType) : true,
     )
-    .filter((obj) =>
-      filterPrice ? obj.price <= parseInt(filterPrice) : true
-    );
+    .filter((obj) => (filterPrice ? obj.price <= parseInt(filterPrice) : true));
 
   return (
     <Layout>
@@ -135,15 +146,34 @@ function Allproducts() {
                     {/* Product Info */}
                     <div className="p-4 sm:p-5 border-t border-gray-200/40 flex flex-col justify-between">
                       <div>
-                        <h2
-                          className={`text-xs uppercase tracking-widest font-semibold mb-1 ${
-                            mode === "dark"
-                              ? "text-pink-400"
-                              : "text-pink-600"
-                          }`}
-                        >
-                          {getUploaderName(userid)}
-                        </h2>
+                        {(() => {
+                          const uploader = getUploaderInfo(userid);
+
+                          return (
+                            <h2
+                              className={`flex items-center gap-1 text-xs tracking-widest font-semibold mb-1
+                            ${mode === "dark" ? "text-green-400" : "text-green-600"}`}
+                            >
+                              {uploader.name}
+
+                              {/* Verification Icon */}
+                              <MdVerified
+                                className={`text-xs ${
+                                  uploader.verified
+                                    ? "text-blue-500"
+                                    : mode === "dark"
+                                      ? "text-gray-500"
+                                      : "text-gray-400"
+                                }`}
+                                title={
+                                  uploader.verified
+                                    ? "Verified Seller"
+                                    : "Not Verified"
+                                }
+                              />
+                            </h2>
+                          );
+                        })()}
 
                         <h1 className="text-sm sm:text-lg font-bold truncate mb-1">
                           {title}
@@ -161,7 +191,7 @@ function Allproducts() {
                           e.stopPropagation();
                           addCart(item);
                         }}
-                        className="w-full py-2 text-sm sm:text-base text-white bg-pink-600 hover:bg-pink-700 font-semibold rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pink-300"
+                        className="w-full py-2 text-sm sm:text-base text-white bg-green-600 hover:bg-green-700 font-semibold rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pink-300"
                       >
                         Add To Cart
                       </button>

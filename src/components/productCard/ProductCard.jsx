@@ -319,34 +319,134 @@
 // }
 
 // export default ProductCard;
-
 import React, {
   useContext,
   useEffect,
   useState,
   useMemo,
   useCallback,
+  useRef,
 } from "react";
 import myContext from "../../context/data/myContext";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../redux/cartSlice";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { MdVerified } from "react-icons/md";
 import { IoIosPricetag } from "react-icons/io";
 
+/* ==============================
+   PRODUCT CARD ITEM (STABLE)
+============================== */
+const ProductCardItem = React.memo(function ProductCardItem({
+  item,
+  mode,
+  onProductClick,
+  onCreatorClick,
+  onAddCart,
+}) {
+  const { title, price, imageUrl, id, userid, uploader } = item;
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => onProductClick(id)}
+      className={`relative rounded-3xl shadow-xl overflow-hidden cursor-pointer
+        transition-transform duration-200 hover:scale-[1.01]
+        ${
+          mode === "dark"
+            ? "bg-gray-800 border border-gray-700"
+            : "bg-gradient-to-t from-pink-50 via-yellow-50 to-white border border-gray-200"
+        }`}
+    >
+      {/* Badge */}
+      <div className="absolute top-3 left-3 text-white text-xs px-2 py-1 rounded-full shadow-md z-20">
+        AllMart 🛒
+      </div>
+
+      {/* Image */}
+      <div className="relative overflow-hidden rounded-t-3xl h-44 sm:h-52">
+        <img
+          src={imageUrl}
+          alt={title}
+          className="w-full h-full object-cover"
+          draggable={false}
+          loading="lazy"
+        />
+      </div>
+
+      {/* Content */}
+      <div className="p-3 sm:p-4 flex flex-col justify-between">
+        <div>
+          <h2
+            className={`flex items-center gap-1 text-xs font-semibold tracking-widest ${
+              mode === "dark" ? "text-green-400" : "text-green-600"
+            }`}
+          >
+            {uploader.name}
+            <MdVerified
+              className={uploader.verified ? "text-blue-500" : "text-gray-400"}
+            />
+          </h2>
+
+          <h1 className="text-sm sm:text-lg font-bold truncate mt-1">
+            {title}
+          </h1>
+
+          <p className="flex items-center gap-1 text-sm sm:text-base font-semibold mt-2 text-pink-600">
+            ₦{price.toLocaleString()} <IoIosPricetag />
+          </p>
+        </div>
+
+        {localStorage.getItem("user") && (
+          <div
+            className="mt-4 flex gap-3 bg-white/30 backdrop-blur-md p-2 rounded-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddCart(item);
+              }}
+              className="flex-1 py-2 text-xs sm:text-sm font-semibold bg-black text-white rounded-xl"
+            >
+              Add Cart
+            </button>
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onCreatorClick(userid);
+              }}
+              className="flex-1 text-xs sm:text-sm font-medium"
+            >
+              👤 Creator
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+});
+
+/* ==============================
+   MAIN COMPONENT
+============================== */
 function ProductCard({ onLoaded }) {
   const { mode, product, searchkey, filterType, filterPrice, user } =
     useContext(myContext);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
 
-  const [imagesLoaded, setImagesLoaded] = useState(0);
+  const imagesLoadedRef = useRef(0);
   const [productsReady, setProductsReady] = useState(false);
-  const [adPosition, setAdPosition] = useState({ top: 0, left: 0 });
-  const [showAd, setShowAd] = useState(false);
 
+  /* -------------------- */
   const addCart = useCallback(
     (item) => {
       dispatch(addToCart(item));
@@ -355,6 +455,28 @@ function ProductCard({ onLoaded }) {
     [dispatch],
   );
 
+  // const handleNavigate = useCallback(
+  //   (path) => {
+  //     navigate(typeof path === "string" ? `/${path}` : `/productinfo/${path}`);
+  //   },
+  //   [navigate],
+  // );
+
+  const goToProduct = useCallback(
+    (id) => {
+      navigate(`/productinfo/${id}`);
+    },
+    [navigate],
+  );
+
+  const goToCreator = useCallback(
+    (userid) => {
+      navigate(`/user-profile/${userid}`);
+    },
+    [navigate],
+  );
+
+  /* -------------------- */
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
@@ -404,129 +526,10 @@ function ProductCard({ onLoaded }) {
   }, [filteredProducts]);
 
   useEffect(() => {
-    if (
-      productsReady &&
-      filteredProducts.length &&
-      imagesLoaded === filteredProducts.length
-    ) {
-      onLoaded?.();
-    }
-  }, [imagesLoaded, filteredProducts, productsReady, onLoaded]);
-
-  useEffect(() => {
-    const showHideAd = () => {
-      setShowAd(true);
-      setAdPosition({
-        top: Math.random() * 400,
-        left: Math.random() * (window.innerWidth * 0.7),
-      });
-      setTimeout(() => setShowAd(false), 4000);
-    };
-
-    showHideAd();
-    const interval = setInterval(showHideAd, 44000);
-    return () => clearInterval(interval);
-  }, []);
+    if (filteredProducts.length) onLoaded?.();
+  }, [filteredProducts, onLoaded]);
 
   if (!productsReady) return null;
-
-  const ProductCardItem = ({ item }) => {
-    const { title, price, imageUrl, id, userid, uploader } = item;
-
-    const handleNavigate = () => navigate(`/productinfo/${id}`);
-
-    return (
-      <div className="flex flex-col gap-4">
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={() => navigate(`/productinfo/${id}`)}
-          className={`relative rounded-3xl shadow-xl overflow-hidden cursor-pointer ${
-            mode === "dark"
-              ? "bg-gray-800 border border-gray-700"
-              : "bg-gradient-to-t from-pink-50 via-yellow-50 to-white border border-gray-200"
-          }`}
-        >
-          {/* Badge */}
-          <div className="absolute top-3 left-3 text-white text-xs px-2 py-1 rounded-full shadow-md z-20">
-            AllMart 🛒
-          </div>
-
-          {/* Image wrapper */}
-          <div className="relative overflow-hidden rounded-t-3xl h-44 sm:h-52">
-            <img
-              src={imageUrl}
-              alt={title}
-              className="w-full h-full object-cover transition-transform duration-300 "
-              onLoad={() => setImagesLoaded((prev) => prev + 1)}
-              onError={(e) => {
-                e.target.src =
-                  "https://via.placeholder.com/300x300.png?text=Unavailable";
-                setImagesLoaded((prev) => prev + 1);
-              }}
-            />
-          </div>
-
-          {/* Content */}
-          <div className="p-3 sm:p-4 flex flex-col justify-between">
-            <div>
-              <h2
-                className={`flex items-center gap-1 text-xs font-semibold tracking-widest ${
-                  mode === "dark" ? "text-green-400" : "text-green-600"
-                }`}
-              >
-                {uploader.name}
-                <MdVerified
-                  className={
-                    uploader.verified ? "text-blue-500" : "text-gray-400"
-                  }
-                />
-              </h2>
-
-              <h1 className="text-sm sm:text-lg font-bold truncate mt-1">
-                {title}
-              </h1>
-
-              <p className="flex items-center gap-1 text-sm sm:text-base font-semibold mt-2 text-pink-600">
-                ₦{price.toLocaleString()} <IoIosPricetag />
-              </p>
-            </div>
-
-            {localStorage.getItem("user") && (
-              <div
-                className="mt-4 flex gap-3 bg-white/30 backdrop-blur-md p-2 rounded-xl"
-                onClick={(e) => e.stopPropagation()} // prevent parent click
-              >
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    addCart(item);
-                  }}
-                  className="flex-1 py-2 text-xs sm:text-sm font-semibold bg-black text-white rounded-xl hover:opacity-90 transition"
-                >
-                  Add Cart
-                </button>
-
-                <Link
-                  to={`/user-profile/${userid}`}
-                  className="flex-1"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <button
-                    type="button"
-                    className="text-xs sm:text-sm font-medium w-full"
-                  >
-                    👤 Creator
-                  </button>
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <section
@@ -535,206 +538,123 @@ function ProductCard({ onLoaded }) {
       }`}
     >
       <Toaster />
-      <div className="container mx-auto px-4 sm:px-6 py-10 md:py-16 relative">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3">
-            🛒 MarketPlace Picks
-          </h1>
-          <div className="h-1 w-20 mx-auto bg-pink-500 rounded"></div>
-          <p
-            className={`mt-3 text-sm sm:text-base ${
-              mode === "dark" ? "text-gray-300" : "text-gray-600"
-            }`}
-          >
-            Discover cool finds and trending products 🛍️
-          </p>
-        </div>
 
-        {/* First 4 Products */}
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 relative">
+      <div className="container mx-auto px-4 py-12">
+        {/* FIRST 4 */}
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
           {firstFour.map((item) => (
-            <ProductCardItem key={item.id} item={item} />
+            <ProductCardItem
+              key={`${item.id}-${item.userid}`}
+              item={item}
+              mode={mode}
+              onProductClick={goToProduct}
+              onCreatorClick={goToCreator}
+              onAddCart={addCart}
+            />
           ))}
         </div>
 
-        {/* Creator Carousel */}
-        {/* <div className="mt-10 overflow-hidden relative">
-          <div className="flex gap-6 animate-scroll whitespace-nowrap pointer-events-none">
-            {allCreators.map((creator, idx) => (
-              <div
-                key={idx}
-                className="flex flex-col items-center justify-center min-w-[120px]
-                   transition-transform duration-300 hover:scale-105"
-              >
-              
-                <div className="relative">
-                  <div
-                    className="w-20 h-20 rounded-full flex items-center justify-center
-                       bg-gradient-to-br from-pink-500 via-purple-500 to-yellow-400
-                       text-white font-bold text-xl shadow-xl ring-2 ring-white/40
-                       backdrop-blur-md"
-                    title={creator.name}
-                  >
-                    {creator.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
+        {/* CREATOR CAROUSEL */}
+        <div className="mt-12 overflow-hidden">
+          <div className="creator-carousel flex gap-4">
+            {allCreators.map((creator, idx) => {
+              const initials = creator.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("");
+
+              const isVerified = creator.verified;
+
+              return (
+                <div
+                  key={idx}
+                  className={`creator-card min-w-[110px] flex flex-col items-center
+                  rounded-2xl px-3 py-4 transition-all
+                  ${
+                    mode === "dark"
+                      ? "bg-black/80 text-white border border-gray-700"
+                      : "bg-gradient-to-t from-pink-50 via-yellow-50 to-white border border-gray-200"
+                  }`}
+                >
+                  {/* Avatar */}
+                  <div className="relative">
+                    <div
+                      className={`w-12 h-12 rounded-full flex items-center justify-center
+                      font-bold text-base
+                      ${
+                        mode === "dark"
+                          ? "bg-gray-900 text-white"
+                          : "bg-gray-100 text-gray-800"
+                      }
+                      ${
+                        isVerified
+                          ? "ring-2 ring-pink-500/50"
+                          : "ring-1 ring-gray-300"
+                      }`}
+                    >
+                      {initials}
+                    </div>
+
+                    {/* Verification badge */}
+                    <div
+                      className={`absolute -top-1 -right-1 rounded-full p-[3px] shadow
+                      ${
+                        isVerified
+                          ? "bg-blue-500"
+                          : mode === "dark"
+                            ? "bg-gray-600"
+                            : "bg-gray-400"
+                      }`}
+                    >
+                      <MdVerified className="text-white text-[10px]" />
+                    </div>
                   </div>
 
-                  
-                  {creator.verified && (
-                    <span className="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-1 shadow-lg">
-                      <MdVerified className="text-white text-sm" />
+                  {/* Name */}
+                  <div className="mt-2 flex items-center gap-1 max-w-full">
+                    <span className="text-xs font-semibold truncate">
+                      {creator.name}
                     </span>
-                  )}
-                </div>
+                    <MdVerified
+                      className={`text-[10px] ${
+                        isVerified ? "text-blue-500" : "text-gray-400"
+                      }`}
+                    />
+                  </div>
 
-                
-                <div className="mt-3 flex items-center gap-1 text-center">
-                  <span className="text-xs sm:text-sm font-semibold text-gray-800 dark:text-gray-200">
-                    {creator.name}
+                  {/* Status */}
+                  <span
+                    className={`mt-1 text-[9px] uppercase tracking-wider font-medium
+                  ${
+                    isVerified
+                      ? mode === "dark"
+                        ? "text-green-400"
+                        : "text-green-600"
+                      : mode === "dark"
+                        ? "text-gray-400"
+                        : "text-gray-500"
+                  }`}
+                  >
+                    {isVerified ? "Verified" : "Creator"}
                   </span>
-                  {creator.verified && (
-                    <MdVerified className="text-blue-500 text-sm" />
-                  )}
                 </div>
-              </div>
-            ))}
-          </div>
-
-          <style>{`
-              @keyframes scroll {
-                0% {
-                  transform: translateX(100%);
-                }
-                100% {
-                  transform: translateX(-100%);
-                }
-              }
-
-              .animate-scroll {
-                display: flex;
-                animation: scroll 30s linear infinite;
-              }
-            `}</style>
-        </div> */}
-
-        <div className="mt-12 relative overflow-hidden">
-  <div className="relative flex gap-4 animate-scroll whitespace-nowrap pointer-events-none px-2">
-    {allCreators.map((creator, idx) => (
-      <div
-        key={idx}
-        className="
-          min-w-[110px] flex flex-col items-center
-          rounded-2xl
-          bg-black/80
-          backdrop-blur-md
-          shadow-md
-          border border-black/30
-          px-3 py-4
-          transition-transform duration-300 hover:scale-105
-        "
-      >
-        {/* Avatar */}
-        <div className="relative">
-          <div
-            className={`w-12 h-12 rounded-full flex items-center justify-center
-              bg-gray-900 text-white
-              font-bold text-base ring-2
-              ${
-                creator.verified
-                  ? "ring-pink-400/40 animate-pulse-slow"
-                  : "ring-gray-300"
-              }`}
-          >
-            {creator.name
-              .split(" ")
-              .map((n) => n[0])
-              .join("")}
-          </div>
-
-          {/* verified */}
-          <div
-            className={`absolute -top-1 -right-1 rounded-full p-1 shadow
-              ${creator.verified ? "bg-blue-500" : "bg-gray-400"}`}
-          >
-            <MdVerified className="text-white text-[10px]" />
+              );
+            })}
           </div>
         </div>
 
-        {/* name */}
-        <div className="mt-2 flex items-center gap-1">
-          <span className="text-xs font-semibold text-white truncate">
-            {creator.name}
-          </span>
-          <MdVerified
-            className={`text-[10px] ${
-              creator.verified ? "text-blue-500" : "text-gray-400"
-            }`}
-          />
-        </div>
-
-        {/* role / tag */}
-        <span
-          className={`mt-1 text-[9px] uppercase tracking-wider font-medium ${
-            creator.verified ? "text-green-400" : "text-gray-400"
-          }`}
-        >
-          {creator.verified ? "Verified" : "Creator"}
-        </span>
-      </div>
-    ))}
-  </div>
-
-  <style>{`
-    @keyframes scroll {
-      0% { transform: translateX(100%); }
-      100% { transform: translateX(-100%); }
-    }
-
-    @keyframes pulseSlow {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); }
-      50% { box-shadow: 0 0 0 6px rgba(236, 72, 153, 0); }
-    }
-
-    .animate-scroll { animation: scroll 35s linear infinite; }
-    .animate-pulse-slow { animation: pulseSlow 3s infinite; }
-  `}</style>
-</div>
-
-        {/* Remaining Products */}
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-8 relative">
+        {/* REST */}
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 mt-10">
           {restProducts.map((item) => (
-            <ProductCardItem key={item.id} item={item} />
+            <ProductCardItem
+              key={`${item.id}-${item.userid}`}
+              item={item}
+              mode={mode}
+              onProductClick={goToProduct}
+              onCreatorClick={goToCreator}
+              onAddCart={addCart}
+            />
           ))}
-        </div>
-
-        {/* Floating Ad */}
-        <div
-          style={{
-            top: adPosition.top,
-            left: adPosition.left,
-            opacity: showAd ? 1 : 0,
-          }}
-          className="absolute pointer-events-none rounded-xl border-dashed border-2 border-gray-300
-            bg-gradient-to-r from-yellow-50 via-pink-50 to-white
-            flex flex-col sm:flex-row justify-between items-center
-            p-4 h-24 sm:h-28 z-40 shadow-lg
-            transition-opacity duration-1000"
-        >
-          <div className="text-center sm:text-left mb-2 sm:mb-0">
-            <h2 className="text-lg font-bold text-pink-500">✨ Sponsored ✨</h2>
-            <p className="text-sm text-gray-700">
-              Check out amazing deals here!
-            </p>
-          </div>
-          <button
-            className="pointer-events-auto px-4 py-2 bg-pink-500 text-white rounded-xl hover:bg-pink-600 transition"
-            onClick={() => (window.location.href = "/")}
-          >
-            Shop Now 🛍️
-          </button>
         </div>
       </div>
     </section>

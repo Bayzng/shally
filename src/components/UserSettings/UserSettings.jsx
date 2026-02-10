@@ -170,7 +170,21 @@ function UserSettings() {
               isDark ? "bg-gray-800 text-gray-200" : "bg-white text-gray-700"
             }`}
           >
-            <h2 className="text-lg font-semibold mb-1">About You</h2>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="flex items-center justify-center w-9 h-9 rounded-full bg-pink-100 text-pink-600">
+                🔔
+              </span>
+
+              <div>
+                <h2 className="text-lg sm:text-xl font-semibold text-green-600">
+                  Notifications
+                </h2>
+                <p className="text-xs text-gray-500">
+                  Stay updated on your orders and activity
+                </p>
+              </div>
+            </div>
+
             <p className="text-sm">
               {currentUser.verified ? (
                 <>

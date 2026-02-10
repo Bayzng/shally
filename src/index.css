@@ -14,3 +14,30 @@
 .animate-marquee {
   animation: marquee 15s linear infinite;
 }
+
+/* ==============================
+   CREATOR CAROUSEL FIX
+============================== */
+.creator-carousel {
+  animation: creator-scroll 35s linear infinite;
+  pointer-events: none;
+}
+
+.creator-carousel > * {
+  pointer-events: auto;
+}
+
+@keyframes creator-scroll {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* Prevent image drag + ghost clicks */
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+}

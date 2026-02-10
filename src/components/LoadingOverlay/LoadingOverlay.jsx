@@ -34,7 +34,7 @@ function LoadingOverlay() {
         }`}
       >
         {displayedText}
-        <span className="animate-blink">|</span>
+        <span className="animate-blink">🛒</span>
       </p>
 
       <style jsx>{`
