@@ -30,6 +30,7 @@ import ProtectedRouteUser from "./components/ProtectedRouteUser/ProtectedRouteUs
 import UserDashboard from "./components/UserDashboard/UserDashboard";
 import UserProfile from "./components/UserProfile/UserProfile";
 import UserSettings from "./components/UserSettings/UserSettings";
+import PrivacyTerms from "./components/PrivacyTerms";
 
 function App() {
   return (
@@ -150,6 +151,7 @@ function App() {
           />
 
           <Route path="/*" element={<NoPage />} />
+          <Route path="/privacy-terms" element={<PrivacyTerms />} />
         </Routes>
 
         <ToastContainer />

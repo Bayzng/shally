@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import myContext from "../../context/data/myContext";
 import { Link } from "react-router-dom";
 import {
@@ -8,9 +8,54 @@ import {
   FaLinkedinIn,
 } from "react-icons/fa";
 import logo from "../../assets/logo.png";
+import { fireDB } from "../../fireabase/FirebaseConfig";
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 
 function Footer() {
   const { mode } = useContext(myContext);
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState("");
+  const [loading, setLoading] = useState(false); // ✅ Loading state
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!email) {
+      setStatus("❌ Please enter a valid email.");
+      return;
+    }
+
+    setLoading(true); // start loading
+    setStatus(""); // clear previous status
+
+    try {
+      // Check if email already exists
+      const q = query(
+        collection(fireDB, "newsletter"),
+        where("email", "==", email),
+      );
+      const snapshot = await getDocs(q);
+
+      if (!snapshot.empty) {
+        setStatus("✅ You are already subscribed!");
+        setLoading(false);
+        return;
+      }
+
+      // Add email to Firestore
+      await addDoc(collection(fireDB, "newsletter"), {
+        email,
+        subscribedAt: new Date(),
+      });
+
+      setStatus("🎉 Thank you for subscribing!");
+      setEmail("");
+    } catch (err) {
+      console.error(err);
+      setStatus("❌ Something went wrong. Please try again.");
+    } finally {
+      setLoading(false); // stop loading
+    }
+  };
 
   return (
     <footer
@@ -20,21 +65,15 @@ function Footer() {
           : "bg-gray-100 text-gray-700"
       }`}
     >
-      {/* Main Footer */}
       <div className="container mx-auto px-6 py-14">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
           {/* Brand */}
           <div className="lg:col-span-2">
             <div className="flex items-center gap-3 mb-4">
               <img
-                // <img style={{backgroundColor: "white"}}
-                // src={"https://dummyimage.com/50x50/000/fff&text=A"}
                 src={logo}
                 alt="AllMart Logo"
-                className={`${
-                  mode === "dark" ? "bg-white" : "bg-white"
-                } w-12 h-12 rounded-lg`}
-                // className="w-12 h-12 rounded-lg"
+                className="w-12 h-12 rounded-lg bg-white"
               />
               <h1 className="text-2xl font-bold">AllMart</h1>
             </div>
@@ -44,7 +83,6 @@ function Footer() {
               sellers, and smooth shopping anytime, anywhere.
             </p>
 
-            {/* Socials */}
             <div className="flex gap-4 mt-6">
               {[FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn].map(
                 (Icon, i) => (
@@ -130,18 +168,27 @@ function Footer() {
             <p className="text-sm mb-4">
               Subscribe to get updates on new products and special offers.
             </p>
-            <form className="flex flex-col gap-3">
+            <form className="flex flex-col gap-3" onSubmit={handleSubscribe}>
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 className="px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-800"
+                required
               />
               <button
                 type="submit"
-                className="bg-pink-600 text-white py-3 rounded-lg hover:bg-pink-700 transition"
+                className={`py-3 rounded-lg transition ${
+                  loading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-pink-600 hover:bg-pink-700 text-white"
+                }`}
+                disabled={loading}
               >
-                Subscribe
+                {loading ? "Subscribing..." : "Subscribe"}
               </button>
+              {status && <p className="text-sm mt-1">{status}</p>}
             </form>
           </div>
         </div>
@@ -181,10 +228,10 @@ function Footer() {
         <div className="container mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
           <p>© {new Date().getFullYear()} AllMart. All rights reserved.</p>
           <div className="flex gap-5">
-            <Link to="/privacy" className="hover:text-pink-500">
+            <Link to="/privacy-terms" className="hover:text-pink-500">
               Privacy Policy
             </Link>
-            <Link to="/terms" className="hover:text-pink-500">
+            <Link to="/privacy-terms" className="hover:text-pink-500">
               Terms
             </Link>
           </div>

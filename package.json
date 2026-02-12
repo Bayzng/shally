@@ -12,6 +12,7 @@
   "dependencies": {
     "@headlessui/react": "^1.7.16",
     "@reduxjs/toolkit": "^1.9.5",
+    "axios": "^1.13.5",
     "firebase": "^10.1.0",
     "framer-motion": "^12.23.23",
     "jspdf": "^3.0.3",
