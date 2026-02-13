@@ -252,7 +252,7 @@ function ProductCard({ onLoaded }) {
         {/* CREATOR CAROUSEL */}
         <div className="mt-12 overflow-hidden">
           <div className="creator-carousel flex gap-4">
-            {allCreators.map((creator, idx) => {
+            {[...allCreators, ...allCreators].map((creator, idx) => {
               const initials = creator.name
                 .split(" ")
                 .map((n) => n[0])

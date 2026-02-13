@@ -297,44 +297,44 @@
 //                         ? "Home Delivery"
 //                         : "Pickup Point"}
 //                     </p>
-//                     <p
-//                       className={`mt-2 font-medium ${
-//                         anyDelivered ? "text-green-600" : "text-blue-500"
-//                       }`}
-//                     >
-//                       <strong>
-//                         {anyDelivered ? "Delivered:" : "Expected Delivery:"}
-//                       </strong>{" "}
-//                       {anyDelivered ? (
-//                         parseDate(
-//                           order.cartItems.find((i) => i.delivered)
-//                             ?.deliveredDate,
-//                         )?.toLocaleDateString("en-GB", {
-//                           weekday: "long",
-//                           day: "numeric",
-//                           month: "long",
-//                           year: "numeric",
-//                           timeZone: "Africa/Lagos",
-//                         })
-//                       ) : (
-//                         <>
-//                           {calculateExpectedDeliveryDate(order.date)}
-//                           {(() => {
-//                             const countdown = getDeliveryCountdown(order.date);
-//                             return countdown ? (
-//                               <span className="block text-sm text-orange-500 mt-1">
-//                                 ⏳ {countdown.days}d {countdown.hours}h{" "}
-//                                 {countdown.minutes}m {countdown.seconds}s
-//                               </span>
-//                             ) : (
-//                               <span className="block text-sm text-green-600 mt-1">
-//                                 ✅ Delivery window reached
-//                               </span>
-//                             );
-//                           })()}
-//                         </>
-//                       )}
-//                     </p>
+// <p
+//   className={`mt-2 font-medium ${
+//     anyDelivered ? "text-green-600" : "text-blue-500"
+//   }`}
+// >
+//   <strong>
+//     {anyDelivered ? "Delivered:" : "Expected Delivery:"}
+//   </strong>{" "}
+//   {anyDelivered ? (
+//     parseDate(
+//       order.cartItems.find((i) => i.delivered)
+//         ?.deliveredDate,
+//     )?.toLocaleDateString("en-GB", {
+//       weekday: "long",
+//       day: "numeric",
+//       month: "long",
+//       year: "numeric",
+//       timeZone: "Africa/Lagos",
+//     })
+//   ) : (
+//     <>
+//       {calculateExpectedDeliveryDate(order.date)}
+//       {(() => {
+//         const countdown = getDeliveryCountdown(order.date);
+//         return countdown ? (
+//           <span className="block text-sm text-orange-500 mt-1">
+//             ⏳ {countdown.days}d {countdown.hours}h{" "}
+//             {countdown.minutes}m {countdown.seconds}s
+//           </span>
+//         ) : (
+//           <span className="block text-sm text-green-600 mt-1">
+//             ✅ Delivery window reached
+//           </span>
+//         );
+//       })()}
+//     </>
+//   )}
+// </p>
 //                   </div>
 
 //                   {/* Total Section */}
@@ -384,7 +384,7 @@
 //                 <button
 //                   onClick={handleConfirmRelease}
 //                   disabled={confirmLoading}
-//                   className={`px-5 py-2 sm:px-6 sm:py-3 rounded-lg 
+//                   className={`px-5 py-2 sm:px-6 sm:py-3 rounded-lg
 //                     text-white font-medium transition-all flex items-center justify-center gap-2
 //                       ${
 //                         confirmLoading
@@ -432,10 +432,6 @@
 
 // export default OrderHistory;
 
-
-
-
-
 import { useEffect, useState, useContext, useMemo } from "react";
 import Layout from "../../components/layout/Layout";
 import {
@@ -481,7 +477,7 @@ function OrderHistory() {
         if (!localUser?.uid) return;
         const q = query(
           collection(fireDB, "order"),
-          where("userid", "==", localUser.uid)
+          where("userid", "==", localUser.uid),
         );
         const querySnapshot = await getDocs(q);
 
@@ -490,15 +486,16 @@ function OrderHistory() {
           return {
             id: doc.id,
             ...data,
-            cartItems: (Array.isArray(data.cartItems) ? data.cartItems : []).map(
-              (item) => ({
-                ...item,
-                uploader: userMap.get(item.userid) || {
-                  name: "AllMart Store",
-                  verified: false,
-                },
-              })
-            ),
+            cartItems: (Array.isArray(data.cartItems)
+              ? data.cartItems
+              : []
+            ).map((item) => ({
+              ...item,
+              uploader: userMap.get(item.userid) || {
+                name: "AllMart Store",
+                verified: false,
+              },
+            })),
           };
         });
 
@@ -550,7 +547,9 @@ function OrderHistory() {
 
       // Update UI instantly
       setOrders((prev) =>
-        prev.map((o) => (o.id === orderId ? { ...o, cartItems: updatedItems } : o))
+        prev.map((o) =>
+          o.id === orderId ? { ...o, cartItems: updatedItems } : o,
+        ),
       );
     } catch (err) {
       console.error("Failed to release escrow:", err);
@@ -635,7 +634,9 @@ function OrderHistory() {
     <Layout>
       <div
         className={`min-h-screen py-10 px-4 sm:px-8 md:px-12 transition-colors duration-300 ${
-          mode === "dark" ? "bg-[#181a1b] text-white" : "bg-gray-50 text-gray-800"
+          mode === "dark"
+            ? "bg-[#181a1b] text-white"
+            : "bg-gray-50 text-gray-800"
         }`}
       >
         <h1 className="text-3xl md:text-4xl font-extrabold text-center mb-10 tracking-wide">
@@ -655,13 +656,17 @@ function OrderHistory() {
                 <div
                   key={order.id}
                   className={`rounded-2xl shadow-lg border p-6 sm:p-8 relative hover:shadow-2xl transition-transform transform hover:scale-[1.01] ${
-                    mode === "dark" ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+                    mode === "dark"
+                      ? "bg-gray-800 border-gray-700"
+                      : "bg-white border-gray-200"
                   }`}
                 >
                   {/* Status Badge */}
                   <span
                     className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-semibold shadow-md ${
-                      anyDelivered ? "bg-green-600 text-white" : "bg-blue-600 text-white"
+                      anyDelivered
+                        ? "bg-green-600 text-white"
+                        : "bg-blue-600 text-white"
                     }`}
                   >
                     {anyDelivered ? "✅ Delivered" : "New Order"}
@@ -695,14 +700,19 @@ function OrderHistory() {
                     {order.cartItems.map((item, i) => {
                       const delivered = isItemDelivered(item);
                       return (
-                        <div key={i} className="flex items-center border rounded-xl mb-3">
+                        <div
+                          key={i}
+                          className="flex items-center border rounded-xl mb-3"
+                        >
                           <img
                             src={item.imageUrl}
                             alt={item.title}
                             className="ml-[1px] w-24 h-24 object-cover border-r rounded-lg"
                           />
                           <div className="p-3 flex-1">
-                            <p className="font-semibold truncate">{item.title}</p>
+                            <p className="font-semibold truncate">
+                              {item.title}
+                            </p>
                             <p className="text-sm text-gray-500">
                               Price: ₦{Number(item.price).toLocaleString()}
                             </p>
@@ -756,6 +766,44 @@ function OrderHistory() {
                         ? "Home Delivery"
                         : "Pickup Point"}
                     </p>
+                    <p
+                      className={`mt-2 font-medium ${
+                        anyDelivered ? "text-green-600" : "text-blue-500"
+                      }`}
+                    >
+                      <strong>
+                        {anyDelivered ? "Delivered:" : "Expected Delivery:"}
+                      </strong>{" "}
+                      {anyDelivered ? (
+                        parseDate(
+                          order.cartItems.find((i) => i.delivered)
+                            ?.deliveredDate,
+                        )?.toLocaleDateString("en-GB", {
+                          weekday: "long",
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                          timeZone: "Africa/Lagos",
+                        })
+                      ) : (
+                        <>
+                          {calculateExpectedDeliveryDate(order.date)}
+                          {(() => {
+                            const countdown = getDeliveryCountdown(order.date);
+                            return countdown ? (
+                              <span className="block text-sm text-orange-500 mt-1">
+                                ⏳ {countdown.days}d {countdown.hours}h{" "}
+                                {countdown.minutes}m {countdown.seconds}s
+                              </span>
+                            ) : (
+                              <span className="block text-sm text-green-600 mt-1">
+                                ✅ Delivery window reached
+                              </span>
+                            );
+                          })()}
+                        </>
+                      )}
+                    </p>
                   </div>
 
                   {/* Total Section */}
@@ -763,7 +811,10 @@ function OrderHistory() {
                     <p className="text-lg sm:text-xl font-bold">
                       Total Paid: #
                       {order.cartItems
-                        ?.reduce((acc, item) => acc + parseFloat(item.price || 0), 0)
+                        ?.reduce(
+                          (acc, item) => acc + parseFloat(item.price || 0),
+                          0,
+                        )
                         .toLocaleString()}
                     </p>
                   </div>

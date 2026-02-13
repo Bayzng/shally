@@ -19,6 +19,8 @@
    CREATOR CAROUSEL FIX
 ============================== */
 .creator-carousel {
+  display: flex;
+  width: max-content;
   animation: creator-scroll 35s linear infinite;
   pointer-events: none;
 }
@@ -28,11 +30,11 @@
 }
 
 @keyframes creator-scroll {
-  0% {
-    transform: translateX(100%);
+  from {
+    transform: translateX(0);
   }
-  100% {
-    transform: translateX(-100%);
+  to {
+    transform: translateX(-50%);
   }
 }
 
