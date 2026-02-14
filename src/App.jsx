@@ -1,10 +1,5 @@
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Navigate,
-} from "react-router-dom";
-
+import ScrollToTop from "./ScrollToTop";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Order from "./pages/order/Order";
 import Cart from "./pages/cart/Cart";
 import Dashboard from "./pages/admin/dashboard/Dashboard";
@@ -31,11 +26,13 @@ import UserDashboard from "./components/UserDashboard/UserDashboard";
 import UserProfile from "./components/UserProfile/UserProfile";
 import UserSettings from "./components/UserSettings/UserSettings";
 import PrivacyTerms from "./components/PrivacyTerms";
+import PublicUpdateProduct from "./pages/admin/page/PublicUpdateProduct";
 
 function App() {
   return (
     <MyState>
       <Router>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/allproducts" element={<Allproducts />} />
@@ -117,6 +114,15 @@ function App() {
               </ProtectedRouteUser>
             }
           />
+          <Route
+            path="/public-update-product/:id"
+            element={
+              <ProtectedRouteUser>
+                <PublicUpdateProduct />
+              </ProtectedRouteUser>
+            }
+          />
+
           <Route
             path="/creator"
             element={

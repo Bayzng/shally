@@ -4,7 +4,9 @@ import myContext from "../../context/data/myContext";
 import { useNavigate } from "react-router-dom";
 
 function MyUploadedProducts() {
-  const { mode, product, deleteProduct, editHandle } = useContext(myContext);
+  // const { mode, product, deleteProduct, editHandle } = useContext(myContext);
+  const { mode, product, deleteProduct } = useContext(myContext);
+
   const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
 
@@ -12,17 +14,23 @@ function MyUploadedProducts() {
   // Filter only current user's products
 const myProducts = product.filter((item) => item.userid === user?.uid);
 
+  // const handleEdit = (item) => {
+  //   editHandle(item);
+  //   navigate("/updateproduct");
+  // };
+
   const handleEdit = (item) => {
-    editHandle(item);
-    navigate("/updateproduct");
-  };
+  navigate(`/public-update-product/${item.id}`);
+};
+
 
   return (
     <Layout>
       <div
         className={`min-h-screen py-10 px-3 sm:px-8 md:px-12 ${
           mode === "dark"
-            ? "bg-[#181a1b] text-white"
+            ? "bg-gray-800 text-white"
+            // ? "bg-[#181a1b] text-white"
             : "bg-gray-50 text-gray-800"
         }`}
       >

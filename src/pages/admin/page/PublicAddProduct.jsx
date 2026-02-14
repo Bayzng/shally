@@ -1,13 +1,12 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useMemo } from "react";
 import Layout from "../../../components/layout/Layout";
 import myContext from "../../../context/data/myContext";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 function PublicAddProduct() {
-  const { addProduct, mode } = useContext(myContext);
+  const { addProduct, mode, product } = useContext(myContext); // include product
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -15,10 +14,43 @@ function PublicAddProduct() {
     price: "",
     imageUrl: "",
     category: "",
-    description: "", // ✅ Added description
+    description: "",
   });
 
   const [preview, setPreview] = useState(null);
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  // ✅ Calculate today's products and remaining slots
+  const { todayCount, remainingSlots } = useMemo(() => {
+    if (!user?.uid) return { todayCount: 0, remainingSlots: 3 };
+
+    const now = new Date();
+    const cutoff = new Date(now.getTime() - 24 * 60 * 60 * 1000); // 24 hours ago
+
+    const last24hProducts = product
+      ?.filter((p) => p.userid === user.uid)
+      .filter((item) => {
+        if (!item.date) return false;
+
+        let productDate;
+
+        // Firestore timestamp
+        if (item.date?.seconds) {
+          productDate = new Date(item.date.seconds * 1000);
+        } else {
+          productDate = new Date(item.date);
+          if (isNaN(productDate.getTime())) return false;
+        }
+
+        return productDate > cutoff; // only include products in last 24 hours
+      });
+
+    return {
+      todayCount: last24hProducts?.length || 0,
+      remainingSlots: Math.max(0, 3 - (last24hProducts?.length || 0)),
+    };
+  }, [product, user?.uid]);
 
   // Image upload + compression
   const handleImageUpload = (e) => {
@@ -82,10 +114,14 @@ function PublicAddProduct() {
       return;
     }
 
-    const user = JSON.parse(localStorage.getItem("user"));
-
     if (!user?.uid) {
       toast.error("Please login to upload products");
+      return;
+    }
+
+    // Check daily limit
+    if (remainingSlots <= 0) {
+      toast.error("You have reached your daily limit of 3 products");
       return;
     }
 
@@ -98,7 +134,7 @@ function PublicAddProduct() {
     };
 
     try {
-      setLoading(true); // ✅ start loading
+      setLoading(true);
       await addProduct(newProduct);
 
       // Reset form
@@ -117,7 +153,7 @@ function PublicAddProduct() {
       console.error(error);
       toast.error("❌ Failed to add product");
     } finally {
-      setLoading(false); // ✅ stop loading
+      setLoading(false);
     }
   };
 
@@ -126,7 +162,8 @@ function PublicAddProduct() {
       <div
         className={`min-h-screen flex justify-center items-center p-6 transition-colors duration-300 ${
           mode === "dark"
-            ? "bg-[#181a1b] text-white"
+            ? "bg-gray-800 text-white"
+            // ? "bg-[#181a1b] text-white"
             : "bg-gray-100 text-gray-800"
         }`}
       >
@@ -139,9 +176,15 @@ function PublicAddProduct() {
               : "bg-white border-gray-200"
           }`}
         >
-          <h1 className="text-center text-3xl font-extrabold text-pink-600 mb-6">
+          <h1 className="text-center text-3xl font-extrabold text-pink-600 mb-4">
             Add Product
           </h1>
+
+          {/* Daily limit info */}
+          <p className="text-center text-sm text-gray-500 mb-6">
+            Products added today: <strong>{todayCount}</strong> / 3. Remaining:{" "}
+            <strong>{remainingSlots}</strong>
+          </p>
 
           {/* Title */}
           <input
@@ -227,9 +270,11 @@ function PublicAddProduct() {
           {/* Submit */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || remainingSlots <= 0}
             className={`w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 rounded-lg transition flex justify-center items-center ${
-              loading ? "opacity-70 cursor-not-allowed" : ""
+              loading || remainingSlots <= 0
+                ? "opacity-70 cursor-not-allowed"
+                : ""
             }`}
           >
             {loading ? (
@@ -254,7 +299,11 @@ function PublicAddProduct() {
                 ></path>
               </svg>
             ) : null}
-            {loading ? "Adding Product..." : "Add Product to Marketplace"}
+            {loading
+              ? "Adding Product..."
+              : remainingSlots <= 0
+                ? "Daily limit reached"
+                : "Add Product to Marketplace"}
           </button>
         </form>
       </div>
