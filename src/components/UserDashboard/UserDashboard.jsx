@@ -44,9 +44,8 @@ function UserDashboard() {
   const [showEscrowModal, setShowEscrowModal] = useState(false);
 
   const maskedUid = currentUser?.uid
-  ? `${currentUser.uid.slice(0, 4)}****${currentUser.uid.slice(-4)}`
-  : "----****----";
-
+    ? `${currentUser.uid.slice(0, 4)}****${currentUser.uid.slice(-4)}`
+    : "----****----";
 
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
@@ -290,61 +289,84 @@ function UserDashboard() {
                 className="absolute inset-0 w-full h-full object-cover scale-105"
               />
               {/* Dark/Blackish Overlay */}
-              <div className="absolute inset-0 bg-black/70" />{" "}
+              {/* Dynamic Overlay for Light & Dark Mode */}
+              <div
+                className={`absolute inset-0 ${
+                  mode === "dark" ? "bg-black/70" : "bg-black/20"
+                }`}
+              ></div>
+
               {/* increased opacity to 65% */}
               {/* Soft Highlight Gradient */}
               <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-transparent" />
               {/* Card Content */}
-              <div className="relative z-10 h-full p-5 flex flex-col justify-between text-white">
+              <div
+                className={`relative z-10 h-full p-5 flex flex-col justify-between ${
+                  mode === "dark" ? "text-white" : "text-black"
+                }`}
+              >
                 {/* Top */}
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-bold tracking-tight text-white drop-shadow-md">
+                  <h3
+                    className={`text-lg font-bold tracking-tight drop-shadow-md ${
+                      mode === "dark" ? "text-white" : "text-white"
+                    }`}
+                  >
                     AllMart
                   </h3>
 
                   <span
-                    className="
-                    text-xs uppercase tracking-wide
-                    bg-black/50
-                    px-3 py-1 rounded-lg
-                    text-white font-bold drop-shadow
-                  "
+                    className={`
+        text-xs uppercase tracking-wide
+        px-3 py-1 rounded-lg font-bold drop-shadow
+        ${mode === "dark" ? "bg-black/50 text-white" : "bg-black/50 text-white"}
+      `}
                   >
                     Virtual Card
                   </span>
                 </div>
 
                 {/* Balance */}
-                <div>
-                  <p className="text-xs font-bold text-white drop-shadow-sm">
+                <div className="mt-2">
+                  <p
+                    className={`text-xs font-bold drop-shadow-sm ${
+                      mode === "dark" ? "text-white" : "text-white"
+                    }`}
+                  >
                     Available Balance
                   </p>
-                  <p className="text-2xl font-extrabold tracking-tight text-white mt-1 drop-shadow-md">
+                  <p
+                    className={`text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 drop-shadow-md ${
+                      mode === "dark" ? "text-white" : "text-white"
+                    }`}
+                  >
                     ₦{totalEarned.toLocaleString()}
                   </p>
                 </div>
 
                 {/* Bottom */}
-                <div className="flex justify-between items-end">
+                <div className="flex justify-between items-end mt-3">
                   {/* Card Number */}
-                  <span className="text-sm tracking-widest text-white font-bold drop-shadow-sm">
+                  <span
+                    className={`text-sm tracking-widest font-bold drop-shadow-sm ${
+                      mode === "dark" ? "text-white" : "text-white"
+                    }`}
+                  >
                     {maskedUid}
                   </span>
 
                   {/* Withdraw Button */}
                   <button
                     onClick={handleWithdraw}
-                    className="
-                    px-4 py-1.5
-                    text-xs font-bold
-                    rounded-lg
-                    bg-green-800/60
-                    text-white
-                    border border-white/20
-                    hover:bg-green-800
-                    transition-all
-                    shadow-md
-                  "
+                    className={`
+        px-4 py-1.5 text-xs font-bold rounded-lg
+        border border-white/20 shadow-md transition-all
+        ${
+          mode === "dark"
+            ? "bg-green-800/60 text-white hover:bg-green-800"
+            : "bg-green-500/70 text-white hover:bg-green-600"
+        }
+      `}
                   >
                     Withdraw
                   </button>
