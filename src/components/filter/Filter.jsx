@@ -1,6 +1,7 @@
 import { useContext, useState, useRef, useEffect } from "react";
 import myContext from "../../context/data/myContext";
 import { FiSearch, FiX } from "react-icons/fi";
+import { IoMdArrowDropdown } from "react-icons/io";
 
 // import ProductCard from "../productCard/ProductCard";
 // // import ProductCard from "../ProductCard"; // replace with your product card component
@@ -150,12 +151,14 @@ function Filter() {
               }`}
             >
               {filterType || "All Categories"}
-              <span className="text-xs">▾</span>
+              <span className="text-xs">
+                <IoMdArrowDropdown size={25} />
+              </span>
             </button>
 
             {openCategory && (
               <div
-                className={`absolute z-20 mt-2 w-full max-h-60 overflow-y-auto rounded-lg shadow-lg border ${
+                className={`absolute z-20 mt-2 w-full max-h-40 overflow-y-auto rounded-lg shadow-lg border ${
                   mode === "dark"
                     ? "bg-gray-900 border border-gray-700 text-white placeholder-gray-400"
                     : "bg-gray-50 border-gray-300 placeholder-gray-500"
@@ -209,12 +212,14 @@ function Filter() {
             >
               {priceRanges.find((p) => p.value === filterPrice)?.label ||
                 "Any Price"}
-              <span className="text-xs">▾</span>
+              <span className="text-xs">
+                <IoMdArrowDropdown size={25} />
+              </span>
             </button>
 
             {openPrice && (
               <div
-                className={`absolute z-20 mt-2 w-full max-h-60 overflow-y-auto rounded-lg shadow-lg border ${
+                className={`absolute z-20 mt-2 w-full max-h-40 overflow-y-auto rounded-lg shadow-lg border ${
                   mode === "dark"
                     ? "bg-gray-900 border border-gray-700 text-white placeholder-gray-400"
                     : "bg-gray-50 border-gray-300 placeholder-gray-500"
