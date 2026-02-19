@@ -43,6 +43,10 @@ function UserDashboard() {
   const [escrowAmount, setEscrowAmount] = useState(0);
   const [showEscrowModal, setShowEscrowModal] = useState(false);
 
+  const maskedUid = currentUser?.uid
+    ? `•••• ${currentUser.uid.slice(-4)}`
+    : "•••• ----";
+
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
@@ -260,36 +264,98 @@ function UserDashboard() {
             </div>
           </InfoCard>
 
-          <GradientCard
-            icon={<Wallet size={22} />}
-            title="Total Earned"
-            mode={mode}
-          >
-            <div className="flex flex-col gap-4">
-              {/* Amount */}
-              <p className="text-3xl font-extrabold tracking-tight">
-                ₦{totalEarned.toLocaleString()}
-              </p>
+          <div className="max-w-4xl">
+            <div
+              className="
+                relative max-w-6xl
+                h-[210px]
+                rounded-2xl
+                overflow-hidden
+              "
+            >
+              {/* Background Image */}
+              <img
+                // src="https://img.freepik.com/free-photo/cartoon-man-wearing-glasses_23-2151136880.jpg?semt=ais_user_personalization&w=740&q=80"
+                // src="https://img.freepik.com/free-photo/cartoon-woman-wearing-glasses_23-2151136862.jpg?semt=ais_user_personalization&w=740&q=80"
+                // src="https://img.freepik.com/premium-photo/five-happy-children-running-through-field-sunny-day_7556-9141.jpg"
+                // src="https://img.freepik.com/premium-photo/youth-group-with-popinspired-background_1208997-747.jpg"
+                // src="https://assets.change.org/photos/7/lr/dz/aPlRDZIvSIIdmXw-800x450-noPad.jpg?1761121329"
+                // src="https://images.theconversation.com/files/509005/original/file-20230208-27-3jttof.jpg?ixlib=rb-4.1.0&rect=0%2C0%2C5463%2C3645&q=50&auto=format&w=768&h=512&fit=crop&dpr=2"
+                // src="https://www.ipsos.com/sites/default/files/styles/max_1300x1300/public/ct/news_and_polls/2022-08/happy%20people%201.jpeg?itok=aE_N840D"
+                // src="https://cdn.punchng.com/wp-content/uploads/2017/05/03133845/Happy.jpg"
+                src="https://img.freepik.com/free-photo/medium-shot-happy-friends-city_23-2149003088.jpg?semt=ais_hybrid&w=740&q=80"
+                alt="Virtual Card"
+                className="
+                  absolute inset-0 w-full h-full object-cover
+                  scale-105
+                "
+              />
+              {/* blur-[0.5px] */}
 
-              {/* Action */}
-              <div className="flex justify-end">
-                <button
-                  onClick={handleWithdraw} // add your logic
-                  className="
-                      px-5 py-2 text-sm font-semibold rounded-xl
-                      bg-gradient-to-r from-green-500 to-emerald-600
-                      text-white shadow-lg
-                      hover:shadow-green-500/40 hover:scale-[1.03]
-                      transition-all duration-300
-                      flex items-center gap-2
+              {/* Dark Overlay */}
+              <div className="absolute inset-0 bg-black/45" />
+
+              {/* Soft Highlight */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-transparent" />
+
+              {/* Card Content */}
+              <div className="relative z-10 h-full p-5 flex flex-col justify-between text-white">
+                {/* Top */}
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-bold tracking-tight text-white">
+                    AllMart
+                  </h3>
+
+                  <span
+                    className="
+                    text-xs uppercase tracking-wide
+                    bg-white/10 backdrop-blur-md
+                    px-3 py-1 rounded-lg
+                    text-white font-bold
+                  "
+                  >
+                    Virtual Card
+                  </span>
+                </div>
+
+                {/* Balance */}
+                <div>
+                  <p className="text-xs font-bold text-white">
+                    Available Balance
+                  </p>
+                  <p className="text-2xl font-extrabold tracking-tight text-white mt-1">
+                    ₦{totalEarned.toLocaleString()}
+                  </p>
+                </div>
+
+                {/* Bottom */}
+                <div className="flex justify-between items-end">
+                  {/* Card Number */}
+                  <span className="text-sm tracking-widest text-white font-bold">
+                    {maskedUid}
+                  </span>
+
+                  {/* Withdraw Button */}
+                  <button
+                    onClick={handleWithdraw}
+                    className="
+                      px-4 py-1.5
+                      text-xs font-bold
+                      rounded-lg
+                      bg-white/25
+                      text-white
+                      border border-white/30
+                      hover:bg-white/35
+                      transition-all
+                      shadow-md
                     "
-                >
-                  <Wallet size={16} />
-                  Withdraw
-                </button>
+                  >
+                    Withdraw
+                  </button>
+                </div>
               </div>
             </div>
-          </GradientCard>
+          </div>
 
           <InfoCard icon={<Lock size={22} />} title="Escrow" mode={mode}>
             <div className="flex flex-col gap-3">
