@@ -44,8 +44,9 @@ function UserDashboard() {
   const [showEscrowModal, setShowEscrowModal] = useState(false);
 
   const maskedUid = currentUser?.uid
-    ? `•••• ${currentUser.uid.slice(-4)}`
-    : "•••• ----";
+  ? `${currentUser.uid.slice(0, 4)}****${currentUser.uid.slice(-4)}`
+  : "----****----";
+
 
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
@@ -264,13 +265,14 @@ function UserDashboard() {
             </div>
           </InfoCard>
 
-          <div className="max-w-4xl">
+          <div className="max-w-4xl ">
             <div
               className="
                 relative max-w-6xl
                 h-[210px]
                 rounded-2xl
                 overflow-hidden
+                shadow-lg
               "
             >
               {/* Background Image */}
@@ -285,33 +287,27 @@ function UserDashboard() {
                 // src="https://cdn.punchng.com/wp-content/uploads/2017/05/03133845/Happy.jpg"
                 src="https://img.freepik.com/free-photo/medium-shot-happy-friends-city_23-2149003088.jpg?semt=ais_hybrid&w=740&q=80"
                 alt="Virtual Card"
-                className="
-                  absolute inset-0 w-full h-full object-cover
-                  scale-105
-                "
+                className="absolute inset-0 w-full h-full object-cover scale-105"
               />
-              {/* blur-[0.5px] */}
-
-              {/* Dark Overlay */}
-              <div className="absolute inset-0 bg-black/45" />
-
-              {/* Soft Highlight */}
+              {/* Dark/Blackish Overlay */}
+              <div className="absolute inset-0 bg-black/70" />{" "}
+              {/* increased opacity to 65% */}
+              {/* Soft Highlight Gradient */}
               <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-transparent" />
-
               {/* Card Content */}
               <div className="relative z-10 h-full p-5 flex flex-col justify-between text-white">
                 {/* Top */}
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-bold tracking-tight text-white">
+                  <h3 className="text-lg font-bold tracking-tight text-white drop-shadow-md">
                     AllMart
                   </h3>
 
                   <span
                     className="
                     text-xs uppercase tracking-wide
-                    bg-white/10 backdrop-blur-md
+                    bg-black/50
                     px-3 py-1 rounded-lg
-                    text-white font-bold
+                    text-white font-bold drop-shadow
                   "
                   >
                     Virtual Card
@@ -320,10 +316,10 @@ function UserDashboard() {
 
                 {/* Balance */}
                 <div>
-                  <p className="text-xs font-bold text-white">
+                  <p className="text-xs font-bold text-white drop-shadow-sm">
                     Available Balance
                   </p>
-                  <p className="text-2xl font-extrabold tracking-tight text-white mt-1">
+                  <p className="text-2xl font-extrabold tracking-tight text-white mt-1 drop-shadow-md">
                     ₦{totalEarned.toLocaleString()}
                   </p>
                 </div>
@@ -331,7 +327,7 @@ function UserDashboard() {
                 {/* Bottom */}
                 <div className="flex justify-between items-end">
                   {/* Card Number */}
-                  <span className="text-sm tracking-widest text-white font-bold">
+                  <span className="text-sm tracking-widest text-white font-bold drop-shadow-sm">
                     {maskedUid}
                   </span>
 
@@ -339,16 +335,16 @@ function UserDashboard() {
                   <button
                     onClick={handleWithdraw}
                     className="
-                      px-4 py-1.5
-                      text-xs font-bold
-                      rounded-lg
-                      bg-white/25
-                      text-white
-                      border border-white/30
-                      hover:bg-white/35
-                      transition-all
-                      shadow-md
-                    "
+                    px-4 py-1.5
+                    text-xs font-bold
+                    rounded-lg
+                    bg-green-800/60
+                    text-white
+                    border border-white/20
+                    hover:bg-green-800
+                    transition-all
+                    shadow-md
+                  "
                   >
                     Withdraw
                   </button>
