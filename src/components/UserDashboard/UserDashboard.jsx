@@ -282,9 +282,9 @@ function UserDashboard() {
                 // src="https://img.freepik.com/premium-photo/youth-group-with-popinspired-background_1208997-747.jpg"
                 // src="https://assets.change.org/photos/7/lr/dz/aPlRDZIvSIIdmXw-800x450-noPad.jpg?1761121329"
                 // src="https://images.theconversation.com/files/509005/original/file-20230208-27-3jttof.jpg?ixlib=rb-4.1.0&rect=0%2C0%2C5463%2C3645&q=50&auto=format&w=768&h=512&fit=crop&dpr=2"
-                // src="https://www.ipsos.com/sites/default/files/styles/max_1300x1300/public/ct/news_and_polls/2022-08/happy%20people%201.jpeg?itok=aE_N840D"
+                src="https://www.ipsos.com/sites/default/files/styles/max_1300x1300/public/ct/news_and_polls/2022-08/happy%20people%201.jpeg?itok=aE_N840D"
                 // src="https://cdn.punchng.com/wp-content/uploads/2017/05/03133845/Happy.jpg"
-                src="https://img.freepik.com/free-photo/medium-shot-happy-friends-city_23-2149003088.jpg?semt=ais_hybrid&w=740&q=80"
+                // src="https://img.freepik.com/free-photo/medium-shot-happy-friends-city_23-2149003088.jpg?semt=ais_hybrid&w=740&q=80"
                 alt="Virtual Card"
                 className="absolute inset-0 w-full h-full object-cover scale-105"
               />
@@ -312,15 +312,15 @@ function UserDashboard() {
                       mode === "dark" ? "text-white" : "text-white"
                     }`}
                   >
-                    AllMart
+                    AllMart 
                   </h3>
 
                   <span
                     className={`
-        text-xs uppercase tracking-wide
-        px-3 py-1 rounded-lg font-bold drop-shadow
-        ${mode === "dark" ? "bg-black/50 text-white" : "bg-black/50 text-white"}
-      `}
+                    text-xs uppercase tracking-wide
+                    px-3 py-1 rounded-lg font-bold drop-shadow
+                    ${mode === "dark" ? "bg-black/50 text-white" : "bg-black/50 text-white"}
+                  `}
                   >
                     Virtual Card
                   </span>

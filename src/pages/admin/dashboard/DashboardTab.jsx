@@ -9,6 +9,8 @@ import jsPDF from "jspdf";
 import logo from "../../../assets/logo.png";
 import html2canvas from "html2canvas";
 import UsersTab from "./UsersTab";
+import DisputeTab from "./DisputeTab";
+import UnreleasedItemsTab from "./UnreleasedItemsTab";
 
 function DashboardTab() {
   const context = useContext(myContext);
@@ -162,6 +164,24 @@ function DashboardTab() {
                 <div className="flex gap-2 items-center">
                   <FaUser /> Users
                 </div>
+              </button>
+            </Tab>
+            <Tab>
+              <button
+                type="button"
+                className="font-medium border-b-2 border-red-500 bg-[#605d5d12] text-red-500 rounded-lg text-xl hover:shadow-red-700 shadow-[inset_0_0_8px_rgba(0,0,0,0.6)] px-5 py-1.5 text-center"
+              >
+                <div className="flex gap-2 items-center">
+                  <FaUser /> Dispute
+                </div>
+              </button>
+            </Tab>
+            <Tab>
+              <button
+                type="button"
+                className="font-medium border-b-2 border-orange-500 bg-[#605d5d12] text-orange-500 rounded-lg text-xl hover:shadow-orange-700 shadow-[inset_0_0_8px_rgba(0,0,0,0.6)] px-5 py-1.5 text-center"
+              >
+                Unreleased
               </button>
             </Tab>
           </TabList>
@@ -393,6 +413,13 @@ function DashboardTab() {
           {/* ===== Users Tab ===== */}
           <TabPanel>
             <UsersTab mode={mode} />
+          </TabPanel>
+          {/* ===== Dispute Tab ===== */}
+          <TabPanel>
+            <DisputeTab mode={mode} />
+          </TabPanel>
+          <TabPanel>
+            <UnreleasedItemsTab mode={mode} />
           </TabPanel>
         </Tabs>
       </div>

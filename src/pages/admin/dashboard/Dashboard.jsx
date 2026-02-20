@@ -20,7 +20,7 @@ function Dashboard() {
     if (o.cartItems && Array.isArray(o.cartItems)) {
       const itemTotal = o.cartItems.reduce(
         (sum, item) => sum + (Number(item.price) || 0),
-        0
+        0,
       );
       const shipping = 100; // Flat shipping rate
       return acc + itemTotal + shipping;
@@ -30,10 +30,10 @@ function Dashboard() {
 
   // ✅ Toast (avoid duplicates)
   toast.dismiss();
-  toast.info("Dashboard data loaded successfully!", {
-    position: "top-right",
-    autoClose: 2000,
-  });
+  // toast.info("Dashboard data loaded successfully!", {
+  //   position: "top-right",
+  //   autoClose: 2000,
+  // });
 
   // ✅ Styling
   const cardStyle = {
@@ -72,43 +72,61 @@ function Dashboard() {
   return (
     <Layout>
       <div className="flex items-center justify-center mt-10">
-        <h1 className="text-4xl font-bold text-white text-center">
+        <h1
+          className={`text-3xl font-bold ${
+            mode === "dark" ? "text-white" : "text-gray-900"
+          }`}
+        >
           Admin Page
         </h1>
       </div>
-      <section className="text-gray-600 body-font mt-10 mb-10">
-        <div className="container px-5 mx-auto mb-10">
-          <div className="flex flex-wrap -m-4 text-center">
-            {stats.map((stat, index) => (
-              <div key={index} className="p-4 md:w-1/4 sm:w-1/2 w-full">
-                <div
-                  className="border-2 hover:shadow-lg shadow-[inset_0_0_10px_rgba(0,0,0,0.6)] bg-gray-100 border-gray-300 px-4 py-6 rounded-xl transition-all duration-300 transform hover:-translate-y-1"
-                  style={cardStyle}
-                >
-                  <div className={`${stat.color} w-12 h-12 mb-3 inline-block`}>
-                    {stat.icon}
-                  </div>
-                  <h2
-                    className="title-font font-medium text-3xl text-black"
-                    style={{ color: mode === "dark" ? "white" : "" }}
-                  >
-                    {stat.value}
-                  </h2>
-                  <p
-                    className={`font-bold ${stat.color}`}
-                    style={{ color: mode === "dark" ? "white" : "" }}
-                  >
-                    {stat.title}
-                  </p>
-                </div>
-              </div>
-            ))}
+      <section
+  className={`text-gray-600 body-font mt-10 mb-10 ${
+    mode === "dark" ? "bg-gray-900" : "bg-gray-50"
+  }`}
+>
+  <div className="container px-4 sm:px-5 mx-auto mb-10">
+    <div className="flex flex-wrap -m-3 text-center">
+      {stats.map((stat, index) => (
+        <div
+          key={index}
+          className="p-3 w-1/2 sm:w-1/2 md:w-1/3 lg:w-1/4"
+        >
+          <div
+            className={`border-2 border-gray-300 rounded-xl px-4 py-6 transition-transform duration-300 transform hover:-translate-y-2 hover:shadow-2xl ${
+              mode === "dark"
+                ? "bg-gray-800 shadow-[inset_0_0_10px_rgba(255,255,255,0.1)]"
+                : "bg-white shadow-[inset_0_0_10px_rgba(0,0,0,0.05)]"
+            }`}
+          >
+            <div
+              className={`w-12 h-12 sm:w-14 sm:h-14 mb-3 sm:mb-4 flex items-center justify-center mx-auto rounded-full text-xl sm:text-2xl ${stat.color} bg-opacity-20`}
+            >
+              {stat.icon}
+            </div>
+            <h2
+              className={`title-font font-semibold text-2xl sm:text-3xl mb-1 sm:mb-2 ${
+                mode === "dark" ? "text-white" : "text-gray-900"
+              }`}
+            >
+              {stat.value}
+            </h2>
+            <p
+              className={`text-base sm:text-lg font-medium ${
+                mode === "dark" ? "text-gray-300" : "text-gray-600"
+              }`}
+            >
+              {stat.title}
+            </p>
           </div>
         </div>
+      ))}
+    </div>
+  </div>
 
-        {/* 📊 Detailed Tabs Section */}
-        <DashboardTab />
-      </section>
+  {/* 📊 Detailed Tabs Section */}
+  <DashboardTab />
+</section>
     </Layout>
   );
 }
