@@ -16,6 +16,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import toast, { Toaster } from "react-hot-toast";
 import LoadingOverlay from "../LoadingOverlay/LoadingOverlay";
+import sim from "../../assets/sim.png";
 
 /* ---------------- helpers ---------------- */
 const normalizeDate = (date) => {
@@ -312,7 +313,7 @@ function UserDashboard() {
                       mode === "dark" ? "text-white" : "text-white"
                     }`}
                   >
-                    AllMart 
+                    AllMart
                   </h3>
 
                   <span
@@ -327,25 +328,34 @@ function UserDashboard() {
                 </div>
 
                 {/* Balance */}
-                <div className="mt-2">
-                  <p
-                    className={`text-xs font-bold drop-shadow-sm ${
-                      mode === "dark" ? "text-white" : "text-white"
-                    }`}
-                  >
-                    Available Balance
-                  </p>
-                  <p
-                    className={`text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 drop-shadow-md ${
-                      mode === "dark" ? "text-white" : "text-white"
-                    }`}
-                  >
-                    ₦{totalEarned.toLocaleString()}
-                  </p>
+                <div className="mt-2. flex items-center justify-between">
+                  <div>
+                    <p
+                      className={`text-xs font-bold drop-shadow-sm ${
+                        mode === "dark" ? "text-white" : "text-white"
+                      }`}
+                    >
+                      Available Balance
+                    </p>
+                    <p
+                      className={`text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 drop-shadow-md ${
+                        mode === "dark" ? "text-white" : "text-white"
+                      }`}
+                    >
+                      ₦{totalEarned.toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="w-28 h-28 flex items-center justify-end">
+                    <img
+                      src={sim}
+                      alt="Sim Card"
+                      className="w-20 h-20 object-contain"
+                    />
+                  </div>
                 </div>
 
                 {/* Bottom */}
-                <div className="flex justify-between items-end mt-3">
+                <div className="flex justify-between items-end mt-2">
                   {/* Card Number */}
                   <span
                     className={`text-sm tracking-widest font-bold drop-shadow-sm ${

@@ -232,17 +232,15 @@ function Navbar() {
             <div className="flex items-center space-x-2">
               <button
                 className={`lg:hidden p-2 rounded-md ${
-                  isDark ? "bg-gray-700 text-white" : "bg-white text-gray-600"
+                  isDark ? "bg-white text-black" : "bg-white text-gray-600"
                 }`}
                 onClick={() => setOpen(true)}
               >
-                <IoMenu size={20} />
+                <IoMenu size={23} />
               </button>
 
               {/* <img src={logo} alt="Allmart Logo" className="w-10 h-10" /> */}
               <img
-                // <img style={{backgroundColor: "white"}}
-                // src={"https://dummyimage.com/50x50/000/fff&text=A"}
                 src={logo}
                 alt="AllMart Logo"
                 className={`${

@@ -376,7 +376,7 @@ function OrderHistory() {
 
                             {/* Seller Info */}
                             <p className="text-sm text-gray-400 mt-1 flex items-center gap-1">
-                              Seller: {item.uploader?.name}{" "}
+                              <span className="text-yellow-400">Seller:</span> {item.uploader?.name}{" "}
                               {item.uploader?.verified && (
                                 <MdVerified className="text-blue-500 text-[12px]" />
                               )}
