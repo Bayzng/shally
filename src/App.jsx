@@ -27,6 +27,7 @@ import UserProfile from "./components/UserProfile/UserProfile";
 import UserSettings from "./components/UserSettings/UserSettings";
 import PrivacyTerms from "./components/PrivacyTerms";
 import PublicUpdateProduct from "./pages/admin/page/PublicUpdateProduct";
+import Disputes from "./components/Disputes/Disputes";
 
 function App() {
   return (
@@ -152,6 +153,14 @@ function App() {
             element={
               <ProtectedRouteUser>
                 <UserSettings />
+              </ProtectedRouteUser>
+            }
+          />
+          <Route
+            path="/disputes"
+            element={
+              <ProtectedRouteUser>
+                <Disputes />
               </ProtectedRouteUser>
             }
           />

@@ -15,6 +15,10 @@ import { IoMenu } from "react-icons/io5";
 import { SiCoinmarketcap } from "react-icons/si";
 import { FaPlusCircle } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
+import { MdOutlineReportProblem } from "react-icons/md";
+import { useEffect } from "react";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { fireDB } from "../../fireabase/FirebaseConfig";
 
 import logo from "../../assets/logo.png";
 import myContext from "../../context/data/myContext";
@@ -24,6 +28,23 @@ function Navbar() {
   const [open, setOpen] = useState(false);
   const user = JSON.parse(localStorage.getItem("user"));
   const cartItems = useSelector((state) => state.cart);
+  const [openDisputesCount, setOpenDisputesCount] = useState(0);
+
+  useEffect(() => {
+    if (!user?.uid) return;
+
+    const q = query(
+      collection(fireDB, "disputes"),
+      where("sellerId", "==", user.uid),
+      where("status", "==", "open"),
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setOpenDisputesCount(snapshot.size);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
 
   const isDark = mode === "dark";
 
@@ -169,6 +190,21 @@ function Navbar() {
                       >
                         <IoSettingsSharp size={22} /> Settings
                       </Link>
+                      <Link
+                        to="/disputes"
+                        className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
+                      >
+                        <MdOutlineReportProblem size={22} />
+
+                        <span className="flex items-center">
+                          Disputes
+                          {openDisputesCount > 0 && (
+                            <span className="ml-1 bg-red-600 text-white text-[10px] font-bold px-2 py-[2px] rounded-full inline-block -translate-y-1">
+                              {openDisputesCount}
+                            </span>
+                          )}
+                        </span>
+                      </Link>
 
                       <hr className="border-gray-200/30" />
                     </>
@@ -303,6 +339,19 @@ function Navbar() {
                   </Link>
                   <Link to="/user-settings" className="font-medium">
                     Settings
+                  </Link>
+                  <Link
+                    to="/disputes"
+                    className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
+                  >
+                    <span className="flex items-center">
+                      Disputes
+                      {openDisputesCount > 0 && (
+                        <span className="ml-1 bg-red-600 text-white text-[10px] font-bold px-2 py-[2px] rounded-full inline-block -translate-y-1">
+                          {openDisputesCount}
+                        </span>
+                      )}
+                    </span>
                   </Link>
                 </>
               )}
