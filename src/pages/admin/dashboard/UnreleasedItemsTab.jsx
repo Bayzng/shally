@@ -7,14 +7,16 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { fireDB } from "../../../fireabase/FirebaseConfig";
-// import LoadingOverlay from "../../../components/LoadingOverlay/LoadingOverlay";
 
 export default function UnreleasedItemsTab({ mode }) {
   const [orders, setOrders] = useState([]);
   const [itemsToRelease, setItemsToRelease] = useState([]);
+  const [filteredItems, setFilteredItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [search, setSearch] = useState("");
 
+  // Fetch orders from Firestore
   useEffect(() => {
     const fetchOrders = async () => {
       setLoading(true);
@@ -34,6 +36,7 @@ export default function UnreleasedItemsTab({ mode }) {
     fetchOrders();
   }, []);
 
+  // Extract unreleased items
   useEffect(() => {
     if (!orders || orders.length === 0) return setItemsToRelease([]);
 
@@ -53,8 +56,22 @@ export default function UnreleasedItemsTab({ mode }) {
     });
 
     setItemsToRelease(unreleasedItems);
+    setFilteredItems(unreleasedItems);
   }, [orders]);
 
+  // Filter items by exact payment ID match
+  useEffect(() => {
+    if (!search) {
+      setFilteredItems(itemsToRelease); // show all if search is empty
+    } else {
+      const filtered = itemsToRelease.filter(
+        (item) => item.paymentId === search
+      );
+      setFilteredItems(filtered);
+    }
+  }, [search, itemsToRelease]);
+
+  // Release a single fund
   const releaseFund = async (orderId, productId) => {
     setConfirmLoading(true);
     try {
@@ -74,18 +91,18 @@ export default function UnreleasedItemsTab({ mode }) {
               deliveredDate: Timestamp.now(),
               autoReleased: true,
             }
-          : item,
+          : item
       );
 
       await updateDoc(orderRef, { cartItems: updatedItems });
 
       setItemsToRelease((prev) =>
-        prev.filter((i) => !(i.orderId === orderId && i.id === productId)),
+        prev.filter((i) => !(i.orderId === orderId && i.id === productId))
       );
       setOrders((prev) =>
         prev.map((o) =>
-          o.id === orderId ? { ...o, cartItems: updatedItems } : o,
-        ),
+          o.id === orderId ? { ...o, cartItems: updatedItems } : o
+        )
       );
 
       alert("✅ Fund released successfully");
@@ -97,11 +114,12 @@ export default function UnreleasedItemsTab({ mode }) {
     }
   };
 
+  // Release all funds for visible filtered items
   const releaseAll = async () => {
-    if (!itemsToRelease.length) return;
+    if (!filteredItems.length) return;
     setConfirmLoading(true);
     try {
-      for (const item of itemsToRelease) {
+      for (const item of filteredItems) {
         await releaseFund(item.orderId, item.id);
       }
     } catch (err) {
@@ -110,14 +128,6 @@ export default function UnreleasedItemsTab({ mode }) {
       setConfirmLoading(false);
     }
   };
-
-  // if (loading) return <div className="flex justify-center items-center h-40"><LoadingOverlay /></div>;
-  if (!itemsToRelease.length)
-    return (
-      <p className="text-center mt-10 text-gray-500">
-        🎉 No items pending release!
-      </p>
-    );
 
   return (
     <div className="px-4 mb-16">
@@ -128,59 +138,84 @@ export default function UnreleasedItemsTab({ mode }) {
         Items Ready for Fund Release
       </h1>
 
-      <div className="flex justify-end mb-6">
+      {/* Search Input */}
+      <div className="flex justify-between items-center mb-6">
+        <input
+          type="text"
+          placeholder="Search by exact Payment ID..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="border px-4 py-2 rounded-lg w-full max-w-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+
         <button
           onClick={releaseAll}
-          disabled={confirmLoading}
-          className="bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          disabled={confirmLoading || filteredItems.length === 0}
+          className="ml-4 bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
         >
           🚀 Release All Funds
         </button>
       </div>
 
-      {/* Grid Layout */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {itemsToRelease.map((item) => (
-          <div
-            key={item.id}
-            className={`border rounded-xl p-5 shadow-lg transform transition hover:scale-105 hover:shadow-2xl ${
-              mode === "dark"
-                ? "bg-gray-800 text-white border-gray-700"
-                : "bg-white"
-            }`}
-          >
-            <h2 className="font-bold text-lg text-red-500 mb-2">
-              {item.title}
-            </h2>
-            <p className="text-sm">
-              <strong>Buyer:</strong> {item.buyerName}
-            </p>
-            <p className="text-sm">
-              <strong>Payment ID:</strong> {item.paymentId}
-            </p>
-            <p className="text-sm">
-              <strong>Order Date:</strong>{" "}
-              {new Date(
-                item.orderDate?.seconds * 1000 || item.orderDate,
-              ).toLocaleDateString("en-GB", {
-                weekday: "short",
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })}
-            </p>
-            <p className="text-red-500 font-semibold mt-2">Pending Release</p>
-
-            <button
-              onClick={() => releaseFund(item.orderId, item.id)}
-              disabled={confirmLoading}
-              className="mt-4 w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+      {filteredItems.length === 0 ? (
+        <p className="text-center mt-10 text-gray-500">
+          {search
+            ? `🎯 No items match Payment ID "${search}"!`
+            : "🎉 No items pending release!"}
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {filteredItems.map((item) => (
+            <div
+              key={item.id}
+              className={`border rounded-xl p-5 shadow-lg transform transition hover:scale-105 hover:shadow-2xl ${
+                mode === "dark"
+                  ? "bg-gray-800 text-white border-gray-700"
+                  : "bg-white"
+              }`}
             >
-              ✅ Release Fund
-            </button>
-          </div>
-        ))}
-      </div>
+              <h2 className="font-bold text-lg text-red-500 mb-2">
+                {item.title}
+              </h2>
+              <p className="text-sm">
+                <strong>Buyer:</strong> {item.buyerName}
+              </p>
+
+              {/* Show Payment ID only if searching */}
+              {search && (
+                <p className="text-sm">
+                  <strong>Payment ID:</strong>{" "}
+                  <span className="bg-yellow-200 text-yellow-800 px-1 rounded">
+                    {item.paymentId}
+                  </span>
+                </p>
+              )}
+
+              <p className="text-sm">
+                <strong>Order Date:</strong>{" "}
+                {new Date(
+                  item.orderDate?.seconds * 1000 || item.orderDate
+                ).toLocaleDateString("en-GB", {
+                  weekday: "short",
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
+              </p>
+
+              <p className="text-red-500 font-semibold mt-2">Pending Release</p>
+
+              <button
+                onClick={() => releaseFund(item.orderId, item.id)}
+                disabled={confirmLoading}
+                className="mt-4 w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              >
+                ✅ Release Fund
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

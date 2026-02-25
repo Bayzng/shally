@@ -125,7 +125,7 @@ function Creator() {
                 mode === "dark" ? "text-gray-400" : "text-gray-600"
               } text-base sm:text-lg md:text-xl`}
             >
-              Simple, powerful, and open — giving everyone equal opportunity to sell.
+              Simple, powerful, and open giving everyone equal opportunity to sell.
             </motion.p>
 
             <motion.div
@@ -217,7 +217,8 @@ function Creator() {
             to="/public-add-product"
             className="inline-block mt-8 bg-white text-pink-600 px-10 py-4 rounded-2xl font-semibold shadow-lg hover:bg-gray-100 text-lg sm:text-xl md:text-2xl transition-transform hover:-translate-y-1"
           >
-            Start Uploading Now 🚀
+            {/* Start Uploading Now 🚀 */}
+            Become A Creator Now 🚀
           </Link>
         </section>
       </div>

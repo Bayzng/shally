@@ -106,7 +106,7 @@ function Filter() {
               type="text"
               value={searchkey}
               onChange={(e) => setSearchkey(e.target.value)}
-              placeholder="Search products, brands or categories"
+              placeholder="Search products..."
               className={`w-full pl-12 pr-12 py-3 rounded-lg text-base outline-none transition
         ${
           mode === "dark"

@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { FiSun } from "react-icons/fi";
 import { BsFillCloudSunFill } from "react-icons/bs";
-import { FaClipboardList } from "react-icons/fa";
 import { RiAdminFill } from "react-icons/ri";
 import { RxCross2 } from "react-icons/rx";
 import { MdShoppingCartCheckout } from "react-icons/md";
@@ -15,11 +14,10 @@ import { IoMenu } from "react-icons/io5";
 import { SiCoinmarketcap } from "react-icons/si";
 import { FaPlusCircle } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
-import { MdOutlineReportProblem } from "react-icons/md";
 import { useEffect } from "react";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { fireDB } from "../../fireabase/FirebaseConfig";
-
+import { IoMdNotifications } from "react-icons/io";
 import logo from "../../assets/logo.png";
 import myContext from "../../context/data/myContext";
 
@@ -102,7 +100,7 @@ function Navbar() {
               leaveTo="-translate-x-full"
             >
               <Dialog.Panel
-                className={`relative flex w-full max-w-[260px] h-screen flex-col overflow-y-auto pb-10 shadow-2xl rounded-2xl transition-all duration-300 ${
+                className={`relative flex w-full max-w-[260px] h-screen flex-col overflow-y-auto pb-10 shadow-2xl transition-all duration-300 ${
                   isDark ? "bg-gray-900 text-white" : "bg-white text-gray-900"
                 }`}
               >
@@ -185,25 +183,39 @@ function Navbar() {
                         <SiCoinmarketcap size={22} /> My Products
                       </Link>
                       <Link
-                        to="/user-settings"
-                        className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
-                      >
-                        <IoSettingsSharp size={22} /> Settings
-                      </Link>
-                      <Link
                         to="/disputes"
                         className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
                       >
-                        <MdOutlineReportProblem size={22} />
+                        <IoMdNotifications size={25} />
 
-                        <span className="flex items-center">
+                        <span className="flex items-center gap-1 relative">
                           Disputes
                           {openDisputesCount > 0 && (
-                            <span className="ml-1 bg-red-600 text-white text-[10px] font-bold px-2 py-[2px] rounded-full inline-block -translate-y-1">
+                            <span
+                              className="
+                                bg-red-600
+                                text-white
+                                text-[10px]
+                                font-bold
+                                w-4
+                                h-4
+                                flex
+                                items-center
+                                justify-center
+                                rounded-full
+                                -translate-y-1
+                              "
+                            >
                               {openDisputesCount}
                             </span>
                           )}
                         </span>
+                      </Link>
+                      <Link
+                        to="/user-settings"
+                        className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
+                        >
+                        <IoSettingsSharp size={22} /> Settings
                       </Link>
 
                       <hr className="border-gray-200/30" />
@@ -238,6 +250,7 @@ function Navbar() {
                       🔐 Signup
                     </Link>
                   )}
+                  <hr className="border-gray-200/30" />
                 </div>
               </Dialog.Panel>
             </Transition.Child>
@@ -292,8 +305,33 @@ function Navbar() {
             {/* RIGHT — MOBILE ICONS */}
             <div className="flex items-center space-x-4 lg:hidden">
               {user && !isAdmin && (
-                <Link to="/order-history">
-                  <FaClipboardList size={20} />
+                <Link
+                  to="/disputes"
+                  className="relative inline-flex items-center"
+                >
+                  <IoMdNotifications size={25} />
+
+                  {openDisputesCount > 0 && (
+                    <span
+                      className="
+                      absolute
+                      -top-2
+                      -right-2
+                      bg-red-600
+                      text-white
+                      text-[10px]
+                      font-bold
+                      min-w-[16px]
+                      h-[16px]
+                      flex
+                      items-center
+                      justify-center
+                      rounded-full
+                    "
+                    >
+                      {openDisputesCount}
+                    </span>
+                  )}
                 </Link>
               )}
 
@@ -342,12 +380,28 @@ function Navbar() {
                   </Link>
                   <Link
                     to="/disputes"
-                    className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
+                    className="relative flex items-center gap-2 font-medium hover:text-pink-500 transition"
                   >
-                    <span className="flex items-center">
+                    <span className="relative flex items-center">
                       Disputes
                       {openDisputesCount > 0 && (
-                        <span className="ml-1 bg-red-600 text-white text-[10px] font-bold px-2 py-[2px] rounded-full inline-block -translate-y-1">
+                        <span
+                          className="
+                          absolute
+                          -top-2
+                          -right-3
+                          bg-red-600
+                          text-white
+                          text-[10px]
+                          font-bold
+                          min-w-[16px]
+                          h-[16px]
+                          flex
+                          items-center
+                          justify-center
+                          rounded-full
+                        "
+                        >
                           {openDisputesCount}
                         </span>
                       )}

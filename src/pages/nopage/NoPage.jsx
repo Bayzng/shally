@@ -36,7 +36,7 @@ function NoPage() {
       <motion.a
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        href="https://www.allmart.com.ng"
+        href="https://www.shally.com.ng"
         className="mt-8 px-8 py-3 bg-white text-purple-700 font-bold rounded-full shadow-lg hover:bg-gray-100 transition-all duration-300"
       >
         Go Back Home

@@ -200,7 +200,7 @@ function Footer() {
           </p>
 
           <div className="flex gap-4 flex-wrap bg-black-400 justify-center p-2 rounded-md">
-            {["Visa", "Master", "PayPal", "Crypto"].map((item, i) => (
+            {["Escrow", "Master", "Card", "Paystack"].map((item, i) => (
               <div
                 key={i}
                 className="

@@ -24,6 +24,8 @@ function OrderHistory() {
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [reportLoading, setReportLoading] = useState(null);
+  const [reportedItems, setReportedItems] = useState(new Set());
+  // will store `${orderId}-${itemIndex}` for all reported items
   // will store `${orderId}-${itemIndex}`
 
   const [infoModal, setInfoModal] = useState({
@@ -35,81 +37,73 @@ function OrderHistory() {
 
   const localUser = JSON.parse(localStorage.getItem("user"));
 
-  const handleReport = async (order, item, itemIndex) => {
-    const loadingKey = `${order.id}-${itemIndex}`;
-    setReportLoading(loadingKey);
-
-    // 🔥 Instant feedback (no waiting)
-    setInfoModal({
-      open: true,
-      type: "info",
-      title: "Checking Report Status",
-      message:
-        "Please wait while we check if this item has already been reported. This will only take a moment.",
-    });
+  const handleReport = async (order, item) => {
+    const key = `${order.id}-${item.id}`;
+    setReportLoading(key);
 
     try {
+      // 1️⃣ Check if dispute already exists
       const q = query(
         collection(fireDB, "disputes"),
         where("orderId", "==", order.id),
-        where("productId", "==", item.id || null),
+        where("productId", "==", item.id),
       );
 
       const existing = await getDocs(q);
 
       if (!existing.empty) {
+        // 🔒 keep yellow permanently
+        setReportedItems((prev) => new Set(prev).add(key));
+
         setInfoModal({
           open: true,
           type: "warning",
-          title: "Report Already Submitted",
-          message:
-            "This item has already been reported. Our support team is currently reviewing it and will reach out if needed.",
+          title: "Already Reported",
+          message: "This item has already been reported.",
         });
         return;
       }
 
+      // 2️⃣ Create dispute
       await addDoc(collection(fireDB, "disputes"), {
         orderId: order.id,
-        productId: item.id || null,
+        productId: item.id,
         productTitle: item.title,
         productImage: item.imageUrl,
         productPrice: item.price,
         productCategory: item.category,
-
         buyerId: localUser?.uid,
         buyerName: order.addressInfo?.name,
         buyerPhone: order.addressInfo?.phoneNumber,
         buyerAddress: order.addressInfo?.address,
         buyerEmail: order.email,
-
         sellerId: item.userid,
         sellerName: item.uploader?.name,
         sellerVerified: item.uploader?.verified || false,
-
         orderDate: order.date,
         expectedDelivery: calculateExpectedDeliveryDate(order.date, item),
         delivered: item.delivered || false,
         paymentId: order.paymentId,
-
         status: "open",
         createdAt: Timestamp.now(),
       });
 
+      // 3️⃣ Update UI instantly (yellow)
+      setReportedItems((prev) => new Set(prev).add(key));
+
       setInfoModal({
         open: true,
         type: "success",
-        title: "Dispute Submitted Successfully",
-        message:
-          "Your report has been sent successfully. Our admin team will review it and update you shortly.",
+        title: "Report Submitted",
+        message: "Your report has been sent successfully.",
       });
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
       setInfoModal({
         open: true,
         type: "warning",
-        title: "Something Went Wrong",
-        message:
-          "We couldn’t submit your report right now. Please check your connection and try again.",
+        title: "Error",
+        message: "Could not submit report. Try again.",
       });
     } finally {
       setReportLoading(null);
@@ -132,10 +126,15 @@ function OrderHistory() {
     const fetchOrders = async () => {
       try {
         if (!localUser?.uid) return;
+
+        /* ===============================
+         1️⃣ FETCH ORDERS
+      =============================== */
         const q = query(
           collection(fireDB, "order"),
           where("userid", "==", localUser.uid),
         );
+
         const querySnapshot = await getDocs(q);
 
         const userOrders = querySnapshot.docs.map((doc) => {
@@ -157,6 +156,27 @@ function OrderHistory() {
         });
 
         setOrders(userOrders);
+
+        /* ===============================
+         2️⃣ FETCH DISPUTES (PERMANENT YELLOW)
+      =============================== */
+        const disputeQuery = query(
+          collection(fireDB, "disputes"),
+          where("buyerId", "==", localUser.uid),
+        );
+
+        const disputeSnapshot = await getDocs(disputeQuery);
+
+        const reportedSet = new Set();
+
+        disputeSnapshot.forEach((doc) => {
+          const data = doc.data();
+          if (data.orderId && data.productId) {
+            reportedSet.add(`${data.orderId}-${data.productId}`);
+          }
+        });
+
+        setReportedItems(reportedSet);
       } catch (error) {
         console.error("Error fetching orders:", error);
       } finally {
@@ -376,7 +396,8 @@ function OrderHistory() {
 
                             {/* Seller Info */}
                             <p className="text-sm text-gray-400 mt-1 flex items-center gap-1">
-                              <span className="text-yellow-400">Seller:</span> {item.uploader?.name}{" "}
+                              <span className="text-yellow-400">Seller:</span>{" "}
+                              {item.uploader?.name}{" "}
                               {item.uploader?.verified && (
                                 <MdVerified className="text-blue-500 text-[12px]" />
                               )}
@@ -397,42 +418,25 @@ function OrderHistory() {
 
                             {!delivered && (
                               <button
-                                disabled={reportLoading === `${order.id}-${i}`}
-                                onClick={() => handleReport(order, item, i)}
-                                className={`mt-2 ml-2 px-3 py-1 rounded text-xs 
-                                  ${
-                                    reportLoading === `${order.id}-${i}`
-                                      ? "bg-gray-400 cursor-not-allowed"
+                                disabled={
+                                  reportLoading === `${order.id}-${item.id}` ||
+                                  reportedItems.has(`${order.id}-${item.id}`)
+                                }
+                                onClick={() => handleReport(order, item)}
+                                className={`mt-2 ml-2 px-3 py-1 rounded text-xs
+                                ${
+                                  reportLoading === `${order.id}-${item.id}`
+                                    ? "bg-gray-400 cursor-not-allowed"
+                                    : reportedItems.has(`${order.id}-${item.id}`)
+                                      ? "bg-yellow-500 text-white cursor-not-allowed"
                                       : "bg-red-600 hover:bg-red-700 text-white"
-                                  }`}
+                                }`}
                               >
-                                {reportLoading === `${order.id}-${i}` ? (
-                                  <>
-                                    <svg
-                                      className="animate-spin h-3 w-3"
-                                      viewBox="0 0 24 24"
-                                      fill="none"
-                                    >
-                                      <circle
-                                        cx="12"
-                                        cy="12"
-                                        r="10"
-                                        stroke="currentColor"
-                                        strokeWidth="4"
-                                        className="opacity-25"
-                                      />
-                                      <path
-                                        d="M4 12a8 8 0 018-8"
-                                        stroke="currentColor"
-                                        strokeWidth="4"
-                                        className="opacity-75"
-                                      />
-                                    </svg>
-                                    Checking...
-                                  </>
-                                ) : (
-                                  "Report"
-                                )}
+                                {reportLoading === `${order.id}-${item.id}`
+                                  ? "Reporting..."
+                                  : reportedItems.has(`${order.id}-${item.id}`)
+                                    ? "Reported"
+                                    : "Report"}
                               </button>
                             )}
 
