@@ -1,206 +1,354 @@
-import { useContext, useEffect } from "react";
-import Filter from "../../components/filter/Filter";
-import Layout from "../../components/layout/Layout";
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import myContext from "../../context/data/myContext";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../redux/cartSlice";
-import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import LoadingOverlay from "../../components/LoadingOverlay/LoadingOverlay"; // ✅ import
+import toast, { Toaster } from "react-hot-toast";
 import { MdVerified } from "react-icons/md";
+import { IoIosPricetag } from "react-icons/io";
+import Layout from "../../components/layout/Layout";
 
-function Allproducts() {
-  const context = useContext(myContext);
-  const {
-    mode,
-    product,
-    searchkey,
-    filterType,
-    filterPrice,
-    user,
-    loading, // ✅ add loading state
-    setLoading,
-  } = context;
+/* ==============================
+   PRODUCT CARD ITEM
+============================== */
+const ProductCardItem = React.memo(function ProductCardItem({
+  item,
+  mode,
+  onProductClick,
+  onCreatorClick,
+  onAddCart,
+}) {
+  const { title, price, imageUrl, id, userid, uploader } = item;
 
-  const dispatch = useDispatch();
-  const cartItems = useSelector((state) => state.cart);
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => onProductClick(id)}
+      className={`relative rounded-3xl shadow-2xl overflow-hidden cursor-pointer
+        transition-transform duration-300 hover:scale-[1.03] hover:shadow-3xl
+        ${
+          mode === "dark"
+            ? "bg-gray-800 border border-gray-700"
+            : "bg-gradient-to-t from-pink-50 via-yellow-50 to-white border border-gray-200"
+        }`}
+    >
+      {/* Badge */}
+      <div className="absolute top-3 left-3 text-white text-xs px-2 py-1 rounded-full shadow-md z-20">
+        AllMart 🛒
+      </div>
+
+      {/* Image */}
+      <div className="relative overflow-hidden rounded-t-3xl h-44 sm:h-52 group">
+        <img
+          src={imageUrl}
+          alt={title}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          draggable={false}
+          loading="lazy"
+          onError={(e) =>
+            (e.target.src =
+              "https://via.placeholder.com/400x400.png?text=No+Image")
+          }
+        />
+      </div>
+
+      {/* Content */}
+      <div className="p-3 sm:p-4 flex flex-col justify-between">
+        <div>
+          <h2
+            className={`flex items-center gap-1 text-xs font-semibold tracking-widest ${
+              mode === "dark" ? "text-green-400" : "text-green-600"
+            }`}
+          >
+            {uploader.name}
+            <MdVerified
+              className={uploader.verified ? "text-blue-500" : "text-gray-400"}
+            />
+          </h2>
+
+          <h1 className="text-sm sm:text-lg font-bold truncate mt-1">
+            {title}
+          </h1>
+
+          <p className="flex items-center gap-1 text-sm sm:text-base font-semibold mt-2 text-pink-600">
+            ₦{price.toLocaleString()} <IoIosPricetag />
+          </p>
+        </div>
+
+        {localStorage.getItem("user") && (
+          <div
+            className="mt-4 flex gap-3 bg-white/20 backdrop-blur-md p-2 rounded-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddCart(item);
+              }}
+              className="flex-1 py-2 text-xs sm:text-sm font-semibold  bg-black from-pink-500 via-purple-500 to-cyan-500 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+            >
+              Add Cart
+            </button>
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onCreatorClick(userid);
+              }}
+              className="flex-1 text-xs sm:text-sm font-medium"
+            >
+              👤 Creator
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+});
+
+/* ==============================
+   MAIN COMPONENT
+============================== */
+function Allproducts({ onLoaded }) {
+  const { mode, product, searchkey, filterType, filterPrice, user } =
+    useContext(myContext);
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.cartItems);
 
-  const addCart = (product) => {
-    dispatch(addToCart(product));
-    toast.success("🛒 Added to cart");
-  };
+  const [productsReady, setProductsReady] = useState(false);
+
+  const addCart = useCallback(
+    (item) => {
+      dispatch(addToCart(item));
+      toast.success("🛒 Added to cart successfully!");
+    },
+    [dispatch],
+  );
+
+  const goToProduct = useCallback(
+    (id) => navigate(`/productinfo/${id}`),
+    [navigate],
+  );
+
+  const goToCreator = useCallback(
+    (userid) => navigate(`/user-profile/${userid}`),
+    [navigate],
+  );
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    if (Array.isArray(product)) setProductsReady(true);
+  }, [product]);
 
-  // ✅ Resolve uploader name from userid
-  // const getUploaderName = (userid) => {
-  //   const uploader = user?.find((u) => u.uid === userid);
-  //   return uploader ? uploader.name : "Marketplace Seller";
-  // };
+  const uploaderMap = useMemo(() => {
+    const map = new Map();
+    user?.forEach((u) => map.set(u.uid, u));
+    return map;
+  }, [user]);
 
-  const getUploaderInfo = (userid) => {
-    const uploader = user?.find((u) => u.uid === userid);
-
-    return uploader
-      ? {
-          name: uploader.name,
-          verified: uploader.verified,
-        }
-      : {
-          name: "Marketplace Seller",
+  const filteredProducts = useMemo(() => {
+    if (!productsReady) return [];
+    return product
+      .filter((p) =>
+        searchkey
+          ? p.title.toLowerCase().includes(searchkey.toLowerCase())
+          : true,
+      )
+      .filter((p) =>
+        filterType
+          ? p.category.toLowerCase().includes(filterType.toLowerCase())
+          : true,
+      )
+      .filter((p) =>
+        filterPrice ? p.price.toString().includes(filterPrice) : true,
+      )
+      .map((p) => ({
+        ...p,
+        uploader: uploaderMap.get(p.userid) || {
+          name: "AllMart Store",
           verified: false,
-        };
-  };
+        },
+      }));
+  }, [product, productsReady, searchkey, filterType, filterPrice, uploaderMap]);
 
-  // ✅ Show loading overlay while products are empty
+  const firstFour = filteredProducts.slice(0, 4);
+  const restProducts = filteredProducts.slice(4);
+
+  const allCreators = useMemo(() => {
+    return [
+      ...new Map(filteredProducts.map((p) => [p.userid, p.uploader])).values(),
+    ];
+  }, [filteredProducts]);
+
   useEffect(() => {
-    if (!product || product.length === 0) {
-      setLoading(true);
-    } else {
-      setLoading(false);
-    }
-  }, [product, setLoading]);
+    if (filteredProducts.length) onLoaded?.();
+  }, [filteredProducts, onLoaded]);
 
-  // Filtered products
-  const filteredProducts = product
-    ?.filter((obj) => obj.title.toLowerCase().includes(searchkey.toLowerCase()))
-    .filter((obj) =>
-      filterType ? obj.category.toLowerCase().includes(filterType) : true,
-    )
-    .filter((obj) => (filterPrice ? obj.price <= parseInt(filterPrice) : true));
+  if (!productsReady) return null;
 
   return (
     <Layout>
-      {/* ================= FULLSCREEN LOADING OVERLAY ================= */}
-      {loading && <LoadingOverlay />}
-
-      <Filter />
-
       <section
-        className={`body-font min-h-screen transition-all duration-500 ${
-          mode === "dark" ? "bg-gray-900 text-white" : "text-gray-900"
+        className={`body-font ${
+          mode === "dark"
+            ? "bg-gray-900 text-white"
+            : "bg-gray-50 text-gray-900"
         }`}
       >
         <Toaster />
-        <div className="container px-4 sm:px-6 lg:px-10 py-12 mx-auto">
-          {/* Header */}
-          <div className="text-center mb-10">
-            <h1 className="text-3xl sm:text-4xl font-bold mb-3">
-              Our Latest Collection
+        <div className="container mx-auto px-4 py-12">
+          {/* FIRST 4 */}
+          <div className="text-center mb-12">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3">
+              Featured Products 🛒
             </h1>
-            <p className="text-gray-500 text-sm sm:text-base">
-              Discover luxury, comfort, and style — all in one place.
+            <div className="h-1 w-20 mx-auto bg-pink-500 rounded"></div>
+            <p
+              className={`mt-3 text-sm sm:text-base ${mode === "dark" ? "text-gray-300" : "text-gray-600"}`}
+            >
+              Discover top picks and trending favorites products just for you
             </p>
-            <div className="h-1 w-24 bg-pink-600 mx-auto mt-4 rounded-full"></div>
+          </div>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            {firstFour.map((item) => (
+              <ProductCardItem
+                key={`${item.id}-${item.userid}`}
+                item={item}
+                mode={mode}
+                onProductClick={goToProduct}
+                onCreatorClick={goToCreator}
+                onAddCart={addCart}
+              />
+            ))}
           </div>
 
-          {/* Empty State */}
-          {filteredProducts?.length === 0 ? (
-            <div className="text-center mt-20">
-              <p
-                className={`text-lg font-medium ${
-                  mode === "dark" ? "text-gray-400" : "text-gray-600"
-                }`}
-              >
-                🚫 No products available in the marketplace yet.
-                <br />
-                Please check back later.
-              </p>
-            </div>
-          ) : (
-            /* Products Grid */
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {filteredProducts.map((item, index) => {
-                const { title, price, imageUrl, id, userid } = item;
+          <div className="inline-block rounded-xl transition-all duration-300 mt-10">
+            <h2
+              className={`text-lg font-semibold tracking-wide ${
+                mode === "dark" ? "font-grotesk" : "font-poppins"
+              }`}
+            >
+              Top Creators
+            </h2>
+          </div>
+
+          {/* CREATOR CAROUSEL */}
+          <div className="mt-6 overflow-hidden">
+            <div className="creator-carousel flex gap-4">
+              {[...allCreators, ...allCreators].map((creator, idx) => {
+                const initials = creator.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("");
+
+                const isVerified = creator.verified;
 
                 return (
                   <div
-                    key={id || index}
-                    onClick={() => navigate(`/productinfo/${id}`)}
-                    className={`relative rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transform transition-all duration-300 overflow-hidden cursor-pointer ${
-                      mode === "dark"
-                        ? "bg-gray-800 border border-gray-700"
-                        : "bg-white border border-gray-200"
-                    }`}
+                    key={idx}
+                    className={`creator-card min-w-[110px] flex flex-col items-center
+                          rounded-2xl px-3 py-4 transition-all
+                          ${
+                            mode === "dark"
+                              ? "bg-black/80 text-white border border-gray-700"
+                              : "bg-gradient-to-t from-pink-50 via-yellow-50 to-white border border-gray-200"
+                          }`}
                   >
-                    {/* Image */}
-                    <div className="overflow-hidden">
-                      <img
-                        src={imageUrl}
-                        alt={title}
-                        className="w-full h-40 sm:h-48 md:h-56 lg:h-64 object-cover rounded-t-2xl transition-transform duration-500 hover:scale-110"
-                        onError={(e) => {
-                          e.target.src =
-                            "https://via.placeholder.com/300x300.png?text=No+Image";
-                        }}
+                    {/* Avatar */}
+                    <div className="relative">
+                      <div
+                        className={`w-12 h-12 rounded-full flex items-center justify-center
+                              font-bold text-base
+                              ${
+                                mode === "dark"
+                                  ? "bg-gray-900 text-white"
+                                  : "bg-gray-100 text-gray-800"
+                              }
+                              ${
+                                isVerified
+                                  ? "ring-2 ring-pink-500/50"
+                                  : "ring-1 ring-gray-300"
+                              }`}
+                      >
+                        {initials}
+                      </div>
+
+                      {/* Verification badge */}
+                      <div
+                        className={`absolute -top-1 -right-1 rounded-full p-[3px] shadow
+                              ${
+                                isVerified
+                                  ? "bg-blue-500"
+                                  : mode === "dark"
+                                    ? "bg-gray-600"
+                                    : "bg-gray-400"
+                              }`}
+                      >
+                        <MdVerified className="text-white text-[10px]" />
+                      </div>
+                    </div>
+
+                    {/* Name */}
+                    <div className="mt-2 flex items-center gap-1 max-w-full">
+                      <span className="text-xs font-semibold truncate">
+                        {creator.name}
+                      </span>
+                      <MdVerified
+                        className={`text-[10px] ${
+                          isVerified ? "text-blue-500" : "text-gray-400"
+                        }`}
                       />
                     </div>
 
-                    {/* Product Info */}
-                    <div className="p-4 sm:p-5 border-t border-gray-200/40 flex flex-col justify-between">
-                      <div>
-                        {(() => {
-                          const uploader = getUploaderInfo(userid);
-
-                          return (
-                            <h2
-                              className={`flex items-center gap-1 text-xs tracking-widest font-semibold mb-1
-                            ${mode === "dark" ? "text-green-400" : "text-green-600"}`}
-                            >
-                              {uploader.name}
-
-                              {/* Verification Icon */}
-                              <MdVerified
-                                className={`text-xs ${
-                                  uploader.verified
-                                    ? "text-blue-500"
-                                    : mode === "dark"
-                                      ? "text-gray-500"
-                                      : "text-gray-400"
-                                }`}
-                                title={
-                                  uploader.verified
-                                    ? "Verified Seller"
-                                    : "Not Verified"
-                                }
-                              />
-                            </h2>
-                          );
-                        })()}
-
-                        <h1 className="text-sm sm:text-lg font-bold truncate mb-1">
-                          {title}
-                        </h1>
-
-                        <p className="text-sm sm:text-base font-medium mb-2">
-                          ₦{price.toLocaleString()}
-                        </p>
-                      </div>
-
-                      {/* Add to Cart Button */}
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          addCart(item);
-                        }}
-                        className="w-full py-2 text-sm sm:text-base text-white bg-green-600 hover:bg-green-700 font-semibold rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pink-300"
-                      >
-                        Add To Cart
-                      </button>
-                    </div>
+                    {/* Status */}
+                    <span
+                      className={`mt-1 text-[9px] uppercase tracking-wider font-medium
+                          ${
+                            isVerified
+                              ? mode === "dark"
+                                ? "text-green-400"
+                                : "text-green-600"
+                              : mode === "dark"
+                                ? "text-gray-400"
+                                : "text-gray-500"
+                          }`}
+                    >
+                      {isVerified ? "Verified" : "Creator"}
+                    </span>
                   </div>
                 );
               })}
             </div>
-          )}
+          </div>
+
+          {/* REST PRODUCTS */}
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 mt-10">
+            {restProducts.map((item) => (
+              <ProductCardItem
+                key={`${item.id}-${item.userid}`}
+                item={item}
+                mode={mode}
+                onProductClick={goToProduct}
+                onCreatorClick={goToCreator}
+                onAddCart={addCart}
+              />
+            ))}
+          </div>
         </div>
       </section>
     </Layout>

@@ -10,10 +10,10 @@ import { fireDB } from "../../../fireabase/FirebaseConfig";
 
 function DisputeTab({ mode }) {
   const [disputes, setDisputes] = useState([]);
+  const [resolvingId, setResolvingId] = useState(null);
 
   const openImageSafely = (base64) => {
     if (!base64.startsWith("data:")) {
-      // normal https URL → open directly
       window.open(base64, "_blank");
       return;
     }
@@ -50,6 +50,8 @@ function DisputeTab({ mode }) {
 
   const resolveDispute = async (dispute) => {
     try {
+      setResolvingId(dispute.id);
+
       // 1️⃣ Update dispute status
       await updateDoc(doc(fireDB, "disputes", dispute.id), {
         status: "resolved",
@@ -60,7 +62,6 @@ function DisputeTab({ mode }) {
       const orderRef = doc(fireDB, "order", dispute.orderId);
       const orderSnap = await getDocs(collection(fireDB, "order"));
 
-      // Find matching order document
       const matchingOrder = orderSnap.docs.find(
         (o) => o.id === dispute.orderId,
       );
@@ -96,6 +97,8 @@ function DisputeTab({ mode }) {
       );
     } catch (error) {
       console.error("Error resolving dispute:", error);
+    } finally {
+      setResolvingId(null);
     }
   };
 
@@ -142,7 +145,8 @@ function DisputeTab({ mode }) {
               </div>
 
               {/* CONTENT */}
-              <div className="p-6 space-y-4">
+              <div className="p-6 flex flex-col gap-4">
+                {/* TITLE */}
                 <h2 className="font-semibold text-lg truncate">
                   {d.productTitle}
                 </h2>
@@ -161,50 +165,64 @@ function DisputeTab({ mode }) {
 
                 {/* META */}
                 <div className="text-xs text-gray-400 space-y-1">
-                  <p>📞 {d.buyerPhone}</p>
-                  <p>🧾 Payment: {d.paymentId}</p>
-                  <p>🚚 Expected: {d.expectedDelivery}</p>
+                  {d.buyerPhone && <p>📞 {d.buyerPhone}</p>}
+                  {d.paymentId && <p>🧾 Payment: {d.paymentId}</p>}
+                  {d.expectedDelivery && (
+                    <p>🚚 Expected: {d.expectedDelivery}</p>
+                  )}
                 </div>
 
-                {/* RECEIPT */}
-                {/* {d.receiptUrl && (
-                  <div
-                    onClick={() => openImageSafely(d.receiptUrl)}
-                    className="cursor-pointer border rounded-xl p-3 text-center text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-                  >
-                    📄 View Receipt Evidence
-                  </div>
-                )} */}
-
+                {/* RECEIPT SECTION (only renders if available) */}
                 {d.receiptUrl && (
-                  <div className="flex items-center gap-3 mt-4">
-                    <img
-                      src={d.receiptUrl}
-                      alt="Receipt"
-                      className="w-14 h-14 object-cover rounded-lg border"
-                    />
+                  <div className="flex flex-col gap-2">
+                    <p className="font-medium text-sm">Receipt Information</p>
+                    <p className="text-xs text-gray-400">Seller Receipt</p>
 
-                    <button
-                      onClick={() => openImageSafely(d.receiptUrl)}
-                      className="text-sm font-medium text-blue-600 hover:underline"
-                    >
-                      View Receipt
-                    </button>
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={d.receiptUrl}
+                        alt="Receipt"
+                        className="w-14 h-14 object-cover rounded-lg border"
+                      />
+
+                      <button
+                        onClick={() => openImageSafely(d.receiptUrl)}
+                        className="text-sm font-medium text-blue-600 hover:underline"
+                      >
+                        View Receipt
+                      </button>
+                    </div>
                   </div>
                 )}
-
-                {/* ACTION */}
-                <div className="pt-2 flex justify-end">
-                  {d.status === "open" ? (
-                    <button
-                      onClick={() => resolveDispute(d)}
-                      className="bg-green-600 hover:bg-green-700 text-white text-sm px-6 py-2 rounded-xl transition"
-                    >
-                      Resolve Dispute
-                    </button>
-                  ) : (
+                <div className="mt-auto pt-2 flex justify-end items-center min-h-[40px]">
+                  {d.status === "resolved" ? (
                     <span className="text-green-500 text-sm font-semibold">
                       ✔ Resolved
+                    </span>
+                  ) : d.receiptUrl ? (
+                    <button
+                      onClick={() => resolveDispute(d)}
+                      disabled={resolvingId === d.id}
+                      className={`text-white text-sm px-6 py-2 rounded-xl transition flex items-center gap-2
+                        ${
+                          resolvingId === d.id
+                            ? "bg-green-400 cursor-not-allowed"
+                            : "bg-green-600 hover:bg-green-700"
+                        }
+                      `}
+                    >
+                      {resolvingId === d.id ? (
+                        <>
+                          <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+                          Resolving...
+                        </>
+                      ) : (
+                        "Resolve Dispute"
+                      )}
+                    </button>
+                  ) : (
+                    <span className="text-yellow-500 text-sm font-medium">
+                      Waiting for seller receipt
                     </span>
                   )}
                 </div>
