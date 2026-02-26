@@ -14,9 +14,10 @@ import { fireDB } from "../../fireabase/FirebaseConfig";
 import myContext from "../../context/data/myContext";
 import LoadingOverlay from "../../components/LoadingOverlay/LoadingOverlay";
 import { MdVerified } from "react-icons/md";
+import { MdNotificationAdd } from "react-icons/md";
 
 function OrderHistory() {
-  const { mode, user } = useContext(myContext); // Assuming user context is available
+  const { mode, user } = useContext(myContext);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -25,14 +26,12 @@ function OrderHistory() {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [reportLoading, setReportLoading] = useState(null);
   const [reportedItems, setReportedItems] = useState(new Set());
-  // will store `${orderId}-${itemIndex}` for all reported items
-  // will store `${orderId}-${itemIndex}`
 
   const [infoModal, setInfoModal] = useState({
     open: false,
     title: "",
     message: "",
-    type: "info", // success | warning | info
+    type: "info",
   });
 
   const localUser = JSON.parse(localStorage.getItem("user"));
@@ -42,7 +41,6 @@ function OrderHistory() {
     setReportLoading(key);
 
     try {
-      // 1️⃣ Check if dispute already exists
       const q = query(
         collection(fireDB, "disputes"),
         where("orderId", "==", order.id),
@@ -52,7 +50,6 @@ function OrderHistory() {
       const existing = await getDocs(q);
 
       if (!existing.empty) {
-        // 🔒 keep yellow permanently
         setReportedItems((prev) => new Set(prev).add(key));
 
         setInfoModal({
@@ -64,7 +61,6 @@ function OrderHistory() {
         return;
       }
 
-      // 2️⃣ Create dispute
       await addDoc(collection(fireDB, "disputes"), {
         orderId: order.id,
         productId: item.id,
@@ -88,7 +84,6 @@ function OrderHistory() {
         createdAt: Timestamp.now(),
       });
 
-      // 3️⃣ Update UI instantly (yellow)
       setReportedItems((prev) => new Set(prev).add(key));
 
       setInfoModal({
@@ -110,26 +105,17 @@ function OrderHistory() {
     }
   };
 
-  /** -------------------------
-   * Step 1: Prepare user map
-   * ------------------------- */
   const userMap = useMemo(() => {
     const map = new Map();
     user?.forEach((u) => map.set(u.uid, u));
     return map;
   }, [user]);
 
-  /** -------------------------
-   * Step 2: Fetch orders and attach seller info
-   * ------------------------- */
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         if (!localUser?.uid) return;
 
-        /* ===============================
-         1️⃣ FETCH ORDERS
-      =============================== */
         const q = query(
           collection(fireDB, "order"),
           where("userid", "==", localUser.uid),
@@ -157,9 +143,6 @@ function OrderHistory() {
 
         setOrders(userOrders);
 
-        /* ===============================
-         2️⃣ FETCH DISPUTES (PERMANENT YELLOW)
-      =============================== */
         const disputeQuery = query(
           collection(fireDB, "disputes"),
           where("buyerId", "==", localUser.uid),
@@ -187,9 +170,6 @@ function OrderHistory() {
     fetchOrders();
   }, [localUser, userMap]);
 
-  /** -------------------------
-   * Helper: parse Firestore date
-   * ------------------------- */
   const parseDate = (value) => {
     if (!value) return null;
     if (value instanceof Timestamp) return value.toDate();
@@ -197,14 +177,8 @@ function OrderHistory() {
     return new Date(value);
   };
 
-  /** -------------------------
-   * Helper: check item delivered
-   * ------------------------- */
   const isItemDelivered = (item) => item.delivered;
 
-  /** -------------------------
-   * Confirm product received
-   * ------------------------- */
   const confirmProductReceived = async (orderId, itemIndex) => {
     try {
       const orderRef = doc(fireDB, "order", orderId);
@@ -222,7 +196,6 @@ function OrderHistory() {
 
       await updateDoc(orderRef, { cartItems: updatedItems });
 
-      // Update UI instantly
       setOrders((prev) =>
         prev.map((o) =>
           o.id === orderId ? { ...o, cartItems: updatedItems } : o,
@@ -247,9 +220,6 @@ function OrderHistory() {
     }
   };
 
-  /** -------------------------
-   * Delivery countdown
-   * ------------------------- */
   const getDeliveryCountdown = (orderDate) => {
     const date = parseDate(orderDate);
     if (!date) return null;
@@ -287,9 +257,6 @@ function OrderHistory() {
     });
   };
 
-  /** -------------------------
-   * Auto re-render countdown every second
-   * ------------------------- */
   useEffect(() => {
     const timer = setInterval(() => setOrders((prev) => [...prev]), 1000);
     return () => clearInterval(timer);
@@ -303,10 +270,6 @@ function OrderHistory() {
         </div>
       </Layout>
     );
-
-  /** -------------------------
-   * Render
-   * ------------------------- */
   return (
     <Layout>
       <div
@@ -316,8 +279,21 @@ function OrderHistory() {
             : "bg-gray-50 text-gray-800"
         }`}
       >
-        <h1 className="text-3xl md:text-4xl font-extrabold text-center mb-10 tracking-wide">
-          🧾 My Order History
+        <div className="mb-5 flex items-center bg-white rounded-xl shadow-md overflow-hidden py-2 px-4">
+          <div className="flex-shrink-0 font-semibold mr-4">
+            <MdNotificationAdd size={20} className="text-red-500" />
+          </div>
+
+          <div className="overflow-hidden whitespace-nowrap flex-1">
+            <div className="inline-block animate-scroll text-black  font-medium">
+              As a buyer, receipts of all products you have purchased will be
+              listed here.
+            </div>
+          </div>
+        </div>
+
+        <h1 className="text-2xl ml-2 md:text-2xl font-extrabold  mb-5 tracking-wide">
+          Order History
         </h1>
 
         {orders.length === 0 ? (
@@ -427,7 +403,9 @@ function OrderHistory() {
                                 ${
                                   reportLoading === `${order.id}-${item.id}`
                                     ? "bg-gray-400 cursor-not-allowed"
-                                    : reportedItems.has(`${order.id}-${item.id}`)
+                                    : reportedItems.has(
+                                          `${order.id}-${item.id}`,
+                                        )
                                       ? "bg-yellow-500 text-white cursor-not-allowed"
                                       : "bg-red-600 hover:bg-red-700 text-white"
                                 }`}

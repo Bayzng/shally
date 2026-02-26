@@ -28,10 +28,12 @@ import UserSettings from "./components/UserSettings/UserSettings";
 import PrivacyTerms from "./components/PrivacyTerms";
 import PublicUpdateProduct from "./pages/admin/page/PublicUpdateProduct";
 import Disputes from "./components/Disputes/Disputes";
+import PullToRefreshWrapper from "./PullToRefreshWrapper";
 
 function App() {
   return (
     <MyState>
+      <PullToRefreshWrapper>
       <Router>
         <ScrollToTop />
         <Routes>
@@ -171,6 +173,7 @@ function App() {
 
         <ToastContainer />
       </Router>
+      </PullToRefreshWrapper>
     </MyState>
   );
 }

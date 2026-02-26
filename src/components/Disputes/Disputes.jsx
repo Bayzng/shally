@@ -13,6 +13,7 @@ import { fireDB } from "../../fireabase/FirebaseConfig";
 import myContext from "../../context/data/myContext";
 import LoadingOverlay from "../../components/LoadingOverlay/LoadingOverlay";
 import { IoClose } from "react-icons/io5";
+import { MdNotificationAdd } from "react-icons/md";
 
 function Disputes() {
   const { mode } = useContext(myContext);
@@ -182,7 +183,21 @@ function Disputes() {
       <div
         className={`min-h-screen py-10 px-4 sm:px-8 ${mode === "dark" ? "bg-[#181a1b] text-white" : "bg-gray-50 text-gray-800"}`}
       >
-        <h1 className="text-2xl font-bold text-center mb-6">⚠️ My Disputes</h1>
+        <div className="mb-10 flex items-center bg-white rounded-xl shadow-md overflow-hidden py-2 px-4">
+          {/* Fixed note */}
+          <div className="flex-shrink-0 font-semibold mr-4">
+            <MdNotificationAdd size={20} className="text-red-500" />
+          </div>
+
+          {/* Scrolling text */}
+          <div className="overflow-hidden whitespace-nowrap flex-1">
+            <div className="inline-block animate-scroll text-black  font-medium">
+              To resolve a dispute, please check your dashboard and upload a
+              screenshot of the reported product.
+            </div>
+          </div>
+        </div>
+        <h1 className="text-2xl font-bold mb-6">Disputes</h1>
 
         {/* Filter Buttons */}
         <div className="flex justify-center gap-4 mb-8">
@@ -257,7 +272,7 @@ function Disputes() {
                   </p>
                   <p>
                     <strong>Order:</strong> {item.orderId} <br />
-                    <strong>Paymemt:</strong> {item.paymentId}
+                    <strong>Payment:</strong> {item.paymentId}
                   </p>
                 </div>
 
