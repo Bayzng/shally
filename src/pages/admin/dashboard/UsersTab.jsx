@@ -64,10 +64,10 @@ function UsersTab({ mode }) {
   return (
     <div className="relative overflow-x-auto mb-10">
       <h1
-        className="text-center mb-5 text-3xl font-semibold underline"
+        className="text-center mb-5 text-3xl font-semibold"
         style={{ color: mode === "dark" ? "white" : "" }}
       >
-        User Details & Verification Requests
+        User Details
       </h1>
 
       {/* Verification Requests Section */}

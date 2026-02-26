@@ -20,6 +20,7 @@ import { fireDB } from "../../fireabase/FirebaseConfig";
 import { IoMdNotifications } from "react-icons/io";
 import logo from "../../assets/logo.png";
 import myContext from "../../context/data/myContext";
+import { MdAdminPanelSettings } from "react-icons/md";
 
 function Navbar() {
   const { mode, toggleMode } = useContext(myContext);
@@ -214,7 +215,7 @@ function Navbar() {
                       <Link
                         to="/user-settings"
                         className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
-                        >
+                      >
                         <IoSettingsSharp size={22} /> Settings
                       </Link>
 
@@ -226,7 +227,7 @@ function Navbar() {
                     <>
                       <Link
                         to="/dashboard"
-                        className="flex items-center gap-2 font-medium text-indigo-500 hover:text-indigo-600 transition"
+                        className="flex items-center gap-2 font-medium text-green-500 hover:text-green-600 transition"
                       >
                         🛠️ Admin Dashboard
                       </Link>
@@ -343,7 +344,8 @@ function Navbar() {
                 )}
               </button>
 
-              {user && (
+              {user && !isAdmin && (
+                // {user && (
                 <Link
                   to={cartItems.length > 0 ? "/cart" : "#"}
                   onClick={handleCartClick}
@@ -355,6 +357,11 @@ function Navbar() {
                       {cartItems.length}
                     </span>
                   )}
+                </Link>
+              )}
+              {isAdmin && (
+                <Link to="/dashboard" className="font-medium relative">
+                  <MdAdminPanelSettings size={25} />
                 </Link>
               )}
             </div>
@@ -440,7 +447,8 @@ function Navbar() {
                   onClick={handleCartClick}
                   className="flex items-center space-x-1"
                 >
-                  <FaShoppingCart /> <span>{cartItems.length}</span>
+                  <FaShoppingCart />
+                  <span>{cartItems.length}</span>
                 </Link>
               )}
             </div>

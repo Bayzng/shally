@@ -109,7 +109,7 @@ function DisputeTab({ mode }) {
           mode === "dark" ? "text-white" : "text-gray-900"
         }`}
       >
-        Dispute Resolution Center
+        Dispute Center
       </h1>
 
       {disputes.length === 0 ? (
