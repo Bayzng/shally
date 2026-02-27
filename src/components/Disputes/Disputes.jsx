@@ -191,7 +191,7 @@ function Disputes() {
 
           {/* Scrolling text */}
           <div className="overflow-hidden whitespace-nowrap flex-1">
-            <div className="inline-block animate-scroll text-black  font-medium">
+            <div className="inline-block animate-scroll text-black">
               To resolve a dispute, please check your dashboard and upload a
               screenshot of the reported product.
             </div>

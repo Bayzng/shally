@@ -21,6 +21,7 @@ import { IoMdNotifications } from "react-icons/io";
 import logo from "../../assets/logo.png";
 import myContext from "../../context/data/myContext";
 import { MdAdminPanelSettings } from "react-icons/md";
+import { IoMdLogIn } from "react-icons/io";
 
 function Navbar() {
   const { mode, toggleMode } = useContext(myContext);
@@ -118,27 +119,28 @@ function Navbar() {
 
                 {/* Navigation */}
                 <div className="px-4 py-6 space-y-5 text-sm mt-10">
+                  <hr className="border-t border-gray-300/60 dark:border-gray-400/60" />
                   <h1
                     className="flex items-center gap-2 font-semibold text-lg tracking-wide
-                    text-pink-500 transition-colors duration-300 cursor-pointer mb-10"
+                     transition-colors duration-300 cursor-pointer mb-10 ml-5"
                   >
-                    AllMart Marketplace
+                    Shop For All 🛍️
                   </h1>
 
-                  <hr className="border-gray-200/30" />
+                  <hr className="border-t border-gray-300/60 dark:border-gray-400/60" />
                   {user && !isAdmin ? (
                     <Link
                       to="/allproducts"
                       className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
                     >
-                      🛍️ All Products
+                      🛒 All Products
                     </Link>
                   ) : (
                     <div
-                      className={`sticky top-0 z-50 ${isDark ? "bg-gray-900" : "bg-white"} rounded-xl p-4 text-center space-y-2`}
+                      className={`sticky top-0 z-50 ${isDark ? "bg-gray-900" : "bg-white"} rounded-xl p-4  space-y-2`}
                     >
                       <h3 className="text-lg font-semibold">
-                        👋 Welcome to Allmart Marketplace
+                        Welcome to Allmart Marketplace
                       </h3>
 
                       <p className="text-sm text-gray-600 dark:text-gray-300">
@@ -149,7 +151,7 @@ function Navbar() {
                       </p>
                     </div>
                   )}
-                  <hr className="border-gray-200/30" />
+                  <hr className="border-t border-gray-300/60 dark:border-gray-400/60" />
                   {user && !isAdmin && (
                     <Link
                       to="/user-dashboard"
@@ -343,6 +345,12 @@ function Navbar() {
                   <FiSun size={20} />
                 )}
               </button>
+
+              {!user && (
+                <Link to="/login" className="font-medium">
+                  <IoMdLogIn size={25} />
+                </Link>
+              )}
 
               {user && !isAdmin && (
                 // {user && (

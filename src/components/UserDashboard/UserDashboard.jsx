@@ -127,6 +127,7 @@ function UserDashboard() {
             customerName: data.addressInfo?.name || "N/A",
             customerPhone: data.addressInfo?.phoneNumber || "N/A",
             customerAddress: data.addressInfo?.address || "N/A",
+            customerPayment: data.paymentId || "N/A",
             customerEmail: data.email || "N/A",
           });
         }
@@ -277,28 +278,15 @@ function UserDashboard() {
             >
               {/* Background Image */}
               <img
-                // src="https://img.freepik.com/free-photo/cartoon-man-wearing-glasses_23-2151136880.jpg?semt=ais_user_personalization&w=740&q=80"
-                // src="https://img.freepik.com/free-photo/cartoon-woman-wearing-glasses_23-2151136862.jpg?semt=ais_user_personalization&w=740&q=80"
-                // src="https://img.freepik.com/premium-photo/five-happy-children-running-through-field-sunny-day_7556-9141.jpg"
-                // src="https://img.freepik.com/premium-photo/youth-group-with-popinspired-background_1208997-747.jpg"
-                // src="https://assets.change.org/photos/7/lr/dz/aPlRDZIvSIIdmXw-800x450-noPad.jpg?1761121329"
-                // src="https://images.theconversation.com/files/509005/original/file-20230208-27-3jttof.jpg?ixlib=rb-4.1.0&rect=0%2C0%2C5463%2C3645&q=50&auto=format&w=768&h=512&fit=crop&dpr=2"
                 src="https://www.ipsos.com/sites/default/files/styles/max_1300x1300/public/ct/news_and_polls/2022-08/happy%20people%201.jpeg?itok=aE_N840D"
-                // src="https://cdn.punchng.com/wp-content/uploads/2017/05/03133845/Happy.jpg"
-                // src="https://img.freepik.com/free-photo/medium-shot-happy-friends-city_23-2149003088.jpg?semt=ais_hybrid&w=740&q=80"
-                alt="Virtual Card"
+                alt="Virtual Card Background"
                 className="absolute inset-0 w-full h-full object-cover scale-105"
               />
-              {/* Dark/Blackish Overlay */}
-              {/* Dynamic Overlay for Light & Dark Mode */}
               <div
                 className={`absolute inset-0 ${
                   mode === "dark" ? "bg-black/70" : "bg-black/20"
                 }`}
               ></div>
-
-              {/* increased opacity to 65% */}
-              {/* Soft Highlight Gradient */}
               <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-transparent" />
               {/* Card Content */}
               <div
@@ -369,14 +357,14 @@ function UserDashboard() {
                   <button
                     onClick={handleWithdraw}
                     className={`
-        px-4 py-1.5 text-xs font-bold rounded-lg
-        border border-white/20 shadow-md transition-all
-        ${
-          mode === "dark"
-            ? "bg-green-800/60 text-white hover:bg-green-800"
-            : "bg-green-500/70 text-white hover:bg-green-600"
-        }
-      `}
+                      px-4 py-1.5 text-xs font-bold rounded-lg
+                      border border-white/20 shadow-md transition-all
+                      ${
+                        mode === "dark"
+                          ? "bg-green-800/60 text-white hover:bg-green-800"
+                          : "bg-green-500/70 text-white hover:bg-green-600"
+                      }
+                    `}
                   >
                     Withdraw
                   </button>
@@ -569,7 +557,7 @@ const OrderCard = ({ order, downloadReceipt, mode }) => {
           onClick={() => downloadReceipt(order.id)}
           className="bg-pink-500 text-white px-3 py-1 rounded text-sm"
         >
-          Download Receipts
+          Receipts
         </button>
       </div>
 
@@ -588,9 +576,12 @@ const OrderCard = ({ order, downloadReceipt, mode }) => {
         <p>
           <strong>Address:</strong> {order.customerAddress}
         </p>
+        <hr className="mt-1 mb-1" />
+        <p>
+          <strong>payment:</strong> {order.customerPayment}
+        </p>
       </div>
 
-      {/* Items */}
       {/* Items */}
       {order.cartItems.map((item, i) => (
         <div

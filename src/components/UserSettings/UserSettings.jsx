@@ -107,156 +107,184 @@ function UserSettings() {
   return (
     <Layout>
       <Toaster />
+
       <div
-        className={`min-h-screen px-4 py-10 ${
-          isDark ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-800"
+        className={`min-h-screen px-4 py-12 transition-all duration-500 ${
+          isDark
+            ? "bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white"
+            : "bg-gradient-to-br from-gray-50 via-white to-purple-50 text-gray-800"
         }`}
       >
-        <div
-          className={`max-w-3xl mx-auto p-8 rounded-3xl shadow-2xl space-y-6 ${
-            isDark
-              ? "bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800"
-              : "bg-gradient-to-r from-pink-50 via-purple-50 to-white"
-          }`}
-        >
-          {/* User Info */}
-          <div className="flex flex-col sm:flex-row justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-white text-4xl font-extrabold shadow-lg">
-                {currentUser.name?.charAt(0)}
-              </div>
-              <div>
-                <p className="text-lg sm:text-xl font-semibold">
-                  {currentUser.name}
-                </p>
-                <p
-                  className={`text-sm ${
-                    isDark ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  {currentUser.email}
-                </p>
-              </div>
-            </div>
-
-            {/* Verified Badge */}
-            {/* Verified Badge */}
-            <div className="flex items-center gap-3 justify-end sm:justify-start">
-              <div
-                className={`flex items-center gap-2 px-3 py-1 rounded-full shadow-lg transition-all duration-300 ${
-                  currentUser.verified
-                    ? "bg-blue-100 text-blue-700"
-                    : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
-                }`}
-              >
-                <MdVerified
-                  size={24}
-                  className={`transition-transform duration-500 ${
-                    currentUser.verified
-                      ? "text-blue-500 animate-bounce"
-                      : "text-gray-400 dark:text-gray-300"
-                  }`}
-                />
-                <span className="font-medium text-sm">
-                  {currentUser.verified ? "Verified" : "Unverified"}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* About */}
+        <div className="max-w-5xl mx-auto space-y-10">
+          {/* ================= HEADER SECTION ================= */}
           <div
-            className={`p-4 rounded-xl shadow-inner ${
-              isDark ? "bg-gray-800 text-gray-200" : "bg-white text-gray-700"
+            className={`p-8 rounded-3xl shadow-2xl backdrop-blur-xl border ${
+              isDark
+                ? "bg-white/5 border-white/10"
+                : "bg-white/70 border-gray-200"
             }`}
           >
-            <div className="flex items-center gap-3 mb-4">
-              <span className="flex items-center justify-center w-9 h-9 rounded-full bg-pink-100 text-pink-600">
-                🔔
-              </span>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+              {/* Profile Info */}
+              <div className="flex items-center gap-6">
+                <div className="relative">
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold shadow-xl">
+                    {currentUser.name?.charAt(0)}
+                  </div>
 
+                  {currentUser.verified && (
+                    <div className="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-2 shadow-lg">
+                      <MdVerified size={18} className="text-white" />
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <h1 className="text-2xl font-bold">{currentUser.name}</h1>
+                  <p className="text-sm opacity-70">{currentUser.email}</p>
+
+                  <div className="mt-2">
+                    <span
+                      className={`px-3 py-1 text-xs rounded-full font-medium ${
+                        currentUser.verified
+                          ? "bg-blue-100 text-blue-600"
+                          : "bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                      }`}
+                    >
+                      {currentUser.verified
+                        ? "Verified Merchant"
+                        : "Standard Account"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Account Summary */}
+              <div className="text-sm space-y-2 opacity-80">
+                <p>🛍 Sell products to thousands of buyers</p>
+                <p>⚡ Get faster visibility with verification</p>
+                <p>🔒 Secure and trusted marketplace system</p>
+              </div>
+            </div>
+          </div>
+
+          {/* ================= VERIFICATION SECTION ================= */}
+          <div
+            className={`p-8 rounded-3xl shadow-xl border ${
+              isDark ? "bg-white/5 border-white/10" : "bg-white border-gray-200"
+            }`}
+          >
+            <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
-                <h2 className="text-lg sm:text-xl font-semibold text-green-600">
-                  Notifications
-                </h2>
-                <p className="text-xs text-gray-500">
-                  Stay updated on your orders and activity
+                <h2 className="text-xl font-bold mb-2">Account Verification</h2>
+
+                <p className="text-sm opacity-70 max-w-xl">
+                  Verified merchants receive priority placement, increased buyer
+                  trust, and a blue verification badge displayed across the
+                  marketplace.
                 </p>
+              </div>
+
+              {/* Status Indicator */}
+              <div>
+                {currentUser.verified ? (
+                  <div className="flex items-center gap-2 text-blue-500 font-semibold">
+                    <MdVerified size={22} />
+                    Verified
+                  </div>
+                ) : alreadyRequested ? (
+                  <div className="text-yellow-500 font-medium">
+                    ⏳ Request Pending Review
+                  </div>
+                ) : (
+                  <div className="text-red-500 font-medium">⚠ Not Verified</div>
+                )}
               </div>
             </div>
 
-            <p className="text-sm">
-              {currentUser.verified ? (
-                <>
-                  <span className="font-semibold">
-                    You are now a verified merchant
-                  </span>{" "}
-                  on our platform.
-                </>
-              ) : alreadyRequested ? (
-                <>
-                  <span className="font-semibold">
-                    Verification request pending
-                  </span>
-                  . Please wait for review.
-                </>
-              ) : (
-                <>
-                  Request verification to get a{" "}
-                  <span className="font-semibold">blue badge</span>.
-                </>
-              )}
-            </p>
+            {/* Action Area */}
+            {!currentUser.verified && !alreadyRequested && (
+              <div className="mt-6">
+                <button
+                  onClick={handleRequestVerification}
+                  disabled={requesting}
+                  className="px-8 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:scale-[1.03] transform transition-all text-white font-semibold shadow-lg"
+                >
+                  {requesting
+                    ? "Submitting Request..."
+                    : "Request Verification"}
+                </button>
+
+                <p className="text-xs mt-2 opacity-60">
+                  Our team will review your account within 24–48 hours.
+                </p>
+              </div>
+            )}
+
+            {alreadyRequested && !currentUser.verified && (
+              <p className="mt-6 text-yellow-500 text-sm">
+                You have already submitted a verification request.
+              </p>
+            )}
           </div>
 
-          {/* Request Button */}
-          {!currentUser.verified && !alreadyRequested && (
-            <div className="text-center">
-              <button
-                onClick={handleRequestVerification}
-                disabled={requesting}
-                className="px-6 py-3 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold shadow-lg transition"
-              >
-                {requesting ? "Requesting..." : "Request Verification"}
-              </button>
-              <p
-                className={`mt-2 text-sm ${
-                  isDark ? "text-gray-400" : "text-gray-500"
-                }`}
-              >
-                Verified merchants get more visibility.
+          {/* ================= BENEFITS GRID ================= */}
+          <div className="grid md:grid-cols-3 gap-6">
+            <div
+              className={`p-6 rounded-2xl shadow-lg ${
+                isDark ? "bg-white/5" : "bg-white"
+              }`}
+            >
+              <h3 className="font-semibold mb-2 text-purple-500">
+                🔥 Higher Visibility
+              </h3>
+              <p className="text-sm opacity-70">
+                Verified merchants appear higher in search results and product
+                listings.
               </p>
             </div>
-          )}
 
-          {alreadyRequested && !currentUser.verified && (
-            <p className="text-center text-sm text-yellow-500">
-              Verification request already submitted.
-            </p>
-          )}
+            <div
+              className={`p-6 rounded-2xl shadow-lg ${
+                isDark ? "bg-white/5" : "bg-white"
+              }`}
+            >
+              <h3 className="font-semibold mb-2 text-blue-500">
+                🛡 Increased Trust
+              </h3>
+              <p className="text-sm opacity-70">
+                Buyers are more confident purchasing from verified accounts.
+              </p>
+            </div>
 
-          {/* Tips */}
+            <div
+              className={`p-6 rounded-2xl shadow-lg ${
+                isDark ? "bg-white/5" : "bg-white"
+              }`}
+            >
+              <h3 className="font-semibold mb-2 text-pink-500">
+                📈 Better Conversions
+              </h3>
+              <p className="text-sm opacity-70">
+                Verified sellers experience improved engagement and sales rates.
+              </p>
+            </div>
+          </div>
+
+          {/* ================= PERFORMANCE TIPS ================= */}
           <div
-            className={`mt-6 p-4 rounded-xl shadow-inner ${
-              isDark ? "bg-gray-800" : "bg-pink-50"
+            className={`p-8 rounded-3xl shadow-xl ${
+              isDark ? "bg-white/5" : "bg-purple-50"
             }`}
           >
-            <h3
-              className={`font-semibold ${
-                isDark ? "text-purple-400" : "text-purple-600"
-              }`}
-            >
-              Tips for Verified Merchants
-            </h3>
-            <ul
-              className={`list-disc list-inside text-sm space-y-1 ${
-                isDark ? "text-gray-300" : "text-gray-700"
-              }`}
-            >
-              <li>Maintain high product quality</li>
-              <li>Respond quickly to buyers</li>
-              <li>Keep your products updated</li>
-              <li>Engage customers consistently</li>
+            <h3 className="font-bold text-lg mb-4">Merchant Growth Tips</h3>
+
+            <ul className="space-y-2 text-sm opacity-80 list-disc list-inside">
+              <li>Upload high-quality product images</li>
+              <li>Respond quickly to customer messages</li>
+              <li>Keep pricing competitive and transparent</li>
+              <li>Maintain excellent delivery records</li>
+              <li>Update your listings regularly</li>
             </ul>
           </div>
         </div>

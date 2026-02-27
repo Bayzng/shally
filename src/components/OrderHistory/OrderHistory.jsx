@@ -285,7 +285,7 @@ function OrderHistory() {
           </div>
 
           <div className="overflow-hidden whitespace-nowrap flex-1">
-            <div className="inline-block animate-scroll text-black  font-medium">
+            <div className="inline-block animate-scroll text-black">
               As a buyer, receipts of all products you have purchased will be
               listed here.
             </div>

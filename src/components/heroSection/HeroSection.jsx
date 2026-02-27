@@ -107,6 +107,12 @@ export default function HeroSection() {
                 {slide.subtitle}
               </p>
               <a
+                onClick={() =>
+                  window.scrollTo({
+                    top: window.innerHeight,
+                    behavior: "smooth",
+                  })
+                }
                 href={slide.cta}
                 className="mt-4 inline-block bg-pink-600 text-white px-6 py-2 rounded-md font-semibold hover:bg-pink-700 transition"
               >
