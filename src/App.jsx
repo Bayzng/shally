@@ -29,6 +29,7 @@ import PrivacyTerms from "./components/PrivacyTerms";
 import PublicUpdateProduct from "./pages/admin/page/PublicUpdateProduct";
 import Disputes from "./components/Disputes/Disputes";
 import PullToRefreshWrapper from "./PullToRefreshWrapper";
+import EditProtectedRoute from "./components/EditProtectedRoute/EditProtectedRoute";
 
 function App() {
   return (
@@ -120,9 +121,9 @@ function App() {
           <Route
             path="/public-update-product/:id"
             element={
-              <ProtectedRouteUser>
+              <ProtectedRoute>
                 <PublicUpdateProduct />
-              </ProtectedRouteUser>
+              </ProtectedRoute>
             }
           />
 

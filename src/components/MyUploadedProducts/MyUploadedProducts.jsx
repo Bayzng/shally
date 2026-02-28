@@ -4,20 +4,12 @@ import myContext from "../../context/data/myContext";
 import { useNavigate } from "react-router-dom";
 
 function MyUploadedProducts() {
-  // const { mode, product, deleteProduct, editHandle } = useContext(myContext);
   const { mode, product, deleteProduct } = useContext(myContext);
 
   const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
 
-  // Filter only current user's products
-  // Filter only current user's products
 const myProducts = product.filter((item) => item.userid === user?.uid);
-
-  // const handleEdit = (item) => {
-  //   editHandle(item);
-  //   navigate("/updateproduct");
-  // };
 
   const handleEdit = (item) => {
   navigate(`/public-update-product/${item.id}`);
@@ -34,8 +26,8 @@ const myProducts = product.filter((item) => item.userid === user?.uid);
             : "bg-gray-50 text-gray-800"
         }`}
       >
-        <h1 className="text-3xl md:text-4xl font-extrabold text-center mb-10">
-          📦 My Products
+        <h1 className="text-3xl md:text-4xl font-extrabold  mb-10">
+         My Products
         </h1>
 
         {myProducts.length === 0 ? (
