@@ -1,31 +1,34 @@
 import { useContext, useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import myContext from "../../../context/data/myContext";
 import toast, { Toaster } from "react-hot-toast";
+import Layout from "../../../components/layout/Layout";
 
 function PublicUpdateProduct() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const { product, products, setProducts, updateProduct } =
+
+  const { product, products, setProducts, updateProduct, mode } =
     useContext(myContext);
+
   const [preview, setPreview] = useState(products?.imageUrl || null);
 
-  // ✅ Load selected product into context on mount
+  // ✅ Load selected product safely
   useEffect(() => {
-    const selectedProduct = product.find((p) => p.id === id);
+    if (!Array.isArray(product) || product.length === 0) return;
 
+    const selectedProduct = product.find((p) => p.id === id);
     if (!selectedProduct) {
       toast.error("Product not found");
-      navigate("/my-products");
       return;
     }
 
-    setProducts(selectedProduct);
+    // Merge with existing state to avoid overwriting context completely
+    setProducts((prev) => ({ ...prev, ...selectedProduct }));
     setPreview(selectedProduct.imageUrl);
-  }, [id, product, setProducts, navigate]);
+  }, [id, product, setProducts]);
 
-  // ✅ Image upload with resizing/compression
+  // ✅ Handle image upload + compression
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -63,7 +66,8 @@ function PublicUpdateProduct() {
 
         const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.7);
 
-        setProducts({ ...products, imageUrl: compressedDataUrl });
+        // Merge image URL safely
+        setProducts((prev) => ({ ...prev, imageUrl: compressedDataUrl }));
         setPreview(compressedDataUrl);
       };
 
@@ -76,7 +80,6 @@ function PublicUpdateProduct() {
   };
 
   // ✅ Handle product update
-  // ✅ Update handleUpdate to use loading state
   const handleUpdate = async () => {
     if (
       !products.title ||
@@ -90,112 +93,214 @@ function PublicUpdateProduct() {
     }
 
     try {
-      setLoading(true); // <-- start loading
-
-      // Call your existing update function
-      await updateProduct();
-
+      setLoading(true);
+      await updateProduct(); // do not reset context or reload
       toast.success("Product updated successfully!");
-
-      //   navigate("/");
-      navigate("/my-products");
-      window.location.reload();
     } catch (error) {
       console.error(error);
       toast.error("Failed to update product. Try again.");
     } finally {
-      setLoading(false); // <-- stop loading
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6">
-      <div className="bg-gray-900 text-white shadow-2xl px-8 py-8 rounded-2xl w-full max-w-lg">
-        <h1 className="text-center text-yellow-400 text-2xl mb-6 font-extrabold tracking-wide">
-          Update Product
-        </h1>
+    <Layout>
+      <div
+        className={`min-h-screen p-6 transition-colors duration-300 ${
+          mode === "dark"
+            ? "bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white"
+            : "bg-gradient-to-br from-gray-100 via-white to-gray-200 text-gray-900"
+        }`}
+      >
         <Toaster />
 
-        <div className="space-y-4">
-          {/* Product Title */}
-          <input
-            type="text"
-            value={products.title || ""}
-            onChange={(e) =>
-              setProducts({ ...products, title: e.target.value })
-            }
-            placeholder="Product Title"
-            className="bg-gray-700 px-3 py-3 w-full rounded-lg text-white placeholder-gray-300 outline-none focus:ring-2 focus:ring-yellow-400"
-          />
+        {/* Header */}
+        <div className="max-w-6xl mx-auto mb-8 p-2">
+          <h1 className="text-4xl font-extrabold mb-3">Edit Studio</h1>
 
-          {/* Product Price */}
-          <input
-            type="number"
-            value={products.price || ""}
-            onChange={(e) =>
-              setProducts({ ...products, price: e.target.value })
-            }
-            placeholder="Product Price"
-            className="bg-gray-700 px-3 py-3 w-full rounded-lg text-white placeholder-gray-300 outline-none focus:ring-2 focus:ring-yellow-400"
-          />
+          <p
+            className={`mt-2 text-sm ${
+              mode === "dark" ? "text-gray-400" : "text-gray-600"
+            }`}
+          >
+            Update your product details and optimize your listing.
+          </p>
 
-          {/* Image Upload */}
-          <div className="flex flex-col items-center">
-            <label className="text-gray-300 mb-2 text-sm font-semibold">
-              Update Product Image
+          <div
+            className={`mt-2 text-xs ${
+              mode === "dark" ? "text-gray-400" : "text-gray-500"
+            }`}
+          >
+            Product ID: <span className="text-yellow-500">{id}</span>
+          </div>
+        </div>
+
+        {/* Main Grid */}
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* LEFT - FORM */}
+          <div
+            className={`rounded-3xl p-8 shadow-xl space-y-6 ${
+              mode === "dark"
+                ? "bg-white/5 border border-white/10"
+                : "bg-white border border-gray-200"
+            }`}
+          >
+            {/* Title */}
+            <div>
+              <label className="text-sm font-semibold block mb-2">
+                Product Title
+              </label>
+              <input
+                type="text"
+                value={products.title || ""}
+                onChange={(e) =>
+                  setProducts((prev) => ({ ...prev, title: e.target.value }))
+                }
+                className={`w-full rounded-xl px-4 py-3 text-base outline-none transition ${
+                  mode === "dark"
+                    ? "bg-gray-800 border border-gray-700 text-white"
+                    : "bg-white border border-gray-300 text-gray-900"
+                } focus:ring-2 focus:ring-yellow-400`}
+              />
+            </div>
+
+            {/* Price + Category */}
+            <label className="text-sm font-semibold block mb-2">
+              Price (₦)
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input
+                type="number"
+                value={products.price || ""}
+                onChange={(e) =>
+                  setProducts((prev) => ({ ...prev, price: e.target.value }))
+                }
+                placeholder="Price"
+                className={`rounded-xl px-4 py-3 text-base outline-none transition ${
+                  mode === "dark"
+                    ? "bg-gray-800 border border-gray-700 text-white"
+                    : "bg-white border border-gray-300 text-gray-900"
+                } focus:ring-2 focus:ring-yellow-400`}
+              />
+
+              <label className="text-sm font-semibold block mb-2">
+                Category
+              </label>
+              <input
+                type="text"
+                value={products.category || ""}
+                onChange={(e) =>
+                  setProducts((prev) => ({ ...prev, category: e.target.value }))
+                }
+                placeholder="Category"
+                className={`rounded-xl px-4 py-3 text-base outline-none transition ${
+                  mode === "dark"
+                    ? "bg-gray-800 border border-gray-700 text-white"
+                    : "bg-white border border-gray-300 text-gray-900"
+                } focus:ring-2 focus:ring-yellow-400`}
+              />
+            </div>
+
+            {/* Description */}
+            <label className="text-sm font-semibold block mb-2">
+              Description
+            </label>
+            <textarea
+              rows="5"
+              value={products.description || ""}
+              onChange={(e) =>
+                setProducts((prev) => ({ ...prev, description: e.target.value }))
+              }
+              placeholder="Product description..."
+              className={`w-full rounded-xl px-4 py-3 text-base outline-none transition ${
+                mode === "dark"
+                  ? "bg-gray-800 border border-gray-700 text-white"
+                  : "bg-white border border-gray-300 text-gray-900"
+              } focus:ring-2 focus:ring-yellow-400`}
+            />
+
+            {/* Image Upload */}
+            <label className="text-sm font-semibold block mb-2">
+              Upload Product Image
             </label>
             <input
               type="file"
               accept="image/*"
               onChange={handleImageUpload}
-              className="bg-gray-700 text-white rounded-lg px-3 py-2 w-full cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-500 file:text-black hover:file:bg-yellow-400 transition-all"
+              className="w-full cursor-pointer
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-full file:border-0
+                file:bg-pink-600 file:text-white
+                hover:file:bg-pink-700"
             />
-            {preview && (
-              <img
-                src={preview}
-                alt="Preview"
-                className="mt-4 w-40 h-40 object-cover rounded-lg shadow-md"
-              />
-            )}
+
+            {/* Button */}
+            <button
+              onClick={handleUpdate}
+              disabled={loading}
+              className={`w-full mt-4 bg-gradient-to-r from-pink-600 to-purple-600 hover:scale-[1.02] transform transition-all text-white font-bold py-3 rounded-xl flex justify-center items-center`}
+            >
+              {loading ? "Updating Product..." : "💾 Save Changes"}
+            </button>
           </div>
 
-          {/* Category */}
-          <input
-            type="text"
-            value={products.category || ""}
-            onChange={(e) =>
-              setProducts({ ...products, category: e.target.value })
-            }
-            placeholder="Product Category"
-            className="bg-gray-700 px-3 py-3 w-full rounded-lg text-white placeholder-gray-300 outline-none focus:ring-2 focus:ring-yellow-400"
-          />
-
-          {/* Description */}
-          <textarea
-            rows="4"
-            value={products.description || ""}
-            onChange={(e) =>
-              setProducts({ ...products, description: e.target.value })
-            }
-            placeholder="Product Description"
-            className="bg-gray-700 px-3 py-3 w-full rounded-lg text-white placeholder-gray-300 outline-none focus:ring-2 focus:ring-yellow-400"
-          ></textarea>
-
-          {/* Update Button */}
-          <button
-            onClick={handleUpdate}
-            disabled={loading} // <-- disables button while loading
-            className={`w-full text-black font-bold py-3 rounded-lg shadow-lg transition-all duration-200 ${
-              loading
-                ? "bg-gray-500 cursor-not-allowed"
-                : "bg-yellow-500 hover:bg-yellow-400"
+          {/* RIGHT - PREVIEW */}
+          <div
+            className={`rounded-3xl p-8 shadow-xl ${
+              mode === "dark"
+                ? "bg-white/5 border border-white/10"
+                : "bg-white border border-gray-200"
             }`}
           >
-            {loading ? "Updating..." : "Update Product"}
-          </button>
+            <h2 className="text-xl font-bold mb-6 text-yellow-500">
+              Live Preview
+            </h2>
+
+            <div
+              className={`rounded-2xl p-6 ${
+                mode === "dark" ? "bg-gray-900" : "bg-gray-100"
+              }`}
+            >
+              {preview ? (
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="w-full h-64 object-cover rounded-xl mb-4"
+                />
+              ) : (
+                <div
+                  className={`w-full h-64 flex items-center justify-center rounded-xl mb-4 ${
+                    mode === "dark"
+                      ? "bg-gray-800 text-gray-400"
+                      : "bg-gray-200 text-gray-500"
+                  }`}
+                >
+                  No Image Selected
+                </div>
+              )}
+
+              <h3 className="text-xl font-bold">
+                {products.title || "Product Title"}
+              </h3>
+
+              <p className="text-yellow-500 font-semibold mt-2">
+                ₦{products.price || "0.00"}
+              </p>
+
+              <p className="text-sm mt-2 opacity-70">
+                Category: {products.category || "Not specified"}
+              </p>
+
+              <p className="text-sm mt-4 opacity-80">
+                {products.description ||
+                  "Your product description will appear here..."}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }
 
