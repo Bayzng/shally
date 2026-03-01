@@ -1,6 +1,6 @@
 import { Fragment, useContext, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { FiSun } from "react-icons/fi";
 import { BsFillCloudSunFill } from "react-icons/bs";
@@ -28,6 +28,7 @@ function Navbar() {
   const [open, setOpen] = useState(false);
   const user = JSON.parse(localStorage.getItem("user"));
   const cartItems = useSelector((state) => state.cart);
+  const location = useLocation(); // Add this
   const [openDisputesCount, setOpenDisputesCount] = useState(0);
 
   useEffect(() => {
@@ -155,7 +156,12 @@ function Navbar() {
                   {user && !isAdmin && (
                     <Link
                       to="/user-dashboard"
-                      className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
+                      className={`flex items-center -ml-1 p-2 gap-2 font-medium hover:text-pink-500 transition  ${
+                          location.pathname === "/user-dashboard"
+                            ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
+                            : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
+                        }`}
+                      // className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
                     >
                       <RiAdminFill size={22} /> My DashBoard
                     </Link>
@@ -167,27 +173,47 @@ function Navbar() {
                     <>
                       <Link
                         to="/order-history"
-                        className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
+                        // className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
+                        className={`flex items-center -ml-1 p-2 gap-2 font-medium hover:text-pink-500 transition  ${
+                          location.pathname === "/order-history"
+                            ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
+                            : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
+                        }`}
                       >
                         <MdShoppingCartCheckout size={22} /> My Orders
                       </Link>
 
                       <Link
                         to="/creator"
-                        className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
+                        // className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
+                        className={`flex items-center -ml-1 p-2 gap-2 font-medium hover:text-pink-500 transition  ${
+                          location.pathname === "/creator"
+                            ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
+                            : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
+                        }`}
                       >
                         <FaPlusCircle size={22} /> Add Product
                       </Link>
 
                       <Link
                         to="/my-products"
-                        className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
+                        className={`flex items-center -ml-1 p-2 gap-2 font-medium hover:text-pink-500 transition  ${
+                          location.pathname === "/my-products"
+                            ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
+                            : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
+                        }`}
+                        // className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
                       >
                         <SiCoinmarketcap size={22} /> My Products
                       </Link>
                       <Link
                         to="/disputes"
-                        className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
+                        className={`flex items-center -ml-1 p-2 gap-2 font-medium hover:text-pink-500 transition  ${
+                          location.pathname === "/disputes"
+                            ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
+                            : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
+                        }`}
+                        // className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
                       >
                         <IoMdNotifications size={25} />
 
@@ -216,7 +242,12 @@ function Navbar() {
                       </Link>
                       <Link
                         to="/user-settings"
-                        className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
+                        className={`flex items-center -ml-1 p-2 gap-2 font-medium hover:text-pink-500 transition  ${
+                          location.pathname === "/user-settings"
+                            ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
+                            : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
+                        }`}
+                        // className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
                       >
                         <IoSettingsSharp size={22} /> Settings
                       </Link>
@@ -375,47 +406,91 @@ function Navbar() {
             </div>
 
             {/* DESKTOP LINKS */}
-            <div className="hidden lg:flex items-center space-x-6">
+            <div className="hidden lg:flex items-center space-x-4">
               {user && !isAdmin && (
                 <>
-                  <Link to="/order-history" className="font-medium">
+                  <Link
+                    to="/order-history"
+                    className={`font-medium px-3 py-1 rounded-xl transition ${
+                      location.pathname === "/order-history"
+                        ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
+                        : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
+                    }`}
+                  >
                     Orders
                   </Link>
-                  <Link to="/creator" className="font-medium">
+
+                  <Link
+                    to="/creator"
+                    className={`font-medium px-3 py-1 rounded-xl transition ${
+                      location.pathname === "/creator"
+                        ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
+                        : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
+                    }`}
+                  >
                     Add Product
                   </Link>
-                  <Link to="/my-products" className="font-medium">
+
+                  <Link
+                    to="/my-products"
+                    className={`font-medium px-3 py-1 rounded-xl transition ${
+                      location.pathname === "/my-products"
+                        ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
+                        : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
+                    }`}
+                  >
                     My Product
                   </Link>
-                  <Link to="/user-dashboard" className="font-medium">
+
+                  <Link
+                    to="/user-dashboard"
+                    className={`font-medium px-3 py-1 rounded-xl transition ${
+                      location.pathname === "/user-dashboard"
+                        ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
+                        : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
+                    }`}
+                  >
                     My Dashboard
                   </Link>
-                  <Link to="/user-settings" className="font-medium">
+
+                  <Link
+                    to="/user-settings"
+                    className={`font-medium px-3 py-1 rounded-xl transition ${
+                      location.pathname === "/user-settings"
+                        ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
+                        : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
+                    }`}
+                  >
                     Settings
                   </Link>
+
                   <Link
                     to="/disputes"
-                    className="relative flex items-center gap-2 font-medium hover:text-pink-500 transition"
+                    className={`relative flex items-center gap-2 font-medium px-3 py-1 rounded-xl transition ${
+                      location.pathname === "/disputes"
+                        ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
+                        : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
+                    }`}
                   >
                     <span className="relative flex items-center">
                       Disputes
                       {openDisputesCount > 0 && (
                         <span
                           className="
-                          absolute
-                          -top-2
-                          -right-3
-                          bg-red-600
-                          text-white
-                          text-[10px]
-                          font-bold
-                          min-w-[16px]
-                          h-[16px]
-                          flex
-                          items-center
-                          justify-center
-                          rounded-full
-                        "
+                            absolute
+                            -top-2
+                            -right-3
+                            bg-red-600
+                            text-white
+                            text-[10px]
+                            font-bold
+                            min-w-[16px]
+                            h-[16px]
+                            flex
+                            items-center
+                            justify-center
+                            rounded-full
+                          "
                         >
                           {openDisputesCount}
                         </span>
@@ -456,7 +531,9 @@ function Navbar() {
                   className="flex items-center space-x-1"
                 >
                   <FaShoppingCart />
-                  <span>{cartItems.length}</span>
+                  <span className="-top-2 -right-2 bg-red-500 w-5 h-5 flex items-center justify-center rounded-full text-white text-xs">
+                    {cartItems.length}
+                  </span>
                 </Link>
               )}
             </div>
