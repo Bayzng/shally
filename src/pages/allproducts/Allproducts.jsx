@@ -221,7 +221,7 @@ function Allproducts({ onLoaded }) {
             <p
               className={`mt-3 text-sm sm:text-base ${mode === "dark" ? "text-gray-300" : "text-gray-600"}`}
             >
-              Discover top picks and trending favorites products just for you
+              Discover top picks and trending favorites product
             </p>
           </div>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">

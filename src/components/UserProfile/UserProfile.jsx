@@ -1,6 +1,13 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { Package, Store, Mail, ShieldCheck, User } from "lucide-react";
+import {
+  Package,
+  Store,
+  Mail,
+  ShieldCheck,
+  User,
+  MessageSquare,
+} from "lucide-react";
 import Layout from "../layout/Layout";
 import myContext from "../../context/data/myContext";
 import LoadingOverlay from "../LoadingOverlay/LoadingOverlay";
@@ -10,14 +17,34 @@ function UserProfile() {
   const { mode, product, user } = useContext(myContext);
   const { uid } = useParams();
   const [currentUser, setCurrentUser] = useState(null);
+  const [chatOpen, setChatOpen] = useState(false);
+  const chatRef = useRef(null); // Ref for chat panel
 
-  /* -------- fetch seller by URL param -------- */
+  // Fetch seller by UID
   useEffect(() => {
     if (!uid || !user) return;
-
     const seller = user.find((u) => u.uid === uid);
     setCurrentUser(seller || null);
   }, [uid, user]);
+
+  // Close chat if clicked/touched outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        chatRef.current &&
+        !chatRef.current.contains(event.target) &&
+        !event.target.closest(".chat-button")
+      ) {
+        setChatOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside); // desktop
+    document.addEventListener("touchstart", handleClickOutside); // mobile
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, []);
 
   if (!currentUser) {
     return (
@@ -33,7 +60,6 @@ function UserProfile() {
     );
   }
 
-  /* -------- seller products -------- */
   const sellerProducts = product.filter(
     (item) => item.userid === currentUser.uid,
   );
@@ -66,8 +92,8 @@ function UserProfile() {
                 <MdVerified
                   className={
                     currentUser.verified
-                      ? "text-blue-500 text-2xl sm:text-3xl" // ✅ green if verified
-                      : "text-gray-400 text-2xl sm:text-3xl" // ⚪ gray if not verified
+                      ? "text-blue-500 text-2xl sm:text-3xl"
+                      : "text-gray-400 text-2xl sm:text-3xl"
                   }
                 />
               </h1>
@@ -191,6 +217,82 @@ function UserProfile() {
             </div>
           )}
         </div>
+
+        {/* ================= CHAT BUTTON ================= */}
+        <button
+          onClick={() => setChatOpen(!chatOpen)}
+          className="chat-button fixed bottom-8 right-8 w-16 h-16 rounded-full bg-pink-500 hover:bg-pink-600 flex items-center justify-center shadow-lg transition-all z-50"
+        >
+          <MessageSquare className="text-white w-8 h-8" />
+        </button>
+
+        {/* ================= CHAT PANEL ================= */}
+        {chatOpen && (
+          <div
+            ref={chatRef}
+            className={`fixed bottom-24 right-8 w-80 max-w-sm rounded-xl shadow-lg flex flex-col z-50
+            ${mode === "dark" ? "bg-gray-800 border border-gray-700 text-gray-200" : "bg-white border border-gray-300 text-gray-800"}
+          `}
+          >
+            {/* Seller info */}
+            <div className="flex items-center gap-3 p-3 border-b border-gray-200 dark:border-gray-700">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                {currentUser.name?.charAt(0) || "U"}
+              </div>
+              <div className="flex flex-col flex-1">
+                <div className="flex items-center gap-1">
+                  <span className="font-bold text-sm">{currentUser.name}</span>
+                  {currentUser.verified ? (
+                    <MdVerified className="text-blue-500 text-xs" />
+                  ) : (
+                    <span className="text-gray-400 text-xs">⚪</span>
+                  )}
+                </div>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  {currentUser.verified ? "Verified Seller" : "Emerging Seller"}
+                </span>
+              </div>
+            </div>
+
+            {/* Chat messages */}
+            <div className="flex-1 overflow-y-auto p-3 space-y-2">
+              <div
+                className={`p-2 rounded-lg max-w-[75%] ${
+                  mode === "dark"
+                    ? "bg-gray-700 text-gray-200"
+                    : "bg-gray-100 text-gray-800"
+                }`}
+              >
+                💬 Chat feature is currently under development!
+              </div>
+
+              {/* Example typing message */}
+              <div
+                className={`p-2 rounded-lg max-w-[75%] self-end italic text-xs text-gray-400`}
+              >
+                Typing...
+              </div>
+            </div>
+
+            {/* Input field */}
+            <div className="border-t border-gray-200 dark:border-gray-700 p-3 flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="Type a message..."
+                disabled
+                className={`flex-1 px-3 py-2 rounded-xl text-sm outline-none
+                ${mode === "dark" ? "bg-gray-700 text-gray-300 placeholder-gray-400" : "bg-gray-100 text-gray-800 placeholder-gray-500"}
+              `}
+              />
+              <button
+                disabled
+                className={`px-3 py-2 rounded-lg font-bold text-white bg-pink-500 opacity-50 cursor-not-allowed`}
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );

@@ -156,7 +156,7 @@ function Navbar() {
                   {user && !isAdmin && (
                     <Link
                       to="/user-dashboard"
-                      className={`flex items-center -ml-1 p-2 gap-2 font-medium hover:text-pink-500 transition  ${
+                      className={`flex items-center -ml-1 px-2 h-8 gap-2 font-medium hover:text-pink-500 transition  ${
                           location.pathname === "/user-dashboard"
                             ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
                             : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
@@ -174,7 +174,7 @@ function Navbar() {
                       <Link
                         to="/order-history"
                         // className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
-                        className={`flex items-center -ml-1 p-2 gap-2 font-medium hover:text-pink-500 transition  ${
+                        className={`flex items-center -ml-1 px-2 h-8 gap-2 font-medium hover:text-pink-500 transition ${
                           location.pathname === "/order-history"
                             ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
                             : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
@@ -186,7 +186,7 @@ function Navbar() {
                       <Link
                         to="/creator"
                         // className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
-                        className={`flex items-center -ml-1 p-2 gap-2 font-medium hover:text-pink-500 transition  ${
+                        className={`flex items-center -ml-1 px-2 h-8 gap-2 font-medium hover:text-pink-500 transition  ${
                           location.pathname === "/creator"
                             ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
                             : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
@@ -197,7 +197,7 @@ function Navbar() {
 
                       <Link
                         to="/my-products"
-                        className={`flex items-center -ml-1 p-2 gap-2 font-medium hover:text-pink-500 transition  ${
+                        className={`flex items-center -ml-1 px-2 h-8 gap-2 font-medium hover:text-pink-500 transition  ${
                           location.pathname === "/my-products"
                             ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
                             : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
@@ -208,7 +208,7 @@ function Navbar() {
                       </Link>
                       <Link
                         to="/disputes"
-                        className={`flex items-center -ml-1 p-2 gap-2 font-medium hover:text-pink-500 transition  ${
+                        className={`flex items-center -ml-1 px-2 h-8 gap-2 font-medium hover:text-pink-500 transition ${
                           location.pathname === "/disputes"
                             ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
                             : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
@@ -242,7 +242,7 @@ function Navbar() {
                       </Link>
                       <Link
                         to="/user-settings"
-                        className={`flex items-center -ml-1 p-2 gap-2 font-medium hover:text-pink-500 transition  ${
+                        className={`flex items-center -ml-1 px-2 h-8 gap-2 font-medium hover:text-pink-500 transition  ${
                           location.pathname === "/user-settings"
                             ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
                             : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
@@ -406,12 +406,12 @@ function Navbar() {
             </div>
 
             {/* DESKTOP LINKS */}
-            <div className="hidden lg:flex items-center space-x-4">
+            <div className="hidden lg:flex items-center space-x-5">
               {user && !isAdmin && (
                 <>
                   <Link
                     to="/order-history"
-                    className={`font-medium px-3 py-1 rounded-xl transition ${
+                    className={`font-medium px-2 py-1 rounded-xl transition ${
                       location.pathname === "/order-history"
                         ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
                         : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
@@ -422,7 +422,7 @@ function Navbar() {
 
                   <Link
                     to="/creator"
-                    className={`font-medium px-3 py-1 rounded-xl transition ${
+                    className={`font-medium px-2 py-1 rounded-xl transition ${
                       location.pathname === "/creator"
                         ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
                         : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
@@ -433,7 +433,7 @@ function Navbar() {
 
                   <Link
                     to="/my-products"
-                    className={`font-medium px-3 py-1 rounded-xl transition ${
+                    className={`font-medium px-2 py-1 rounded-xl transition ${
                       location.pathname === "/my-products"
                         ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
                         : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
@@ -444,7 +444,7 @@ function Navbar() {
 
                   <Link
                     to="/user-dashboard"
-                    className={`font-medium px-3 py-1 rounded-xl transition ${
+                    className={`font-medium px-2 py-1 rounded-xl transition ${
                       location.pathname === "/user-dashboard"
                         ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
                         : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
@@ -455,7 +455,7 @@ function Navbar() {
 
                   <Link
                     to="/user-settings"
-                    className={`font-medium px-3 py-1 rounded-xl transition ${
+                    className={`font-medium px-2 py-1 rounded-xl transition ${
                       location.pathname === "/user-settings"
                         ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
                         : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
@@ -466,7 +466,7 @@ function Navbar() {
 
                   <Link
                     to="/disputes"
-                    className={`relative flex items-center gap-2 font-medium px-3 py-1 rounded-xl transition ${
+                    className={`relative flex items-center gap-2 font-medium px-2 py-1 rounded-xl transition ${
                       location.pathname === "/disputes"
                         ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
                         : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"

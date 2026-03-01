@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { MdVerified } from "react-icons/md";
 import { IoIosPricetag } from "react-icons/io";
+import Ads from "../ads/ads";
 
 /* ==============================
    PRODUCT CARD ITEM (STABLE)
@@ -121,9 +122,18 @@ function ProductCard({ onLoaded }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
+  const [adPosition, setAdPosition] = useState(0);
 
   const imagesLoadedRef = useRef(0);
   const [productsReady, setProductsReady] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAdPosition((prev) => (prev + 1) % 3);
+    }, 7000); // change position every 7 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   /* -------------------- */
   const addCart = useCallback(
@@ -210,6 +220,8 @@ function ProductCard({ onLoaded }) {
       }`}
     >
       <Toaster />
+
+      <Ads />
 
       <div className="container mx-auto px-4 py-12">
         {/* FIRST 4 */}

@@ -36,7 +36,7 @@ function Creator() {
         }`}
       >
         {/* HERO SECTION */}
-        <section className="max-w-7xl mx-auto px-6 pt-20 pb-16 grid md:grid-cols-2 gap-10 items-center">
+        <section className="max-w-7xl mx-auto px-6 pt-16 pb-16 grid md:grid-cols-2 gap-10 items-center">
           <motion.div
             initial="hidden"
             animate="visible"
