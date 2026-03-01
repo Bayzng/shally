@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { MdVerified } from "react-icons/md";
 import { IoIosPricetag } from "react-icons/io";
-import Ads from "../ads/ads";
+// import Ads from "../ads/ads";
 
 /* ==============================
    PRODUCT CARD ITEM (STABLE)
@@ -221,7 +221,7 @@ function ProductCard({ onLoaded }) {
     >
       <Toaster />
 
-      <Ads />
+      {/* <Ads /> */}
 
       <div className="container mx-auto px-4 py-12">
         {/* FIRST 4 */}
