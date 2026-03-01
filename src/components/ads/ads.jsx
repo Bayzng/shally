@@ -10,12 +10,22 @@ function Ads() {
 
   // Auto show / hide every 7s
   useEffect(() => {
-    const interval = setInterval(() => {
-      setVisible((prev) => !prev);
-    }, 7000);
-    return () => clearInterval(interval);
-  }, []);
+    let timeout;
 
+    const toggleVisibility = () => {
+      // Show for 3 seconds
+      setVisible(true);
+      timeout = setTimeout(() => {
+        // Hide for 1 minute
+        setVisible(false);
+        timeout = setTimeout(toggleVisibility, 60000); // repeat after 1 minute
+      }, 4000);
+    };
+
+    toggleVisibility();
+
+    return () => clearTimeout(timeout);
+  }, []);
   if (!visible) return null;
 
   return (
@@ -68,7 +78,7 @@ function Ads() {
             hover:bg-pink-500 hover:text-white
             hover:shadow-lg hover:shadow-pink-500/40
             transition-all duration-300"
-            >
+      >
         Launch Now
       </button>
     </div>

@@ -12,6 +12,7 @@ import Layout from "../layout/Layout";
 import myContext from "../../context/data/myContext";
 import LoadingOverlay from "../LoadingOverlay/LoadingOverlay";
 import { MdVerified } from "react-icons/md";
+import { X } from "lucide-react";
 
 function UserProfile() {
   const { mode, product, user } = useContext(myContext);
@@ -28,23 +29,6 @@ function UserProfile() {
   }, [uid, user]);
 
   // Close chat if clicked/touched outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        chatRef.current &&
-        !chatRef.current.contains(event.target) &&
-        !event.target.closest(".chat-button")
-      ) {
-        setChatOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside); // desktop
-    document.addEventListener("touchstart", handleClickOutside); // mobile
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside);
-    };
-  }, []);
 
   if (!currentUser) {
     return (
@@ -223,7 +207,11 @@ function UserProfile() {
           onClick={() => setChatOpen(!chatOpen)}
           className="chat-button fixed bottom-8 right-8 w-16 h-16 rounded-full bg-pink-500 hover:bg-pink-600 flex items-center justify-center shadow-lg transition-all z-50"
         >
-          <MessageSquare className="text-white w-8 h-8" />
+          {chatOpen ? (
+            <X className="text-white w-8 h-8" />
+          ) : (
+            <MessageSquare className="text-white w-8 h-8" />
+          )}
         </button>
 
         {/* ================= CHAT PANEL ================= */}
