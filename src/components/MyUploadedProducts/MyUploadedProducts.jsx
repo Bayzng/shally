@@ -9,12 +9,11 @@ function MyUploadedProducts() {
   const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
 
-const myProducts = product.filter((item) => item.userid === user?.uid);
+  const myProducts = product.filter((item) => item.userid === user?.uid);
 
   const handleEdit = (item) => {
-  navigate(`/public-update-product/${item.id}`);
-};
-
+    navigate(`/public-update-product/${item.id}`);
+  };
 
   return (
     <Layout>
@@ -22,12 +21,12 @@ const myProducts = product.filter((item) => item.userid === user?.uid);
         className={`min-h-screen py-10 px-3 sm:px-8 md:px-12 ${
           mode === "dark"
             ? "bg-gray-800 text-white"
-            // ? "bg-[#181a1b] text-white"
-            : "bg-gray-50 text-gray-800"
+            : // ? "bg-[#181a1b] text-white"
+              "bg-gray-50 text-gray-800"
         }`}
       >
         <h1 className="text-3xl md:text-4xl font-extrabold  mb-10">
-         My Products
+          My Products
         </h1>
 
         {myProducts.length === 0 ? (
@@ -35,7 +34,7 @@ const myProducts = product.filter((item) => item.userid === user?.uid);
             You haven’t uploaded any products yet 🛒
           </p>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mx-auto">
             {myProducts.map((item) => (
               <div
                 key={item.id}
