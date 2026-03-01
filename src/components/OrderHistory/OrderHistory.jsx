@@ -4,6 +4,7 @@ import {
   collection,
   getDocs,
   query,
+  orderBy,
   where,
   doc,
   updateDoc,
@@ -116,9 +117,15 @@ function OrderHistory() {
       try {
         if (!localUser?.uid) return;
 
+        // const q = query(
+        //   collection(fireDB, "order"),
+        //   where("userid", "==", localUser.uid),
+        // );
+
         const q = query(
           collection(fireDB, "order"),
           where("userid", "==", localUser.uid),
+          orderBy("date", "desc"), // newest first
         );
 
         const querySnapshot = await getDocs(q);
@@ -141,7 +148,19 @@ function OrderHistory() {
           };
         });
 
-        setOrders(userOrders);
+        // setOrders(userOrders);
+        // Ensure proper descending sort by date (newest first)
+        const sortedOrders = userOrders.sort((a, b) => {
+          const dateA = a.date?.seconds
+            ? a.date.seconds
+            : new Date(a.date).getTime() / 1000;
+          const dateB = b.date?.seconds
+            ? b.date.seconds
+            : new Date(b.date).getTime() / 1000;
+          return dateB - dateA; // descending
+        });
+
+        setOrders(sortedOrders);
 
         const disputeQuery = query(
           collection(fireDB, "disputes"),

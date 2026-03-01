@@ -8,6 +8,7 @@ import {
   updateDoc,
   doc,
   Timestamp,
+  orderBy,
 } from "firebase/firestore";
 import { fireDB } from "../../fireabase/FirebaseConfig";
 import myContext from "../../context/data/myContext";
@@ -36,6 +37,7 @@ function Disputes() {
         const q = query(
           collection(fireDB, "disputes"),
           where("sellerId", "==", localUser.uid),
+          orderBy("createdAt", "desc"), // 🔹 fetch recent first
         );
 
         const snapshot = await getDocs(q);
@@ -57,7 +59,6 @@ function Disputes() {
 
   const handleCheckClick = (dispute) => {
     if (dispute.status === "resolved") return;
-
     const latestDispute = disputes.find((d) => d.id === dispute.id);
     setSelectedDispute(latestDispute);
     setModalOpen(true);
@@ -68,14 +69,12 @@ function Disputes() {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     if (!file.type.startsWith("image/")) {
       alert("Please select a valid image file!");
       return;
     }
 
     const reader = new FileReader();
-
     reader.onload = (event) => {
       const img = new Image();
       img.src = event.target.result;
@@ -83,7 +82,6 @@ function Disputes() {
       img.onload = () => {
         const MAX_WIDTH = 600;
         const MAX_HEIGHT = 600;
-
         let width = img.width;
         let height = img.height;
 
@@ -91,7 +89,6 @@ function Disputes() {
           height = (MAX_WIDTH / width) * height;
           width = MAX_WIDTH;
         }
-
         if (height > MAX_HEIGHT) {
           width = (MAX_HEIGHT / height) * width;
           height = MAX_HEIGHT;
@@ -100,16 +97,11 @@ function Disputes() {
         const canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
-
         const ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, width, height);
 
-        // 🔥 Strong compression (0.5 quality)
         const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.5);
-
-        // 🚨 Check size before saving
         const sizeInBytes = new Blob([compressedDataUrl]).size;
-
         if (sizeInBytes > 900000) {
           alert("Image is still too large. Please upload a smaller image.");
           return;
@@ -119,9 +111,7 @@ function Disputes() {
         setPreviewUrl(compressedDataUrl);
       };
 
-      img.onerror = () => {
-        alert("Error processing image.");
-      };
+      img.onerror = () => alert("Error processing image.");
     };
 
     reader.readAsDataURL(file);
@@ -134,22 +124,18 @@ function Disputes() {
     }
 
     try {
-      setSubmitLoading(true); // start loading
+      setSubmitLoading(true);
 
       await updateDoc(doc(fireDB, "disputes", selectedDispute.id), {
         receiptUrl: previewUrl,
         receiptUploadedAt: Timestamp.now(),
-        status: "reviewing", // ✅ NEW STATE
+        status: "reviewing",
       });
 
       setDisputes((prev) =>
         prev.map((d) =>
           d.id === selectedDispute.id
-            ? {
-                ...d,
-                receiptUrl: previewUrl,
-                status: "reviewing", // ✅ reflect immediately in UI
-              }
+            ? { ...d, receiptUrl: previewUrl, status: "reviewing" }
             : d,
         ),
       );
@@ -162,7 +148,7 @@ function Disputes() {
       console.error("Error saving receipt:", error);
       alert("Failed to save receipt. Try again.");
     } finally {
-      setSubmitLoading(false); // stop loading
+      setSubmitLoading(false);
     }
   };
 
@@ -184,12 +170,9 @@ function Disputes() {
         className={`min-h-screen py-10 px-4 sm:px-8 ${mode === "dark" ? "bg-[#181a1b] text-white" : "bg-gray-50 text-gray-800"}`}
       >
         <div className="mb-10 flex items-center bg-white rounded-xl shadow-md overflow-hidden py-2 px-4">
-          {/* Fixed note */}
           <div className="flex-shrink-0 font-semibold mr-4">
             <MdNotificationAdd size={20} className="text-red-500" />
           </div>
-
-          {/* Scrolling text */}
           <div className="overflow-hidden whitespace-nowrap flex-1">
             <div className="inline-block animate-scroll text-black">
               To resolve a dispute, please check your dashboard and upload a
@@ -197,11 +180,12 @@ function Disputes() {
             </div>
           </div>
         </div>
+
         <h1 className="text-2xl font-bold mb-6">Disputes</h1>
 
         {/* Filter Buttons */}
         <div className="flex justify-center gap-4 mb-8">
-          {["all", "open", "resolved"].map((type) => (
+          {["all", "open", "reviewing", "resolved"].map((type) => (
             <button
               key={type}
               onClick={() => setFilter(type)}
@@ -222,7 +206,6 @@ function Disputes() {
                 key={item.id}
                 className={`rounded-xl border shadow-sm p-4 text-sm transition ${mode === "dark" ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}
               >
-                {/* Header */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex gap-3">
                     <img
@@ -240,23 +223,15 @@ function Disputes() {
                       </p>
                     </div>
                   </div>
-
                   <span
-                    className={`px-2 py-0.5 text-xs rounded-full font-medium ${
-                      item.status === "open"
-                        ? "bg-red-100 text-red-600"
-                        : item.status === "reviewing"
-                          ? "bg-yellow-100 text-yellow-700"
-                          : "bg-green-100 text-green-600"
-                    }`}
+                    className={`px-2 py-0.5 text-xs rounded-full font-medium ${item.status === "open" ? "bg-red-100 text-red-600" : item.status === "reviewing" ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-600"}`}
                   >
                     {item.status?.toUpperCase()}
                   </span>
                 </div>
 
-                {/* Alert */}
                 <div
-                  className={`mt-3 px-3 py-2 rounded-md text-xs ${item.status === "open" ? "bg-red-50 text-red-600" : "bg-green-50 text-green-600"}`}
+                  className={`mt-3 px-3 py-2 rounded-md text-xs ${item.status === "open" ? "bg-red-50 text-red-600" : item.status === "reviewing" ? "bg-yellow-50 text-yellow-700" : "bg-green-50 text-green-600"}`}
                 >
                   {item.status === "open"
                     ? "⚠️ Buyer reported an issue. Action required."
@@ -265,7 +240,6 @@ function Disputes() {
                       : "✅ Dispute resolved. No action needed."}
                 </div>
 
-                {/* Basic Info */}
                 <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-gray-500">
                   <p>
                     <strong>Buyer:</strong> {item.buyerName}
@@ -286,21 +260,13 @@ function Disputes() {
                     />
                   </div>
                 )}
-                {/* Manage button */}
+
                 <button
                   onClick={() => handleCheckClick(item)}
                   disabled={
                     item.status === "resolved" || item.status === "reviewing"
                   }
-                  className={`mt-3 w-full px-4 py-2 text-sm font-semibold rounded-lg shadow transition duration-200 flex items-center justify-center gap-2
-                    ${
-                      item.status === "resolved"
-                        ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                        : item.status === "reviewing"
-                          ? "bg-yellow-200 text-yellow-700 cursor-not-allowed"
-                          : "bg-purple-600 text-white hover:bg-purple-700 hover:shadow-md"
-                    }
-                  `}
+                  className={`mt-3 w-full px-4 py-2 text-sm font-semibold rounded-lg shadow transition flex items-center justify-center gap-2 ${item.status === "resolved" ? "bg-gray-300 text-gray-600 cursor-not-allowed" : item.status === "reviewing" ? "bg-yellow-200 text-yellow-700 cursor-not-allowed" : "bg-purple-600 text-white hover:bg-purple-700 hover:shadow-md"}`}
                 >
                   {item.status === "resolved"
                     ? "Dispute Completed"
@@ -323,7 +289,6 @@ function Disputes() {
               >
                 <IoClose size={24} />
               </button>
-
               <div className="flex flex-col items-center gap-4">
                 <h2 className="text-xl font-bold text-center text-gray-800 dark:text-white">
                   ⚠️ Dispute Action Required
@@ -332,7 +297,6 @@ function Disputes() {
                   Provide the transaction receipt for this order.
                 </p>
 
-                {/* Show existing receipt or upload */}
                 {selectedDispute.receiptUrl ? (
                   <div className="w-full">
                     <strong>Uploaded Receipt:</strong>
@@ -360,8 +324,6 @@ function Disputes() {
                           : "Click to upload receipt image"}
                       </div>
                     </label>
-
-                    {/* Preview */}
                     {previewUrl && (
                       <img
                         src={previewUrl}
@@ -369,7 +331,6 @@ function Disputes() {
                         className="mt-2 max-h-48 w-full object-contain rounded-md border"
                       />
                     )}
-
                     <button
                       onClick={handleSubmit}
                       disabled={submitLoading}

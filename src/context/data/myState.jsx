@@ -12,12 +12,14 @@ import {
   query,
   setDoc,
 } from "firebase/firestore";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 import { fireDB } from "../../fireabase/FirebaseConfig";
 
 function MyState({ children }) {
   // Theme mode
-  const [mode, setMode] = useState(localStorage.getItem("themeMode") || "light");
+  const [mode, setMode] = useState(
+    localStorage.getItem("themeMode") || "light",
+  );
 
   const toggleMode = () => {
     const newMode = mode === "light" ? "dark" : "light";
@@ -50,7 +52,7 @@ function MyState({ children }) {
 
   // 🔹 Add product (works with passed product or context state)
   const addProduct = async (newProduct = null) => {
-    const productToAdd = newProduct || products; 
+    const productToAdd = newProduct || products;
     const { title, price, imageUrl, category } = productToAdd; // description optional
 
     if (!title || !price || !imageUrl || !category) {
@@ -141,6 +143,26 @@ function MyState({ children }) {
     }
   };
 
+  // PublicUpdateProduct
+  const PublicUpdateProduct = async () => {
+    if (!products.id) {
+      toast.error("No product selected for update");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await setDoc(doc(fireDB, "products", products.id), products);
+      toast.success("✅ Product updated successfully");
+      getProductData();
+    } catch (error) {
+      console.error(error);
+      toast.error("❌ Error updating product");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // 🔹 Delete product (admin)
   const deleteProduct = async (item) => {
     if (!item.id) return;
@@ -212,6 +234,7 @@ function MyState({ children }) {
         product,
         editHandle,
         updateProduct,
+        PublicUpdateProduct,
         deleteProduct,
         order,
         user,

@@ -9,7 +9,7 @@ function PublicUpdateProduct() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const { product, products, setProducts, updateProduct, mode } =
+  const { product, products, setProducts, PublicUpdateProduct, mode } =
     useContext(myContext);
 
   const [preview, setPreview] = useState(products?.imageUrl || null);
@@ -97,12 +97,10 @@ function PublicUpdateProduct() {
 
     try {
       setLoading(true);
-      await updateProduct(); // Update product in DB
+      await PublicUpdateProduct(); // Update product in DB
 
-      // ✅ Keep reload, then redirect to home
       setTimeout(() => {
-        window.location.reload(); // reload current page
-        window.location.href = "/"; // redirect to home
+        window.location.href = "/";
       }, 500);
     } catch (error) {
       console.error(error);
