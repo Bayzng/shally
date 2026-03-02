@@ -232,11 +232,13 @@ function UserProfile() {
               <div className="flex flex-col flex-1">
                 <div className="flex items-center gap-1">
                   <span className="font-bold text-sm">{currentUser.name}</span>
-                  {currentUser.verified ? (
-                    <MdVerified className="text-blue-500 text-xs" />
-                  ) : (
-                    <span className="text-gray-400 text-xs">⚪</span>
-                  )}
+                  <MdVerified
+                    className={
+                      currentUser.verified
+                        ? "text-blue-500 text-xs"
+                        : "text-gray-400 text-xs"
+                    }
+                  />
                 </div>
                 <span className="text-xs text-gray-500 dark:text-gray-400">
                   {currentUser.verified ? "Verified Seller" : "Emerging Seller"}
