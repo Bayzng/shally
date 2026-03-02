@@ -202,6 +202,8 @@ function UserProfile() {
           )}
         </div>
 
+        {/* ================= SELLER Footer ================= */}
+
         {/* ================= CHAT BUTTON ================= */}
         <button
           onClick={() => setChatOpen(!chatOpen)}
@@ -251,9 +253,10 @@ function UserProfile() {
                     : "bg-gray-100 text-gray-800"
                 }`}
               >
-                💬 Chat feature is currently under development!
+                💬 Hey{" "}
+                {JSON.parse(localStorage.getItem("user"))?.name || "there"},
+                Chat feature is currently under development!
               </div>
-
               {/* Example typing message */}
               <div
                 className={`p-2 rounded-lg max-w-[75%] self-end italic text-xs text-gray-400`}
