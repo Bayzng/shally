@@ -22,6 +22,7 @@ import logo from "../../assets/logo.png";
 import myContext from "../../context/data/myContext";
 import { MdAdminPanelSettings } from "react-icons/md";
 import { IoMdLogIn } from "react-icons/io";
+import { IoChatboxEllipsesOutline } from "react-icons/io5";
 
 function Navbar() {
   const { mode, toggleMode } = useContext(myContext);
@@ -30,6 +31,10 @@ function Navbar() {
   const cartItems = useSelector((state) => state.cart);
   const location = useLocation(); // Add this
   const [openDisputesCount, setOpenDisputesCount] = useState(0);
+  const { product } = useContext(myContext);
+
+  // check if user has created at least one product
+  const isSeller = user ? product.some((p) => p.userid === user.uid) : false;
 
   useEffect(() => {
     if (!user?.uid) return;
@@ -157,10 +162,10 @@ function Navbar() {
                     <Link
                       to="/user-dashboard"
                       className={`flex items-center -ml-1 px-2 h-8 gap-2 font-medium hover:text-pink-500 transition  ${
-                          location.pathname === "/user-dashboard"
-                            ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
-                            : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
-                        }`}
+                        location.pathname === "/user-dashboard"
+                          ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
+                          : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
+                      }`}
                       // className="flex items-center gap-2 font-medium hover:text-pink-500 transition"
                     >
                       <RiAdminFill size={22} /> My DashBoard
@@ -206,6 +211,20 @@ function Navbar() {
                       >
                         <SiCoinmarketcap size={22} /> My Products
                       </Link>
+
+                      {user && !isAdmin && isSeller && (
+                        <Link
+                          to="/chat" // ✅ path matches the route
+                          className={`flex items-center -ml-1 px-2 h-8 gap-2 font-medium hover:text-pink-500 transition ${
+                            location.pathname === "/chat"
+                              ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
+                              : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
+                          }`}
+                        >
+                          <IoChatboxEllipsesOutline size={22} /> Chat System
+                        </Link>
+                      )}
+
                       <Link
                         to="/disputes"
                         className={`flex items-center -ml-1 px-2 h-8 gap-2 font-medium hover:text-pink-500 transition ${
@@ -429,6 +448,17 @@ function Navbar() {
                     }`}
                   >
                     Add Product
+                  </Link>
+
+                  <Link
+                    to="/chat" // ✅ path matches the route
+                    className={`flex items-center -ml-1 px-2 h-8 gap-2 font-medium hover:text-pink-500 transition ${
+                      location.pathname === "/chat"
+                        ? "bg-pink-200 text-pink-700 dark:bg-pink-600 dark:text-white"
+                        : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-white"
+                    }`}
+                  >
+                    Chat-System
                   </Link>
 
                   <Link

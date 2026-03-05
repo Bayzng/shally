@@ -1,47 +1,76 @@
+import { useContext } from "react";
 import ScrollToTop from "./ScrollToTop";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Order from "./pages/order/Order";
-import Cart from "./pages/cart/Cart";
-import Dashboard from "./pages/admin/dashboard/Dashboard";
-import NoPage from "./pages/nopage/NoPage";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import MyState from "./context/data/myState";
+import myContext from "./context/data/myContext";
+
+import Home from "./pages/home/Home";
+import Allproducts from "./pages/allproducts/Allproducts";
+import Cart from "./pages/cart/Cart";
+import Order from "./pages/order/Order";
+import Dashboard from "./pages/admin/dashboard/Dashboard";
 import Login from "./pages/registration/Login";
 import Signup from "./pages/registration/Signup";
 import ProductInfo from "./pages/productInfo/ProductInfo";
 import AddProduct from "./pages/admin/page/AddProduct";
 import UpdateProduct from "./pages/admin/page/UpdateProduct";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import Allproducts from "./pages/allproducts/Allproducts";
+import PublicAddProduct from "./pages/admin/page/PublicAddProduct";
+import PublicUpdateProduct from "./pages/admin/page/PublicUpdateProduct";
+
 import TransactionStatus from "./components/TransactionStatus/TransactionStatus";
 import OrderHistory from "./components/OrderHistory/OrderHistory";
-import PublicAddProduct from "./pages/admin/page/PublicAddProduct";
-import Home from "./pages/home/Home";
 import Creator from "./components/Creator/Creator";
 import MyUploadedProducts from "./components/MyUploadedProducts/MyUploadedProducts";
-import ProtectedRouteForAdmin from "./components/ProtectedRouteForAdmin/ProtectedRouteForAdmin";
-import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute";
-import ProtectedRouteUser from "./components/ProtectedRouteUser/ProtectedRouteUser";
 import UserDashboard from "./components/UserDashboard/UserDashboard";
 import UserProfile from "./components/UserProfile/UserProfile";
 import UserSettings from "./components/UserSettings/UserSettings";
 import PrivacyTerms from "./components/PrivacyTerms";
-import PublicUpdateProduct from "./pages/admin/page/PublicUpdateProduct";
 import Disputes from "./components/Disputes/Disputes";
+import SellerChatDashboard from "./components/SellerChat/SellerChatDashboard";
+
+import ProtectedRouteForAdmin from "./components/ProtectedRouteForAdmin/ProtectedRouteForAdmin";
+import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute";
+import ProtectedRouteUser from "./components/ProtectedRouteUser/ProtectedRouteUser";
 import PullToRefreshWrapper from "./PullToRefreshWrapper";
-import EditProtectedRoute from "./components/EditProtectedRoute/EditProtectedRoute";
+import NoPage from "./pages/noPage/NoPage";
 
 function App() {
   return (
     <MyState>
-      <PullToRefreshWrapper>
+      <AppRoutes />
+    </MyState>
+  );
+}
+
+function AppRoutes() {
+  const { currentUser, product } = useContext(myContext);
+
+  // Check if current user has created at least one product
+  const isSeller = currentUser
+    ? product.some((p) => p.userid === currentUser.uid)
+    : false;
+
+  return (
+    <PullToRefreshWrapper>
       <Router>
         <ScrollToTop />
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/allproducts" element={<Allproducts />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/productinfo/:id" element={<ProductInfo />} />
+          <Route path="/privacy-terms" element={<PrivacyTerms />} />
+          {/* <Route path="/privacy-terms" element={<Sel />} /> */}
 
+          <Route path="/*" element={<NoPage />} />
+
+          {/* Protected Routes for logged-in users */}
           <Route
             path="/order"
             element={
@@ -50,39 +79,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRouteForAdmin>
-                <Dashboard />
-              </ProtectedRouteForAdmin>
-            }
-          />
-
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-
-          <Route path="/productinfo/:id" element={<ProductInfo />} />
-
-          <Route
-            path="/addproduct"
-            element={
-              <ProtectedRouteForAdmin>
-                <AddProduct />
-              </ProtectedRouteForAdmin>
-            }
-          />
-
-          <Route
-            path="/updateproduct"
-            element={
-              <ProtectedRouteUser>
-                <UpdateProduct />
-              </ProtectedRouteUser>
-            }
-          />
-
           <Route
             path="/transaction-status"
             element={
@@ -91,7 +87,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/order-history"
             element={
@@ -100,7 +95,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/my-products"
             element={
@@ -110,6 +104,33 @@ function App() {
             }
           />
 
+          {/* Protected Routes for Admin */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRouteForAdmin>
+                <Dashboard />
+              </ProtectedRouteForAdmin>
+            }
+          />
+          <Route
+            path="/addproduct"
+            element={
+              <ProtectedRouteForAdmin>
+                <AddProduct />
+              </ProtectedRouteForAdmin>
+            }
+          />
+
+          {/* Protected Routes for Users */}
+          <Route
+            path="/updateproduct"
+            element={
+              <ProtectedRouteUser>
+                <UpdateProduct />
+              </ProtectedRouteUser>
+            }
+          />
           <Route
             path="/public-add-product"
             element={
@@ -121,12 +142,11 @@ function App() {
           <Route
             path="/public-update-product/:id"
             element={
-              <ProtectedRoute>
+              <ProtectedRouteUser>
                 <PublicUpdateProduct />
-              </ProtectedRoute>
+              </ProtectedRouteUser>
             }
           />
-
           <Route
             path="/creator"
             element={
@@ -168,14 +188,21 @@ function App() {
             }
           />
 
-          <Route path="/*" element={<NoPage />} />
-          <Route path="/privacy-terms" element={<PrivacyTerms />} />
+          {/* Seller Chat - Only visible to users who created products */}
+          {/* Always define /chat */}
+          <Route
+            path="/chat"
+            element={
+              <ProtectedRouteUser>
+                <SellerChatDashboard />
+              </ProtectedRouteUser>
+            }
+          />
         </Routes>
 
         <ToastContainer />
       </Router>
-      </PullToRefreshWrapper>
-    </MyState>
+    </PullToRefreshWrapper>
   );
 }
 

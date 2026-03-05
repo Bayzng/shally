@@ -30,7 +30,12 @@ function MyUploadedProducts() {
         </h1>
 
         {myProducts.length === 0 ? (
-          <p className="text-center text-gray-500 text-lg">
+          <p className={`p-4 rounded-md border-l-4 w-10/12 max-w-[14rem]  ${
+              mode === "dark"
+                ? "bg-gray-700 border-yellow-400 text-yellow-200"
+                : "bg-yellow-50 border-yellow-400 text-yellow-800"
+            }`}
+          >
             You haven’t uploaded any products yet 🛒
           </p>
         ) : (

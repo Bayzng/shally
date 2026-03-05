@@ -198,7 +198,12 @@ function Disputes() {
 
         {/* Disputes List */}
         {filteredDisputes.length === 0 ? (
-          <p className="text-center text-gray-500">No disputes found.</p>
+          <p className={`p-4 rounded-md border-l-4 w-10/12 max-w-[14rem]  ${
+              mode === "dark"
+                ? "bg-gray-700 border-yellow-400 text-yellow-200"
+                : "bg-yellow-50 border-yellow-400 text-yellow-800"
+            }`}
+          >No disputes found.</p>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {filteredDisputes.map((item) => (

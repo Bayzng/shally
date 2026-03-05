@@ -19,15 +19,14 @@ export default function HeroSection() {
       title: "🛍️ Shop What You Love",
       subtitle: "Find your next must-have items",
       image:
-        "https://img.freepik.com/premium-photo/woman-is-sitting-globe-with-clock-city-background_984237-89720.jpg?semt=ais_hybrid&w=740&q=80",
+        "https://images.unsplash.com/photo-1674027392887-751d6396b710?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fG9ubGluZSUyMHNob3BwaW5nfGVufDB8fDB8fHww",
       cta: "#",
     },
     {
       title: "🚚 Fast Shipping & Support",
       subtitle: "Quality service from start to finish",
       image:
-        "https://kinsta.com/wp-content/uploads/2024/08/performance-requirements-and-10-best-practices-for-high-speed-ecommerce-websites-1024x512.png",
-      // image: image,
+        "https://images.unsplash.com/photo-1674027392838-d85710a5121d?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDE3fHx8ZW58MHx8fHx8&fm=jpg&q=60&w=3000",
       cta: "#",
     },
   ];
@@ -76,7 +75,6 @@ export default function HeroSection() {
       left: "75%",
       rotate: "3deg",
     },
-    // { text: "Curated collections are amazing!", author: "@rayhaan", color: "bg-green-400", top: "40%", left: "90%", rotate: "-2deg" },
   ];
 
   const bgColor = mode === "dark" ? "bg-gray-900" : "bg-gray-50";
@@ -86,7 +84,7 @@ export default function HeroSection() {
   return (
     <section className={`relative w-full ${bgColor} overflow-hidden`}>
       {/* ---------- MOBILE HERO (SMALL SCREENS) ---------- */}
-      <div className="block md:hidden w-full h-[250px] sm:h-[350px]">
+      <div className="block md:hidden relative w-full h-[300px] sm:h-[380px] rounded-b-3xl overflow-hidden">
         {slides.map((slide, index) => (
           <div
             key={index}
@@ -94,30 +92,45 @@ export default function HeroSection() {
               index === current ? "opacity-100" : "opacity-0"
             }`}
           >
+            {/* Background behind image for light mode */}
+            {mode !== "dark" && (
+              <div className="absolute inset-0 bg-white"></div>
+            )}
+
+            {/* Image */}
             <img
               src={slide.image}
               alt={slide.title}
-              className="w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover rounded-b-3xl"
             />
-            <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center text-white px-4">
-              <h1 className="text-2xl sm:text-3xl font-bold drop-shadow-lg">
+
+            {/* Overlay */}
+            <div
+              className={`absolute inset-0 flex flex-col justify-center items-center text-center px-4 ${
+                mode === "dark"
+                  ? "bg-black/40 text-white"
+                  : "bg-black/40 text-white"
+              }`}
+            >
+              <h1 className="text-2xl sm:text-3xl font-bold drop-shadow-md">
                 {slide.title}
               </h1>
+
               <p className="mt-2 text-sm sm:text-base drop-shadow">
                 {slide.subtitle}
               </p>
-              <a
+
+              <button
                 onClick={() =>
                   window.scrollTo({
                     top: window.innerHeight,
                     behavior: "smooth",
                   })
                 }
-                href={slide.cta}
-                className="mt-4 inline-block bg-pink-600 text-white px-6 py-2 rounded-md font-semibold hover:bg-pink-700 transition"
+                className="mt-4 bg-pink-600 text-white px-6 py-2 rounded-md font-semibold hover:bg-pink-700 transition"
               >
                 Shop Now 🛒
-              </a>
+              </button>
             </div>
           </div>
         ))}
@@ -136,7 +149,9 @@ export default function HeroSection() {
                 height: `${Math.random() * 200 + 100}px`,
                 top: `${Math.random() * 100}%`,
                 left: `${Math.random() * 100}%`,
-                background: `linear-gradient(135deg, hsl(${Math.random() * 360}, 70%, 60%), hsl(${Math.random() * 360}, 80%, 70%))`,
+                background: `linear-gradient(135deg, hsl(${
+                  Math.random() * 360
+                }, 70%, 60%), hsl(${Math.random() * 360}, 80%, 70%))`,
                 animation: `float ${Math.random() * 6 + 4}s ease-in-out infinite alternate`,
                 animationDelay: `${Math.random() * 3}s`,
               }}
@@ -162,9 +177,7 @@ export default function HeroSection() {
         </p>
 
         {/* Call to Action */}
-        {/* Call to Action */}
         <div className="mt-10 flex flex-wrap justify-center gap-6 animate-fadeIn delay-200 z-10">
-          {/* GET STARTED / EXPLORE BUTTON */}
           {isAuthenticated ? (
             <button
               onClick={() =>
@@ -182,7 +195,6 @@ export default function HeroSection() {
             </Link>
           )}
 
-          {/* MARKETPLACE BUTTON */}
           <Link to={isAuthenticated ? "/allproducts" : "/login"}>
             <button className="px-12 py-4 border-2 border-cyan-400 text-cyan-400 font-bold rounded-full shadow-2xl hover:scale-110 transition-transform duration-300">
               Marketplace
