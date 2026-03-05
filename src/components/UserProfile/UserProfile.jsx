@@ -10,7 +10,6 @@ import {
   MessageSquare,
   X,
 } from "lucide-react";
-import Layout from "../layout/Layout";
 import myContext from "../../context/data/myContext";
 import LoadingOverlay from "../LoadingOverlay/LoadingOverlay";
 import { MdVerified } from "react-icons/md";
@@ -24,6 +23,8 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { fireDB } from "../../fireabase/FirebaseConfig";
+import { IoArrowBackCircleSharp } from "react-icons/io5";
+import Layout from "../Layout/Layout";
 
 function UserProfile() {
   const { mode, product, user } = useContext(myContext);
@@ -261,69 +262,86 @@ function UserProfile() {
         {/* ================= CHAT PANEL ================= */}
         {chatOpen && (
           <div
-            className={`fixed bottom-24 right-8 w-80 max-w-sm rounded-xl shadow-lg flex flex-col z-50
+            className={`fixed right-4 bottom-4 w-80 max-w-sm h-[500px] flex flex-col rounded-xl shadow-lg z-[999]
       ${mode === "dark" ? "bg-gray-800 border border-gray-700 text-gray-200" : "bg-white border border-gray-300 text-gray-800"}
-      h-[500px]  // fixed height
     `}
           >
-            {/* Seller Info */}
-            <div className="flex items-center gap-3 p-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
-                <span className="text-white font-bold text-lg sm:text-xl leading-none select-none">
-                  {currentUser.name?.charAt(0).toUpperCase() || "U"}
-                </span>
-              </div>
-              <div className="flex flex-col flex-1">
-                <div className="flex items-center gap-1">
-                  <span className="font-bold text-sm sm:text-base">
-                    {currentUser.name}
+            {/* ================= CHAT HEADER ================= */}
+            <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+              {/* Seller Info */}
+              <div className="flex items-center gap-3">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
+                  <span className="text-white font-bold text-lg sm:text-xl leading-none select-none">
+                    {currentUser.name?.charAt(0).toUpperCase() || "U"}
                   </span>
-                  <MdVerified
-                    className={
-                      currentUser.verified
-                        ? "text-blue-500 text-xs sm:text-sm"
-                        : "text-gray-400 text-xs sm:text-sm"
-                    }
-                  />
                 </div>
-                <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                  {currentUser.verified ? "Verified Seller" : "Emerging Seller"}
-                </span>
-              </div>
-            </div>
-
-            {/* Messages - scrollable */}
-            <div
-              ref={chatRef}
-              className={`flex-1 overflow-y-auto p-3 space-y-2 ${
-                mode === "dark" ? "bg-gray-900" : "bg-gray-50"
-              }`}
-            >
-              {messages.map((msg) => {
-                const isBuyer = msg.senderId === buyerId; // buyer on right
-                return (
-                  <div
-                    key={msg.id}
-                    className={`flex ${isBuyer ? "justify-end" : "justify-start"}`}
-                  >
-                    <div
-                      className={`px-3 py-2 rounded-lg max-w-[75%] break-words ${
-                        isBuyer
-                          ? "bg-pink-500 text-white rounded-tr-none" // buyer messages on right
-                          : `bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded-tl-none` // seller messages on left
-                      }`}
-                    >
-                      {msg.text}
-                    </div>
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-1">
+                    <span className="font-bold text-sm sm:text-base">
+                      {currentUser.name}
+                    </span>
+                    <MdVerified
+                      className={
+                        currentUser.verified
+                          ? "text-blue-500 text-xs sm:text-sm"
+                          : "text-gray-400 text-xs sm:text-sm"
+                      }
+                    />
                   </div>
-                );
-              })}
+                  <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                    {currentUser.verified
+                      ? "Verified Seller"
+                      : "Emerging Seller"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Close Button */}
+              <button
+                onClick={() => setChatOpen(false)}
+                className="sm:hidden flex items-center justify-center p-2 rounded-full shadow-lg hover:scale-110 transition-transform duration-300 bg-white dark:bg-gray-800"
+              >
+                <IoArrowBackCircleSharp className="text-red-500" size={22} />
+              </button>
             </div>
 
-            {/* Input */}
-            <div
-              className={`border-t border-gray-200 dark:border-gray-700 p-3 flex items-center gap-2 flex-shrink-0`}
-            >
+            {/* ================= MESSAGES ================= */}
+            <div className="flex-1 overflow-y-auto p-3 space-y-2">
+              {messages.length === 0 ? (
+                <div
+                  className={`text-center text-sm italic ${
+                    mode === "dark" ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
+                  No messages yet. Say hello to {currentUser.name}!
+                </div>
+              ) : (
+                messages.map((msg) => {
+                  const isBuyer = msg.senderId === buyerId;
+                  return (
+                    <div
+                      key={msg.id}
+                      className={`flex ${isBuyer ? "justify-end" : "justify-start"}`}
+                    >
+                      <div
+                        className={`px-3 py-2 rounded-lg max-w-[75%] break-words ${
+                          isBuyer
+                            ? "bg-pink-500 text-white rounded-tr-none"
+                            : "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded-tl-none"
+                        }`}
+                      >
+                        {msg.text}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+              {/* dummy div for scrollIntoView */}
+              <div ref={chatRef} />
+            </div>
+
+            {/* ================= INPUT ================= */}
+            <div className="border-t border-gray-200 dark:border-gray-700 p-3 flex items-center gap-2 flex-shrink-0">
               <input
                 type="text"
                 placeholder="Type a message..."
@@ -333,6 +351,7 @@ function UserProfile() {
                 className={`flex-1 text-base px-3 py-2 rounded-xl text-sm outline-none
           ${mode === "dark" ? "bg-gray-700 text-gray-300 placeholder-gray-400" : "bg-gray-100 text-gray-800 placeholder-gray-500"}
         `}
+                style={{ fontSize: "16px" }}
               />
               <button
                 onClick={handleSend}
