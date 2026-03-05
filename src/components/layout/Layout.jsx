@@ -13,6 +13,7 @@ function Layout({ children }) {
       </main>
 
       {/* Footer always at bottom */}
+      {/* Footer always at bottom */}
       <Footer />
     </div>
   )

@@ -24,7 +24,7 @@ import {
 } from "firebase/firestore";
 import { fireDB } from "../../fireabase/FirebaseConfig";
 import { IoArrowBackCircleSharp } from "react-icons/io5";
-import Layout from "../Layout/Layout";
+import Layout from "../layout/Layout";
 
 function UserProfile() {
   const { mode, product, user } = useContext(myContext);
