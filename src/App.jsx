@@ -19,7 +19,6 @@ import AddProduct from "./pages/admin/page/AddProduct";
 import UpdateProduct from "./pages/admin/page/UpdateProduct";
 import PublicAddProduct from "./pages/admin/page/PublicAddProduct";
 import PublicUpdateProduct from "./pages/admin/page/PublicUpdateProduct";
-
 import TransactionStatus from "./components/TransactionStatus/TransactionStatus";
 import OrderHistory from "./components/OrderHistory/OrderHistory";
 import Creator from "./components/Creator/Creator";
@@ -30,12 +29,10 @@ import UserSettings from "./components/UserSettings/UserSettings";
 import PrivacyTerms from "./components/PrivacyTerms";
 import Disputes from "./components/Disputes/Disputes";
 import SellerChatDashboard from "./components/SellerChat/SellerChatDashboard";
-
 import ProtectedRouteForAdmin from "./components/ProtectedRouteForAdmin/ProtectedRouteForAdmin";
 import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute";
 import ProtectedRouteUser from "./components/ProtectedRouteUser/ProtectedRouteUser";
 import PullToRefreshWrapper from "./PullToRefreshWrapper";
-import NoPage from "./pages/noPage/NoPage";
 
 function App() {
   return (
@@ -68,7 +65,7 @@ function AppRoutes() {
           <Route path="/privacy-terms" element={<PrivacyTerms />} />
           {/* <Route path="/privacy-terms" element={<Sel />} /> */}
 
-          <Route path="/*" element={<NoPage />} />
+          {/* <Route path="/*" element={<NoPage />} /> */}
 
           {/* Protected Routes for logged-in users */}
           <Route
