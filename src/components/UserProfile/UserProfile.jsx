@@ -23,7 +23,7 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { fireDB } from "../../fireabase/FirebaseConfig";
-import { IoArrowBackCircleSharp } from "react-icons/io5";
+import { IoCloseCircleSharp } from "react-icons/io5";
 import Layout from "../layout/Layout";
 
 function UserProfile() {
@@ -265,25 +265,24 @@ function UserProfile() {
         {/* ================= CHAT PANEL ================= */}
         {chatOpen && (
           <div
-            className={`fixed right-4 bottom-4 w-80 max-w-sm h-[500px] flex flex-col rounded-xl shadow-lg z-[999]
-      ${mode === "dark" ? "bg-gray-800 border border-gray-700 text-gray-200" : "bg-white border border-gray-300 text-gray-800"}
-    `}
+            className={`fixed right-4 bottom-4 w-80 max-w-sm h-[500px] flex flex-col rounded-xl shadow-lg z-[999] ${
+              mode === "dark"
+                ? "bg-gray-800 border border-gray-700 text-gray-200"
+                : "bg-white border border-gray-300 text-gray-800"
+            }`}
           >
-            {/* ================= CHAT HEADER ================= */}
-            <div className="flex items-center justify-between gap-3 p-3 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20 bg-inherit flex-shrink-0 w-full transition-colors duration-300">
+            {/* ===== CHAT HEADER ===== */}
+            <div className="flex-shrink-0 flex items-center justify-between rounded-xl gap-3 p-3 border-b border-gray-200 dark:border-gray-700 bg-inherit z-20">
               {/* Seller Info */}
               <div className="flex items-center gap-3 flex-1">
-                {/* Avatar */}
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center shadow-md hover:scale-105 transform transition-transform duration-300">
-                  <span className="text-white font-bold text-lg sm:text-xl leading-none select-none">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center shadow-md">
+                  <span className="text-white font-bold text-lg sm:text-xl">
                     {currentUser.name?.charAt(0).toUpperCase() || "U"}
                   </span>
                 </div>
-
-                {/* Name & Status */}
                 <div className="flex flex-col">
                   <div className="flex items-center gap-1">
-                    <span className="flex items-center text-sm sm:text-base font-extrabold text-center sm:text-left">
+                    <span className="text-sm sm:text-base font-extrabold">
                       {currentUser.name}
                     </span>
                     <MdVerified
@@ -305,20 +304,22 @@ function UserProfile() {
               {/* Close Button */}
               <button
                 onClick={() => setChatOpen(false)}
-                className="sm:hidden flex items-center justify-center p-2 rounded-full shadow-lg hover:scale-110 transition-transform duration-300 bg-white dark:bg-gray-800"
+                className={`sm:hidden flex items-center justify-center p-2 rounded-full shadow-lg transition-transform duration-300 hover:scale-110 ${
+                  mode === "dark" ? "bg-gray-800" : "bg-white"
+                }`}
               >
-                <IoArrowBackCircleSharp
+                <IoCloseCircleSharp
                   className="text-red-500 dark:text-red-400"
                   size={22}
                 />
               </button>
             </div>
 
-            {/* ================= MESSAGES ================= */}
+            {/* ===== MESSAGES ===== */}
             <div
               ref={chatRef}
               className="flex-1 overflow-y-auto p-3 space-y-2"
-              style={{ marginBottom: "72px" }} // ensure input doesn't cover last message
+              style={{ paddingBottom: "80px" }} // leave space for input
             >
               {messages.length === 0 ? (
                 <div
@@ -328,19 +329,10 @@ function UserProfile() {
                       : "bg-gray-100 text-gray-700"
                   }`}
                 >
-                  {/* Greeting */}
                   <p className="font-semibold text-base">
                     👋 Say hello to {currentUser.name}!
                   </p>
-
-                  {/* AllMart Monitoring Notice */}
-                  <p className="flex items-center justify-center gap-1">
-                    {/* <span className="text-yellow-400">🛡️</span> */}
-                    <span>
-                      All messages are strictly monitored by AllMart to ensure a
-                      safe and trusted communication environment.
-                    </span>
-                  </p>
+                  <p>All messages are strictly monitored by AllMart.</p>
                 </div>
               ) : (
                 messages.map((msg) => {
@@ -348,9 +340,7 @@ function UserProfile() {
                   return (
                     <div
                       key={msg.id}
-                      className={`flex ${
-                        isBuyer ? "justify-end" : "justify-start"
-                      }`}
+                      className={`flex ${isBuyer ? "justify-end" : "justify-start"}`}
                     >
                       <div
                         className={`px-3 py-2 rounded-lg max-w-[75%] break-words ${
@@ -367,21 +357,19 @@ function UserProfile() {
               )}
             </div>
 
-            {/* ================= INPUT ================= */}
-            <div className="border-t border-gray-200 dark:border-gray-700 p-3 flex items-center gap-2 sticky bottom-0 bg-inherit z-10">
+            {/* ===== INPUT ===== */}
+            <div className="absolute bottom-0 left-0 rounded-xl right-0 p-3 flex items-center gap-2 border-t border-gray-200 dark:border-gray-700 bg-inherit z-10">
               <input
                 type="text"
                 placeholder="Type a message..."
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                className={`flex-1 text-base px-3 py-2 rounded-xl text-sm outline-none
-          ${
-            mode === "dark"
-              ? "bg-gray-700 text-gray-300 placeholder-gray-400"
-              : "bg-gray-100 text-gray-800 placeholder-gray-500"
-          }
-        `}
+                className={`flex-1 text-base px-3 py-2 rounded-xl text-sm outline-none ${
+                  mode === "dark"
+                    ? "bg-gray-700 text-gray-300 placeholder-gray-400"
+                    : "bg-gray-100 text-gray-800 placeholder-gray-500"
+                }`}
                 style={{ fontSize: "16px" }}
               />
               <button

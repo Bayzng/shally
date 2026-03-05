@@ -215,10 +215,10 @@ function SellerChatDashboard() {
         className={`flex flex-col h-full ${activeChat ? "flex-1 w-full" : "hidden sm:flex flex-[3.5]"}`}
       >
         {activeChat && activeBuyer ? (
-          <>
-            {/* ====== Buyer Info Header (Sticky) ====== */}
+          <div className="relative flex-1 flex flex-col h-full">
+            {/* ====== Buyer Info Header ====== */}
             <div
-              className={`sticky top-0 z-10 flex items-center gap-3 p-3 border-b ${
+              className={`flex-shrink-0 flex items-center gap-3 p-3 border-b sticky top-0 z-10 ${
                 mode === "dark"
                   ? "border-gray-700 bg-gray-900"
                   : "border-gray-200 bg-white"
@@ -236,9 +236,7 @@ function SellerChatDashboard() {
               >
                 <IoArrowBackCircleSharp
                   size={35}
-                  className={`${
-                    mode === "dark" ? "text-green-400" : "text-green-500"
-                  }`}
+                  className={`${mode === "dark" ? "text-green-400" : "text-green-500"}`}
                 />
               </button>
 
@@ -253,9 +251,7 @@ function SellerChatDashboard() {
               <div className="flex flex-col">
                 <div className="flex items-center gap-1">
                   <span
-                    className={`font-bold text-sm ${
-                      mode === "dark" ? "text-gray-200" : "text-gray-800"
-                    }`}
+                    className={`font-bold text-sm ${mode === "dark" ? "text-gray-200" : "text-gray-800"}`}
                   >
                     {activeBuyer.name}
                   </span>
@@ -270,46 +266,53 @@ function SellerChatDashboard() {
                   />
                 </div>
                 <span
-                  className={`text-xs ${
-                    mode === "dark" ? "text-gray-400" : "text-gray-500"
-                  }`}
+                  className={`text-xs ${mode === "dark" ? "text-gray-400" : "text-gray-500"}`}
                 >
                   {activeBuyer.verified ? "Verified Buyer" : "Buyer"}
                 </span>
               </div>
             </div>
 
-            {/* ====== Messages (Scrollable under header) ====== */}
+            {/* ====== Messages ====== */}
             <div
               ref={chatRef}
               className={`flex-1 overflow-y-auto p-4 space-y-2 ${mode === "dark" ? "bg-gray-900" : "bg-gray-50"}`}
-              style={{ marginBottom: "72px" }} // extra space so last messages aren’t hidden behind input
+              style={{ paddingBottom: "80px" }} // extra space so messages aren’t hidden behind input
             >
-              {messages.length === 0 && (
+              {messages.length === 0 ? (
                 <p className="text-center text-gray-400 text-sm">
                   No messages yet
                 </p>
-              )}
-              {messages.map((msg) => {
-                const isSeller = msg.senderId === sellerId;
-                return (
-                  <div
-                    key={msg.id}
-                    className={`flex ${isSeller ? "justify-end" : "justify-start"}`}
-                  >
+              ) : (
+                messages.map((msg) => {
+                  const isSeller = msg.senderId === sellerId;
+                  return (
                     <div
-                      className={`px-4 py-2 rounded-lg max-w-[85%] sm:max-w-[70%] break-words ${isSeller ? "bg-pink-500 text-white rounded-tr-none" : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-tl-none"}`}
+                      key={msg.id}
+                      className={`flex ${isSeller ? "justify-end" : "justify-start"}`}
                     >
-                      {msg.text}
+                      <div
+                        className={`px-4 py-2 rounded-lg max-w-[85%] sm:max-w-[70%] break-words ${
+                          isSeller
+                            ? "bg-pink-500 text-white rounded-tr-none"
+                            : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-tl-none"
+                        }`}
+                      >
+                        {msg.text}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
 
-            {/* ====== Input (Sticky bottom) ====== */}
+            {/* ====== Input ====== */}
             <div
-              className={`p-3 flex gap-2 border-t sticky bottom-0 z-10 ${mode === "dark" ? "border-gray-700 bg-gray-900" : "border-gray-300 bg-white"}`}
+              className={`absolute bottom-0 left-0 right-0 p-3 flex gap-2 border-t z-10 ${
+                mode === "dark"
+                  ? "border-gray-700 bg-gray-900"
+                  : "border-gray-300 bg-white"
+              }`}
             >
               <input
                 type="text"
@@ -317,7 +320,11 @@ function SellerChatDashboard() {
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                className={`flex-1 px-3 py-3 text-base rounded-xl outline-none ${mode === "dark" ? "bg-gray-800 text-gray-200 placeholder-gray-400" : "bg-gray-100 text-gray-800 placeholder-gray-500"}`}
+                className={`flex-1 px-3 py-3 text-base rounded-xl outline-none ${
+                  mode === "dark"
+                    ? "bg-gray-800 text-gray-200 placeholder-gray-400"
+                    : "bg-gray-100 text-gray-800 placeholder-gray-500"
+                }`}
                 style={{ fontSize: "16px" }}
               />
               <button
@@ -327,7 +334,7 @@ function SellerChatDashboard() {
                 Send
               </button>
             </div>
-          </>
+          </div>
         ) : (
           <div
             className={`flex flex-col justify-center items-center flex-1 w-full h-screen text-center px-4 ${mode === "dark" ? "text-gray-400" : "text-gray-500"}`}
