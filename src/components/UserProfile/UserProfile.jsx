@@ -61,7 +61,14 @@ function UserProfile() {
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const msgs = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setMessages(msgs);
-      chatRef.current?.scrollTo(0, chatRef.current.scrollHeight);
+
+      // Scroll to bottom smoothly
+      setTimeout(() => {
+        chatRef.current?.scrollTo({
+          top: chatRef.current.scrollHeight,
+          behavior: "smooth",
+        });
+      }, 100);
     });
 
     return () => unsubscribe();
@@ -71,11 +78,9 @@ function UserProfile() {
   const handleSend = async () => {
     if (!newMessage.trim() || !currentUser) return;
 
-    // Ensure chat document exists
     const chatDocRef = doc(fireDB, "chats", chatId);
     await setDoc(chatDocRef, { chatId }, { merge: true });
 
-    // Add message
     const messagesRef = collection(fireDB, "chats", chatId, "messages");
     await addDoc(messagesRef, {
       senderId: buyerId,
@@ -114,7 +119,7 @@ function UserProfile() {
             : "bg-gray-50 text-gray-800"
         }`}
       >
-        {/* ================= SELLER HEADER ================= */}
+        {/* ================= SELLER INFO ================= */}
         <div
           className={`max-w-6xl mx-auto mb-10 p-6 sm:p-8 rounded-3xl shadow-lg ${
             mode === "dark" ? "bg-gray-800 border border-gray-700" : "bg-white"
@@ -258,8 +263,6 @@ function UserProfile() {
         </button>
 
         {/* ================= CHAT PANEL ================= */}
-        {/* ================= CHAT PANEL ================= */}
-        {/* ================= CHAT PANEL ================= */}
         {chatOpen && (
           <div
             className={`fixed right-4 bottom-4 w-80 max-w-sm h-[500px] flex flex-col rounded-xl shadow-lg z-[999]
@@ -267,23 +270,26 @@ function UserProfile() {
     `}
           >
             {/* ================= CHAT HEADER ================= */}
-            <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+            <div className="flex items-center justify-between gap-3 p-3 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20 bg-inherit flex-shrink-0 w-full transition-colors duration-300">
               {/* Seller Info */}
-              <div className="flex items-center gap-3">
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
+              <div className="flex items-center gap-3 flex-1">
+                {/* Avatar */}
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center shadow-md hover:scale-105 transform transition-transform duration-300">
                   <span className="text-white font-bold text-lg sm:text-xl leading-none select-none">
                     {currentUser.name?.charAt(0).toUpperCase() || "U"}
                   </span>
                 </div>
+
+                {/* Name & Status */}
                 <div className="flex flex-col">
                   <div className="flex items-center gap-1">
-                    <span className="font-bold text-sm sm:text-base">
+                    <span className="flex items-center text-sm sm:text-base font-extrabold text-center sm:text-left">
                       {currentUser.name}
                     </span>
                     <MdVerified
                       className={
                         currentUser.verified
-                          ? "text-blue-500 text-xs sm:text-sm"
+                          ? "text-blue-500 text-xs sm:text-sm animate-pulse"
                           : "text-gray-400 text-xs sm:text-sm"
                       }
                     />
@@ -301,19 +307,40 @@ function UserProfile() {
                 onClick={() => setChatOpen(false)}
                 className="sm:hidden flex items-center justify-center p-2 rounded-full shadow-lg hover:scale-110 transition-transform duration-300 bg-white dark:bg-gray-800"
               >
-                <IoArrowBackCircleSharp className="text-red-500" size={22} />
+                <IoArrowBackCircleSharp
+                  className="text-red-500 dark:text-red-400"
+                  size={22}
+                />
               </button>
             </div>
 
             {/* ================= MESSAGES ================= */}
-            <div className="flex-1 overflow-y-auto p-3 space-y-2">
+            <div
+              ref={chatRef}
+              className="flex-1 overflow-y-auto p-3 space-y-2"
+              style={{ marginBottom: "72px" }} // ensure input doesn't cover last message
+            >
               {messages.length === 0 ? (
                 <div
-                  className={`text-center text-sm italic ${
-                    mode === "dark" ? "text-gray-400" : "text-gray-500"
+                  className={`flex flex-col gap-2 text-center text-sm p-4 rounded-lg ${
+                    mode === "dark"
+                      ? "bg-gray-800 text-gray-300"
+                      : "bg-gray-100 text-gray-700"
                   }`}
                 >
-                  No messages yet. Say hello to {currentUser.name}!
+                  {/* Greeting */}
+                  <p className="font-semibold text-base">
+                    👋 Say hello to {currentUser.name}!
+                  </p>
+
+                  {/* AllMart Monitoring Notice */}
+                  <p className="flex items-center justify-center gap-1">
+                    {/* <span className="text-yellow-400">🛡️</span> */}
+                    <span>
+                      All messages are strictly monitored by AllMart to ensure a
+                      safe and trusted communication environment.
+                    </span>
+                  </p>
                 </div>
               ) : (
                 messages.map((msg) => {
@@ -321,7 +348,9 @@ function UserProfile() {
                   return (
                     <div
                       key={msg.id}
-                      className={`flex ${isBuyer ? "justify-end" : "justify-start"}`}
+                      className={`flex ${
+                        isBuyer ? "justify-end" : "justify-start"
+                      }`}
                     >
                       <div
                         className={`px-3 py-2 rounded-lg max-w-[75%] break-words ${
@@ -336,12 +365,10 @@ function UserProfile() {
                   );
                 })
               )}
-              {/* dummy div for scrollIntoView */}
-              <div ref={chatRef} />
             </div>
 
             {/* ================= INPUT ================= */}
-            <div className="border-t border-gray-200 dark:border-gray-700 p-3 flex items-center gap-2 flex-shrink-0">
+            <div className="border-t border-gray-200 dark:border-gray-700 p-3 flex items-center gap-2 sticky bottom-0 bg-inherit z-10">
               <input
                 type="text"
                 placeholder="Type a message..."
@@ -349,7 +376,11 @@ function UserProfile() {
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
                 className={`flex-1 text-base px-3 py-2 rounded-xl text-sm outline-none
-          ${mode === "dark" ? "bg-gray-700 text-gray-300 placeholder-gray-400" : "bg-gray-100 text-gray-800 placeholder-gray-500"}
+          ${
+            mode === "dark"
+              ? "bg-gray-700 text-gray-300 placeholder-gray-400"
+              : "bg-gray-100 text-gray-800 placeholder-gray-500"
+          }
         `}
                 style={{ fontSize: "16px" }}
               />
